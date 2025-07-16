@@ -1516,7 +1516,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 <input type="text" id="customExercise" placeholder="Ajouter un exercice" aria-label="Nom de l'exercice personnalisé">
                 <button class="btn btn-success" id="addExerciseBtn" aria-label="Ajouter l'exercice"> Ajouter</button>
             </div>
-            <div id="autocompleteSuggestions" class="hidden" role="listbox" aria-label="Suggestions d'exercices"></div>
         </section>
 
         <section class="summary-section" aria-labelledby="summarySectionTitle">
@@ -1694,9 +1693,9 @@ body.dark-mode .exercise-card .btn-secondary {
             <i class="fas fa-calculator"></i>
             <span>Calculs</span>
         </button>
-        <button class="btn btn-primary" id="bottomFinishSessionBtn" aria-label="Terminer la séance">
-            <i class="fas fa-flag-checkered"></i>
-            <span>Terminer</span>
+        <button class="btn btn-primary" id="bottomScrollBtn" aria-label="Faire défiler la page">
+            <i class="fas fa-arrows-alt-v"></i>
+            <span>Défiler</span>
         </button>
     </nav>
 
@@ -1719,7 +1718,6 @@ body.dark-mode .exercise-card .btn-secondary {
         function init() {
             
 
-            state.availableExercises = parseExerciseList(rawExerciseList);
 
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
@@ -1861,7 +1859,7 @@ body.dark-mode .exercise-card .btn-secondary {
             timerPlayPauseIcon: document.getElementById('timerPlayPauseIcon'),
             timerPlayPauseText: document.getElementById('timerPlayPauseText'),
             bottomAddExerciseBtn: document.getElementById('bottomAddExerciseBtn'),
-            bottomFinishSessionBtn: document.getElementById('bottomFinishSessionBtn'),
+            bottomScrollBtn: document.getElementById('bottomScrollBtn'),
             bottomViewHistoryBtn: document.getElementById('bottomViewHistoryBtn'),
             bottomPlateCalculatorBtn: document.getElementById('bottomPlateCalculatorBtn'),
             bottomNotesBtn: document.getElementById('bottomNotesBtn'),
@@ -1905,61 +1903,61 @@ body.dark-mode .exercise-card .btn-secondary {
           {
             name: "Haut du Corps (Force)",
             exercises: [
-              { name: "Tractions scapulaires", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Développé couché barre", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Machine élévations latérales debout", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Tractions", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Développé incliné haltères", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Rowing T-barre appuyé", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Pec Deck", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Bayesian Cable Curl", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Extension triceps à la poulie haute", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
+              { name: "Tractions scapulaires", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Développé couché barre", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Machine élévations latérales debout", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Tractions", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Développé incliné haltères", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Rowing T-barre appuyé", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Pec Deck", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Bayesian Cable Curl", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Extension triceps à la poulie haute", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
             ]
           },
           {
             name: "Bas du Corps (Force)",
             exercises: [
-              { name: "Soulevé de terre roumain (RDL)", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Hip thrust", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Hack squat", rest: "180s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Fentes bulgares", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Mollets debout", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
+              { name: "Soulevé de terre roumain (RDL)", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Hip thrust", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Hack squat", rest: "180s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Fentes bulgares", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Mollets debout", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
             ]
           },
           {
             name: "Haut du Corps (Hypertrophie & Poigne)",
             exercises: [
-              { name: "Dips", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Tirage vertical prise large", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Écarté incliné aux poulies", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Face Pull", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Élévations latérales à la poulie", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Curl pupitre", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Extension triceps overhead", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Flexions poignets supination", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Extensions de poignets pronation", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Farmer’s Walk", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Planche", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
+              { name: "Dips", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Tirage vertical prise large", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Écarté incliné aux poulies", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Face Pull", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Élévations latérales à la poulie", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Curl pupitre", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Extension triceps overhead", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Flexions poignets supination", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Extensions de poignets pronation", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Farmer’s Walk", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Planche", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
             ]
           },
           {
             name: "Bas du Corps (Hypertrophie & Focus Ischios/Fessiers)",
             exercises: [
-              { name: "Pendulum Squat", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Hip thrust", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Leg curl assis", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Mollets assis", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Glute Ham Raise", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Circuit abdos (relevé de jambe, crunches, planche)", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
+              { name: "Pendulum Squat", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Hip thrust", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Leg curl assis", rest: "75s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Mollets assis", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Glute Ham Raise", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Circuit abdos (relevé de jambe, crunches, planche)", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
             ]
           },
           {
             name: "Trapèzes & Mobilité ",
             exercises: [
-              { name: "Barbell Shrugs", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Face Pull", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Cable Y-Raise", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
-              { name: "Dead Hang", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
+              { name: "Barbell Shrugs", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Face Pull", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Cable Y-Raise", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
+              { name: "Dead Hang", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] }
             ]
           },
           {
@@ -1977,10 +1975,6 @@ body.dark-mode .exercise-card .btn-secondary {
         ];
 
         const defaultSessionNames = defaultSessions.map(s => s.name);
-        
-        const rawExerciseList = `
-ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Archer row,Arnold press,Ball slam,Ball slam côté,Bar hang,Bayesian curl,Bear push up,Biceps anneaux,Biceps-triceps extension superset,Bird dog,Bobine d'Andrieu,Bobine d'Andrieu inversée,Brignole cable press down,Brignole squat,Burpees,Cable crunch,Cable extension jambe,Cable glute kickback,Cable jambe étendue,Cable kickback,Cable leg extension,Cable press down,Cable cable press down brignole,Calf raise machine,Cat camel,Chest flies,Chest flies machine,Circuit cross training,Corde à sauter,Course sur tapis,Crunch,Crunch classique,Curl barre EZ,Curl incliné,Curl marteau assis,Curl pronation,Curl pronation haltères,Curl pupitre,Curl pupitre machine,Deadbug,Deadlift trap bar,Dips,Dips pectoraux anneaux,Dips verticaux barres fixes,Donkey kick,Drapeau humain,Drop jump single leg,Dév. couché partiel prise serrée,Dév. incliné,Dév. militaire assis haltères,Développé couché,Développé couché haltères,Développé couché incliné haltères,Développé devant landmine,Développé militaire,Développé militaire barre,Développé militaire haltère,Elevations tibialis,Extension haltères en hauteur,Extension triceps corde,Extension triceps élastique,Facepull,Facepull anneaux,Fentes bulgares,Fentes marchées,Flexion haltères en hauteur,Floor press haltères,Fly au sol bras à 60°,Front Squats,Front lever,Gainage rétroversion,Glute bridge,Glute extension,Glute ham raise,Glute kickback,High lat pull in,Hip thrust une jambe,Hula hoop,Inverted row,Jump squats,Jumping jacks,L-Fly,L-fly poulie,L-fly élastique,Landmine press,Landmine squat,Landmine squeeze press,Lat prayer,Leg curl allongé,Leg curl assis,Leg curl delavier,Leg curl haltères,Leg curl machine,Leg extension,Machine arrière épaules,Machine rowing divergent,Magyc triceps,Masse de force,ForceMedecine ball wall slam,Medicine ball wall slam,Modified row,Mollets assis,Mollets assis barre,Mollets assis machine,Mollets debout,Mollets machine,Mollets à la barre guidée,Mollets à la presse à cuisse,Montée de marches,Mountain climbers,Multi-hip,Musclets,Nordic hamstring,Oiseau,Oiseau poulie/anneaux,Oiseaux poulie,Pec deck,Pendlay row,Pistol assisté,Plank,Pompes archer,Pompes complètes,Pompes pliométriques,Pompes sur anneaux,Portée de grosse pierre,Poussée de poulie diagonale haute,Poussée de rouleau dans le mur,Presse Palof,Presse inclinée,Pull over haltères,Rack push,Relevé de jambes suspendu,Retourné de pneu,Romanian Deadlift,Romanian deadlift,Rowing Yates,Rowing bûcheron,Rowing divergent,Rowing haltères,Rowing uneven,Side bend,Side bend élastique,Side plank dynamique,Single leg hipthrust landmine,Single leg stiff leg deadlift,Sissy Mathias,Sissy squat,Sissy squat anneaux,Sissy squat appui anneaux,Sissy squat machine,Skull crusher,Sled push,Sprint,Sprint en montée,Squat barre,Squat talons très relevés,Standing cable leg curl,Step up,Step up accroché,Superman,Superset Crunch/relevé de jambes,Swing kettlebell + élastique,Swings,Tibialis anterior,Tirage arraché,Tirage horizontal,Tirage vertical machine,Tirage vertical unilatéral,Tire flip,Traction assistée,Traction supination,Tractions anneaux,Tractions porte,Tractions prise neutre focus coude,Tractions pronation,Tractions pronation prise serrée,Tractions scapulaires,Tractions scapulaires uneven,Tractions supination,Triceps anneaux,Triceps au mur,Triceps poulie,Unilateral lat pull in,Upright row,Wall ball,Wall ball devant,Wall ball diagonal,Wall ball frisbee,Woodchopper,Écarté couché haltères,Élévation frontale,Élévations latérales,Élévations latérales couchées,Élévations latérales poulie,Élévations latérales unilatérale,Élévations mollets debout
-        `.split(',').map(item => item.trim());
         
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -2560,8 +2554,8 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                     let seriesContentHtml = "";
                     (ex.series || []).forEach((currentSeries, i) => { // Added (ex.series || []) for extra safety
                         seriesContentHtml += `<td role="cell"><div class="serie-input">
-                            <input type="text" inputmode="decimal" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
-                            <input type="text" inputmode="decimal" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
+                            <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
+                            <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
                             <button class="serie-input-delete" data-ex="${idx}" data-serie="${i}" aria-label="Effacer cette série">&times;</button>
                         </div></td>`;
                     });
@@ -2635,8 +2629,8 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                             <div class="series-row">
                                 <span>Série ${i + 1}:</span>
                                 <div class="series-input-group">
-                                    <input type="text" inputmode="decimal" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
-                                    <input type="text" inputmode="decimal" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
+                                    <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
+                                    <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
                                     <button class="serie-input-delete" data-ex="${idx}" data-serie="${i}" aria-label="Effacer série ${i+1} pour ${ex.name}">&times;</button>
                                 </div>
                             </div>
@@ -3921,19 +3915,6 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                 }
             }, { once : true });
         }
-
-        function parseExerciseList(rawList) {
-            return rawList;
-        }
-
-        function showSuggestions(input) {
-            const query = input.value.toLowerCase();
-            dom.autocompleteSuggestions.innerHTML = '';
-            if (query.length < 2) { 
-                dom.autocompleteSuggestions.classList.remove('show');
-                dom.autocompleteSuggestions.classList.add('hidden');
-                return;
-            }
             const filteredSuggestions = state.availableExercises.filter(exercise => 
                 exercise.toLowerCase().includes(query)
             ).slice(0, 10); 
@@ -3956,15 +3937,6 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                 dom.autocompleteSuggestions.classList.remove('hidden');
                 dom.autocompleteSuggestions.classList.add('show');
             } else {
-                dom.autocompleteSuggestions.classList.remove('show');
-                dom.autocompleteSuggestions.addEventListener('transitionend', () => {
-                    dom.autocompleteSuggestions.classList.add('hidden');
-                }, { once : true });
-            }
-        }
-
-        function hideSuggestionsOnClickOutside(event) {
-            if (!dom.autocompleteSuggestions.contains(event.target) && event.target !== dom.customExerciseInput) {
                 dom.autocompleteSuggestions.classList.remove('show');
                 dom.autocompleteSuggestions.addEventListener('transitionend', () => {
                     dom.autocompleteSuggestions.classList.add('hidden');
@@ -4112,7 +4084,8 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                     if (!state.sessions[state.currentSessionIndex].exercises) {
                         state.sessions[state.currentSessionIndex].exercises = [];
                     }
-                    state.sessions[state.currentSessionIndex].exercises.push({ name, rest: "1 min", series: [{weight: '', reps: ''}] });
+                    const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}];
+                    state.sessions[state.currentSessionIndex].exercises.push({ name, rest: "1 min", series: fourSeries });
                     createTable(); 
                     dom.customExerciseInput.value = '';
                     showNotification(`Exercice "${name}" ajouté avec succès.`, "info");
@@ -4129,15 +4102,6 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                     showNotification("Veuillez entrer un nom d'exercice à ajouter.", "error");
                 }
             });
-
-            dom.customExerciseInput.addEventListener('input', () => showSuggestions(dom.customExerciseInput));
-            dom.customExerciseInput.addEventListener('blur', () => {
-                setTimeout(() => dom.autocompleteSuggestions.classList.remove('show'), 100); 
-                setTimeout(() => dom.autocompleteSuggestions.classList.add('hidden'), 300);
-            });
-            dom.customExerciseInput.addEventListener('focus', () => showSuggestions(dom.customExerciseInput));
-            document.addEventListener('click', hideSuggestionsOnClickOutside);
-            dom.autocompleteSuggestions.addEventListener('mousedown', (e) => e.preventDefault());
 
             dom.exerciseListContainer.addEventListener('blur', (e) => {
     if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
@@ -4172,10 +4136,10 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                         }
 
                         if (target.classList.contains('weight')) {
-                            const repsInput = document.querySelector(`[data-ex='${exIndex}'][data-serie='${serieIndex}'].reps`);
-                            if (repsInput) {
-                                repsInput.focus();
-                            }
+                        const repsInput = document.querySelector(`[data-ex='${exIndex}'][data-serie='${serieIndex}'].reps`);
+                        if (repsInput && !state.isMobileView) {
+                            repsInput.focus();
+                        }
                         } else if (target.classList.contains('reps')) {
                             const weightInput = document.querySelector(`[data-ex='${exIndex}'][data-serie='${serieIndex}'].weight`);
                             
@@ -4192,13 +4156,13 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                                     if (nextWeightInput.value.trim() === '') {
                                         nextWeightInput.value = weightInput.value;
                                     }
-                                    nextWeightInput.focus();
-                                } else {
-                                    const nextExerciseElement = document.querySelector(`[data-exercise-index="${exIndex + 1}"]`);
-                                    if (nextExerciseElement) {
-                                        const firstWeightInputOfNextEx = nextExerciseElement.querySelector(`.weight[data-serie="0"]`);
-                                        if (firstWeightInputOfNextEx) {
-                                            firstWeightInputOfNextEx.focus();
+                                        if (!state.isMobileView) nextWeightInput.focus();
+                                        } else {
+                                            const nextExerciseElement = document.querySelector(`[data-exercise-index="${exIndex + 1}"]`);
+                                            if (nextExerciseElement) {
+                                                const firstWeightInputOfNextEx = nextExerciseElement.querySelector(`.weight[data-serie="0"]`);
+                                                if (firstWeightInputOfNextEx && !state.isMobileView) {
+                                                    firstWeightInputOfNextEx.focus();
                                         } else {
                                             target.blur();
                                         }
@@ -4497,9 +4461,11 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
 
             dom.bottomAddExerciseBtn.addEventListener('click', () => {
                 dom.addExerciseSection.scrollIntoView({ behavior: 'smooth' });
-                setTimeout(() => {
-                    dom.customExerciseInput.focus();
-                }, 300);
+                if (!state.isMobileView) {
+                    setTimeout(() => {
+                        dom.customExerciseInput.focus();
+                    }, 300);
+                }
             });
             dom.bottomNotesBtn.addEventListener('click', () => {
                 state.isNotesSectionVisible = !state.isNotesSectionVisible;
@@ -4513,8 +4479,21 @@ ABS rolls,Abdos couché,Abducteurs,Adducteurs,Adduction poulie jambe pliée,Arch
                     dom.sessionNotesSection.classList.add('hide-notes-section');
                 }
             });
-            dom.bottomFinishSessionBtn.addEventListener('click', finishAndSaveSession);
-            dom.bottomViewHistoryBtn.addEventListener('click', () => {
+                    dom.bottomScrollBtn.addEventListener('click', () => {
+                        const currentScrollY = window.scrollY;
+                        const windowHeight = window.innerHeight;
+                        const documentHeight = document.documentElement.scrollHeight;
+                    
+                        const distanceToTop = currentScrollY;
+                        const distanceToBottom = documentHeight - windowHeight - currentScrollY;
+                    
+                        if (distanceToBottom > distanceToTop) {
+                            window.scrollTo({ top: documentHeight, behavior: 'smooth' });
+                        } else {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    });
+                dom.bottomViewHistoryBtn.addEventListener('click', () => {
                 displayHistory(); 
                 dom.historyModal.classList.remove('hidden'); 
                 dom.historyModal.classList.add('show');
