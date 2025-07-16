@@ -2201,7 +2201,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 dom.quickEditExerciseName.textContent = state.sessions[state.currentSessionIndex].exercises[idx].name;
                 dom.quickEditModal.classList.remove('hidden');
                 dom.quickEditModal.classList.add('show');
-                dom.quickEditWeight.focus();
+                if (!state.isMobileView) dom.quickEditWeight.focus();
                 dom.quickEditWeight.classList.remove('is-invalid');
                 dom.quickEditWeightError.textContent = '';
                 dom.quickEditReps.classList.remove('is-invalid');
@@ -3704,7 +3704,7 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.newSessionModal.classList.remove('hidden');
             dom.newSessionModal.classList.add('show');
             dom.newSessionNameInput.value = ''; 
-            dom.newSessionNameInput.focus(); 
+            if (!state.isMobileView) dom.newSessionNameInput.focus(); 
             dom.newSessionNameInput.classList.remove('is-invalid');
             dom.newSessionNameError.textContent = '';
         }
@@ -3736,7 +3736,8 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.newSessionNameInput.classList.remove('is-invalid');
             dom.newSessionNameError.textContent = '';
 
-            const newSession = { name: newName, exercises: [{weight: '', reps: ''}] };
+            const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}];
+            const newSession = { name: newName, exercises: [{ name: "Nouvel Exercice", rest: "60s", series: fourSeries }] };
             state.sessions.push(newSession);
             updateSessionSelectOptions(); 
             state.currentSessionIndex = state.sessions.length - 1; 
@@ -3915,34 +3916,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
             }, { once : true });
         }
-            const filteredSuggestions = state.availableExercises.filter(exercise => 
-                exercise.toLowerCase().includes(query)
-            ).slice(0, 10); 
-            if (filteredSuggestions.length > 0) {
-                filteredSuggestions.forEach((suggestion, index) => {
-                    const div = document.createElement('div');
-                    div.textContent = suggestion;
-                    div.setAttribute('role', 'option');
-                    div.id = `autocomplete-option-${index}`;
-                    div.addEventListener('click', () => {
-                        input.value = suggestion;
-                        dom.autocompleteSuggestions.classList.remove('show');
-                        dom.autocompleteSuggestions.addEventListener('transitionend', () => {
-                            dom.autocompleteSuggestions.classList.add('hidden');
-                            dom.autocompleteSuggestions.innerHTML = ''; 
-                        }, { once: true });
-                    });
-                    dom.autocompleteSuggestions.appendChild(div);
-                });
-                dom.autocompleteSuggestions.classList.remove('hidden');
-                dom.autocompleteSuggestions.classList.add('show');
-            } else {
-                dom.autocompleteSuggestions.classList.remove('show');
-                dom.autocompleteSuggestions.addEventListener('transitionend', () => {
-                    dom.autocompleteSuggestions.classList.add('hidden');
-                }, { once : true });
-            }
-        }
+           
 
         function playBeep() {
             try {
@@ -4472,7 +4446,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (state.isNotesSectionVisible) {
                     dom.sessionNotesSection.classList.add('show-notes-section');
                     dom.sessionNotesSection.classList.remove('hide-notes-section');
-                    dom.sessionNotesInput.focus();
+                    if (!state.isMobileView) dom.sessionNotesInput.focus();
                     dom.sessionNotesSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
                     dom.sessionNotesSection.classList.remove('show-notes-section');
