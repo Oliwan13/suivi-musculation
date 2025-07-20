@@ -293,6 +293,7 @@
         color: var(--color-text-header);
         margin-bottom: var(--spacing-sm);
         letter-spacing: -0.01em;
+        text-transform: capitalize;
     }
     h4 {
         margin: 0 0 var(--spacing-xs) 0;
@@ -366,7 +367,6 @@
     .exercise-list-container .desktop-table th {
         background: linear-gradient(135deg, var(--color-primary-gradient-start), var(--color-primary-gradient-end));
         color: var(--color-text-on-accent);
-        text-transform: uppercase;
         font-size: var(--font-size-sm); 
         letter-spacing: 1px; 
         position: sticky;
@@ -1499,8 +1499,8 @@ body.dark-mode .exercise-card .btn-secondary {
           <label for="sessionSelect"><strong>Séance:</strong></label>
           <select id="sessionSelect" aria-label="Sélectionner une séance d'entraînement">
             </select>
-          <button class="btn btn-outline" id="createNewSessionTypeBtn" aria-label="Créer une nouvelle séance">Nouvelle Séance</button>
-          <button class="btn btn-danger" id="deleteCurrentSessionBtn" aria-label="Supprimer la séance actuelle" title="Supprimer la séance actuelle (personnalisée)"> Supprimer Séance</button>
+          <button class="btn btn-outline" id="createNewSessionTypeBtn" aria-label="Créer une nouvelle séance">Nouvelle séance</button>
+          <button class="btn btn-danger" id="deleteCurrentSessionBtn" aria-label="Supprimer la séance actuelle" title="Supprimer la séance actuelle (personnalisée)">Supprimer la séance</button>
         </div>
         
         <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
@@ -1522,10 +1522,10 @@ body.dark-mode .exercise-card .btn-secondary {
             <h2 id="summarySectionTitle" class="sr-only">Résumé de la séance</h2>
             <div class="summary-card">
                 <span class="card-icon fas fa-dumbbell" aria-hidden="true"></span>
-                <h3>Total Kg/Rép</h3> <div class="value" id="totalKgRep" aria-live="polite">0 kg/rep</div> </div>
+                <h3>Total kg/rép</h3> <div class="value" id="totalKgRep" aria-live="polite">0 kg/rep</div> </div>
             <div class="summary-card">
                 <span class="card-icon fas fa-calendar-alt" aria-hidden="true"></span>
-                <h3>Semaine Précédente</h3>
+                <h3>Semaine précédente</h3>
                 <input type="text" inputmode="decimal" id="previousWeek" placeholder="kg/rep" aria-label="Performance de la semaine précédente">
             </div>
             <div class="summary-card">
@@ -1535,7 +1535,7 @@ body.dark-mode .exercise-card .btn-secondary {
             </div>
             <div class="summary-card">
                 <span class="card-icon fas fa-clock" aria-hidden="true"></span>
-                <h3>Temps Total</h3>
+                <h3>Temps total</h3>
                 <div class="value" id="totalTime" aria-live="polite">00:00:00</div>
                 <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur" style="margin-top: var(--spacing-sm);">
                     <span id="timerPlayPauseIcon" aria-hidden="true">⏯️</span>
@@ -1545,22 +1545,22 @@ body.dark-mode .exercise-card .btn-secondary {
         </section>
 
         <section class="controls session-notes-section" id="sessionNotesSection" aria-labelledby="sessionNotesTitle">
-            <h2 id="sessionNotesTitle" class="sr-only">Notes de Séance</h2>
-            <label for="sessionNotes"><strong>Notes de Séance:</strong></label>
+            <h2 id="sessionNotesTitle" class="sr-only">Notes de séance</h2>
+            <label for="sessionNotes"><strong>Notes de séance:</strong></label>
             <textarea id="sessionNotes" placeholder="Ajouter des notes sur la séance..." aria-label="Notes de séance"></textarea>
         </section>
         
         <section class="action-buttons" aria-labelledby="actionButtonsTitle">
             <h2 id="actionButtonsTitle" class="sr-only">Actions principales</h2>
-            <button class="btn btn-success" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance"> Terminer & Sauvegarder</button>
-            <button class="btn btn-primary" id="viewHistoryBtn" aria-label="Voir l'historique"> Historique</button>
-            <button class="btn btn-primary" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs"> Calculateurs</button>
+            <button class="btn btn-success" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">Terminer & sauvegarder</button>
+            <button class="btn btn-primary" id="viewHistoryBtn" aria-label="Voir l'historique">Historique</button>
+            <button class="btn btn-primary" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">Calculateurs</button>
         </section>
 
         <section class="action-buttons" style="margin-top: var(--spacing-md);" aria-labelledby="dataManagementTitle">
             <h2 id="dataManagementTitle" class="sr-only">Gestion des données</h2>
-            <button class="btn btn-info" id="exportBtn" aria-label="Exporter les données"> Exporter</button>
-            <button class="btn btn-info" id="importBtn" aria-label="Importer les données"> Importer</button>
+            <button class="btn btn-info" id="exportBtn" aria-label="Exporter les données">Exporter</button>
+            <button class="btn btn-info" id="importBtn" aria-label="Importer les données">Importer</button>
         </section>
         <input type="file" id="importFile" class="hidden" accept=".json,.csv" aria-label="Fichier d'importation">
     </main> <div id="notification-container" aria-live="polite" aria-atomic="true"></div>
@@ -1574,7 +1574,7 @@ body.dark-mode .exercise-card .btn-secondary {
     <div id="historyModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
       <div class="modal-content">
           <button id="closeHistoryModal" class="modal-close-btn" aria-label="Fermer le modal historique">&times;</button>
-          <h2 id="historyModalTitle">Historique des Séances</h2>
+          <h2 id="historyModalTitle">Historique des séances</h2>
           <div id="historyList" aria-live="polite"></div>
       </div>
     </div>
@@ -1582,7 +1582,7 @@ body.dark-mode .exercise-card .btn-secondary {
     <div id="newSessionModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="newSessionModalTitle">
         <div class="modal-content">
             <button id="closeNewSessionModal" class="modal-close-btn" aria-label="Fermer le modal de nouvelle séance">&times;</button>
-            <h2 id="newSessionModalTitle">Créer une Nouvelle Séance</h2>
+            <h2 id="newSessionModalTitle">Créer une nouvelle séance</h2>
             <div class="input-group-modal">
                 <input type="text" id="newSessionNameInput" placeholder="Nom de la nouvelle séance" aria-label="Nom de la nouvelle séance">
                 <div id="newSessionNameError" class="error-message"></div>
@@ -1597,11 +1597,11 @@ body.dark-mode .exercise-card .btn-secondary {
     <div id="loadOptionsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="loadOptionsModalTitle">
       <div class="modal-content">
           <button id="closeLoadOptionsModal" class="modal-close-btn" aria-label="Fermer le modal d'options de chargement">&times;</button>
-          <h2 id="loadOptionsModalTitle">Options de Chargement</h2>
+          <h2 id="loadOptionsModalTitle">Options de chargement</h2>
           <p>Comment utiliser la séance "<strong id="loadSessionName"></strong>" ?</p>
           <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
-              <button class="btn btn-primary" id="openNewSessionBtn"> Ouvrir (remplace la séance actuelle)</button>
-              <button class="btn btn-secondary" id="appendToCurrentSessionBtn"> Ajouter à la séance actuelle</button>
+              <button class="btn btn-primary" id="openNewSessionBtn">Ouvrir (remplace la séance actuelle)</button>
+              <button class="btn btn-secondary" id="appendToCurrentSessionBtn">Ajouter à la séance actuelle</button>
           </div>
       </div>
     </div>
@@ -1610,12 +1610,12 @@ body.dark-mode .exercise-card .btn-secondary {
         <div class="modal-content">
             <button id="closePlateCalculatorModal" class="modal-close-btn" aria-label="Fermer le modal du calculateur de plaques">&times;</button>
             <div class="modal-tabs" role="tablist">
-                <button class="modal-tab-btn active" id="plateCalcTab" aria-controls="plateCalcContent" role="tab" aria-selected="true">Calculateur de Plaques</button>
-                <button class="modal-tab-btn" id="goalCalcTab" aria-controls="goalCalcContent" role="tab" aria-selected="false">Objectifs d'Entraînement</button>
+                <button class="modal-tab-btn" id="plateCalcTab" aria-controls="plateCalcContent" role="tab" aria-selected="false">Calculateur de plaques</button>
+                <button class="modal-tab-btn active" id="goalCalcTab" aria-controls="goalCalcContent" role="tab" aria-selected="true">Objectifs d'entraînement</button>
             </div>
             
-            <div id="plateCalcContent" class="modal-tab-content" role="tabpanel" aria-labelledby="plateCalcTab">
-                <h2 id="plateCalcModalTitle">Calculateur de Plaques</h2>
+            <div id="plateCalcContent" class="modal-tab-content hidden" role="tabpanel" aria-labelledby="plateCalcTab">
+                <h2 id="plateCalcModalTitle">Calculateur de plaques</h2>
                 <div class="controls">
                     <div class="input-group-modal">
                         <input type="text" inputmode="decimal" id="targetWeightInput" placeholder="Poids cible (kg)" aria-label="Poids cible">
@@ -1629,8 +1629,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 <div id="platesResult" style="text-align: left; margin-top: var(--spacing-lg);"></div>
             </div>
 
-            <div id="goalCalcContent" class="modal-tab-content hidden" role="tabpanel" aria-labelledby="goalCalcTab">
-                <h2>Objectifs d'Entraînement</h2>
+            <div id="goalCalcContent" class="modal-tab-content" role="tabpanel" aria-labelledby="goalCalcTab">
+                <h2>Objectifs d'entraînement</h2>
                 <div class="controls">
                     <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
                         <label>
@@ -1660,7 +1660,7 @@ body.dark-mode .exercise-card .btn-secondary {
     <div id="quickEditModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="quickEditModalTitle">
       <div class="modal-content">
           <button id="closeQuickEditModal" class="modal-close-btn" aria-label="Fermer le modal d'édition rapide">&times;</button>
-          <h2 id="quickEditModalTitle">Édition Rapide</h2>
+          <h2 id="quickEditModalTitle">Édition rapide</h2>
           <p>Appliquer à toutes les séries de : <strong id="quickEditExerciseName"></strong></p>
           <div class="controls">
               <div class="input-group-modal">
@@ -1700,25 +1700,18 @@ body.dark-mode .exercise-card .btn-secondary {
     </nav>
 
     <script>
-    // Service Worker registration removed as it was causing URL protocol errors in this environment.
+    // Service Worker registration is commented out to prevent potential issues in some environments.
     // if ('serviceWorker' in navigator) {
     //   window.addEventListener('load', () => {
     //     navigator.serviceWorker.register('/service-worker.js')
-    //       .then(registration => {
-    //         console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    //       })
-    //       .catch(err => {
-    //         console.log('ServiceWorker registration failed: ', err);
-    //       });
+    //       .then(registration => console.log('ServiceWorker registration successful'))
+    //       .catch(err => console.log('ServiceWorker registration failed: ', err));
     //   });
     // }
 
     window.addEventListener('load', () => {
-        // Define init function at the top of the load event listener to ensure it's available when called
+        
         function init() {
-            
-
-
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
                 applyTheme(savedTheme);
@@ -1733,7 +1726,8 @@ body.dark-mode .exercise-card .btn-secondary {
             }
             
             const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout'));
-            if (inProgress) {
+            // MODIFICATION 2: Check if the in-progress session is empty
+            if (inProgress && inProgress.customSessions && inProgress.customSessions[inProgress.sessionIndex] && inProgress.customSessions[inProgress.sessionIndex].exercises.length > 0) {
                 state.sessions = Array.isArray(inProgress.customSessions) ? inProgress.customSessions : JSON.parse(JSON.stringify(defaultSessions));
                 state.currentSessionIndex = inProgress.sessionIndex || 0;
                 if (state.currentSessionIndex >= state.sessions.length) {
@@ -1754,7 +1748,9 @@ body.dark-mode .exercise-card .btn-secondary {
                     dom.timerPlayPauseText.textContent = 'Play';
                 }
             } else {
+                 // If no valid session in progress, load defaults
                  state.sessions = JSON.parse(JSON.stringify(defaultSessions));
+                 localStorage.removeItem('inProgressWorkout'); // Clean up empty session
             }
             
             if (state.isMobileView) {
@@ -1785,27 +1781,13 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
             });
 
-            state.isInitialized = true; // Set flag to true after full initialization
-
-            // Log all critical DOM elements at startup for debugging
-            console.log('--- Initialisation des éléments DOM ---');
-            console.log('dom.plateCalculatorBtn:', dom.plateCalculatorBtn);
-            console.log('dom.plateCalcTab:', dom.plateCalcTab);
-            console.log('dom.goalCalcTab:', dom.goalCalcTab);
-            console.log('dom.plateCalcContent:', dom.plateCalcContent);
-            console.log('dom.goalCalcContent:', dom.goalCalcContent);
-            console.log('dom.oneRmInput:', dom.oneRmInput);
-            console.log('dom.oneRmManualInput:', dom.oneRmManualInput);
-            console.log('dom.oneRmSelectInput:', dom.oneRmSelectInput);
-            console.log('dom.oneRmExerciseSelect:', dom.oneRmExerciseSelect);
-            console.log('--------------------------------------');
+            state.isInitialized = true;
         }
-
 
         const dom = {
             sessionSelect: document.getElementById('sessionSelect'),
             exerciseListContainer: document.getElementById('exerciseListContainer'),
-            totalKgRepEl: document.getElementById('totalKgRep'), // Changed from totalTonnageEl
+            totalKgRepEl: document.getElementById('totalKgRep'),
             previousWeekInput: document.getElementById('previousWeek'),
             deltaEl: document.getElementById('delta'),
             totalTimeEl: document.getElementById('totalTime'),
@@ -1852,9 +1834,9 @@ body.dark-mode .exercise-card .btn-secondary {
             plateCalcContent: document.getElementById('plateCalcContent'),
             goalCalcContent: document.getElementById('goalCalcContent'),
             oneRmInput: document.getElementById('oneRmInput'),
-            oneRmManualInput: document.getElementById('oneRmManualInput'), // Added for new input mode
-            oneRmSelectInput: document.getElementById('oneRmSelectInput'),   // Added for new input mode
-            oneRmExerciseSelect: document.getElementById('oneRmExerciseSelect'), // Added for new input mode
+            oneRmManualInput: document.getElementById('oneRmManualInput'),
+            oneRmSelectInput: document.getElementById('oneRmSelectInput'),
+            oneRmExerciseSelect: document.getElementById('oneRmExerciseSelect'),
             goalResultsContainer: document.getElementById('goalResultsContainer'),
             timerPlayPauseIcon: document.getElementById('timerPlayPauseIcon'),
             timerPlayPauseText: document.getElementById('timerPlayPauseText'),
@@ -1896,7 +1878,9 @@ body.dark-mode .exercise-card .btn-secondary {
             isMobileView: window.matchMedia("(max-width: 768px)").matches,
             isNotesSectionVisible: false,
             deferredPwaPrompt: null,
-            isInitialized: false // Added initialization flag
+            isInitialized: false,
+            pressTimer: null, // MODIFICATION 1: For long press tracking
+            isLongPress: false // MODIFICATION 1: For long press tracking
         };
         
         const defaultSessions = [
@@ -1989,7 +1973,6 @@ body.dark-mode .exercise-card .btn-secondary {
             if (state.deferredPwaPrompt) {
                 state.deferredPwaPrompt.prompt();
                 const { outcome } = await state.deferredPwaPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
                 if (outcome === 'accepted') {
                     showNotification('Lyftiv a été ajouté à votre écran d\'accueil!', 'success', 5000);
                 }
@@ -2025,16 +2008,16 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function handleNumericInput(e) {
-    const input = e.target;
-    let value = input.value.replace(/,/g, '.');
-    const segments = value.split('+').map(s => s.trim());
-    const validatedSegments = segments.filter(s => {
-        if (s === '') return true;
-        const num = parseFloat(s);
-        return !isNaN(num) && num >= 0;
-    });
-    input.value = validatedSegments.join('+');
-}
+            const input = e.target;
+            let value = input.value.replace(/,/g, '.');
+            const segments = value.split('+').map(s => s.trim());
+            const validatedSegments = segments.filter(s => {
+                if (s === '') return true;
+                const num = parseFloat(s);
+                return !isNaN(num) && num >= 0;
+            });
+            input.value = validatedSegments.join('+');
+        }
 
         function getPlateCombinationOptimal(target, denominations) {
             let currentRemaining = target;
@@ -2207,7 +2190,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 dom.quickEditReps.classList.remove('is-invalid');
                 dom.quickEditRepsError.textContent = '';
             } else if (action === 'link-superset') {
-                const scrollY = window.scrollY; // Enregistrer la position
                 const exercises = state.sessions[state.currentSessionIndex].exercises;
                 const clickedExercise = exercises[idx];
 
@@ -2260,14 +2242,12 @@ body.dark-mode .exercise-card .btn-secondary {
                         createTable();
                     }
                 }
-                window.scrollTo(0, scrollY); // Restaurer la position
             } else if (timerAction) {
                 handleTimerActions(timerAction, idx, rowOrCard);
             } else if (action === 'remove') {
                 const exerciseToRemove = state.sessions[state.currentSessionIndex].exercises[idx];
                 const confirmed = await customConfirm(`Êtes-vous sûr de vouloir supprimer l'exercice "${exerciseToRemove.name}"?`);
                 if (confirmed) {
-                    const scrollY = window.scrollY; // Enregistrer la position
                     state.sessions[state.currentSessionIndex].exercises.splice(idx, 1);
                     state.lastDeletedExercise = exerciseToRemove;
                     if (state.timers[idx]) {
@@ -2275,7 +2255,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         delete state.timers[idx];
                     }
                     createTable();
-                    window.scrollTo(0, scrollY); // Restaurer la position
                     showUndoableNotification(`Exercice "${exerciseToRemove.name}" supprimé.`, () => {
                         if (state.lastDeletedExercise) {
                             state.sessions[state.currentSessionIndex].exercises.splice(idx, 0, state.lastDeletedExercise);
@@ -2286,29 +2265,10 @@ body.dark-mode .exercise-card .btn-secondary {
                         }
                     }, 7000);
                 }
-            } else if (button.classList.contains('serie-input-delete')) {
-                const exIndex = +button.dataset.ex;
-                const serieIndex = +button.dataset.serie;
-                const exercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
-
-                if (exercise.series.length > 1) {
-                    const scrollY = window.scrollY; // Enregistrer la position
-                    exercise.series.splice(serieIndex, 1);
-                    createTable();
-                    window.scrollTo(0, scrollY); // Restaurer la position
-                    updateAllTotals();
-                    showNotification(`Série ${serieIndex + 1} de l'exercice effacée.`, "info", 2000);
-                } else {
-                    showNotification("Un exercice doit avoir au moins une série.", "error", 3000);
-                }
             } else if (action === 'add-series') {
-                const scrollY = window.scrollY; // Enregistrer la position
                 const exercise = state.sessions[state.currentSessionIndex].exercises[idx];
                 exercise.series.push({ weight: '', reps: '' });
                 createTable();
-                window.scrollTo(0, scrollY); // Restaurer la position
-                const newSeriesInput = document.querySelector(`[data-ex='${idx}'][data-serie='${exercise.series.length - 1}'].weight`);
-                newSeriesInput?.focus();
                 showNotification(`Nouvelle série ajoutée à l'exercice "${exercise.name}".`, "info", 2000);
             }
         }
@@ -2323,7 +2283,6 @@ body.dark-mode .exercise-card .btn-secondary {
              const duration = Math.max(restSeconds, 60); 
 
             if (timerAction === 'start') {
-                // Demande de permission au premier usage du minuteur
                 if ('Notification' in window && Notification.permission === 'default') {
                     Notification.requestPermission();
                 }
@@ -2403,10 +2362,8 @@ body.dark-mode .exercise-card .btn-secondary {
         }
         
         function updateStateFromTable() {
-            if (!state.isInitialized) {
-                console.warn('Application not fully initialized. Skipping updateStateFromTable.');
-                return;
-            }
+            if (!state.isInitialized) return;
+            
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession || !currentSession.exercises) return;
 
@@ -2439,7 +2396,6 @@ body.dark-mode .exercise-card .btn-secondary {
             });
         }
 
-        // Helper function to reset the entire app state to default
         function resetAppStateToDefault() {
             state.sessions = JSON.parse(JSON.stringify(defaultSessions));
             state.currentSessionIndex = 0;
@@ -2453,7 +2409,7 @@ body.dark-mode .exercise-card .btn-secondary {
             state.isWorkoutTimerPaused = false;
             state.pausedTime = 0;
             dom.totalTimeEl.textContent = "00:00:00";
-            dom.totalKgRepEl.textContent = "0 kg/rep"; // Changed from totalTonnageEl
+            dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
             dom.previousWeekInput.value = "";
             dom.sessionNotesInput.value = "";
@@ -2462,52 +2418,33 @@ body.dark-mode .exercise-card .btn-secondary {
             updateSessionSelectOptions();
             dom.sessionSelect.value = state.currentSessionIndex;
             updateDeleteSessionButtonState();
-            console.log("App state reset to default.");
         }
 
-        // Helper function to check if the current app state is valid
         function isAppStateValid() {
             if (!Array.isArray(state.sessions)) {
-                console.error("Validation failed: state.sessions is not an array.", state.sessions);
                 return false;
             }
             if (typeof state.currentSessionIndex !== 'number' || state.currentSessionIndex < 0 || state.currentSessionIndex >= state.sessions.length) {
-                console.error("Validation failed: state.currentSessionIndex is invalid.", state.currentSessionIndex, state.sessions.length);
                 return false;
             }
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession || typeof currentSession !== 'object' || !Array.isArray(currentSession.exercises)) {
-                console.error("Validation failed: currentSession or currentSession.exercises is invalid.", currentSession);
                 return false;
             }
             return true;
         }
         
         function createTable() {
-            if (!state.isInitialized) {
-                console.warn('Application not fully initialized. Skipping createTable.');
-                return;
-            }
+            if (!state.isInitialized) return;
 
             dom.exerciseListContainer.innerHTML = "";
-            // Robust defensive check at the very beginning
             if (!isAppStateValid()) {
-                console.warn("Invalid session state detected in createTable. Attempting to reset to default sessions.");
                 resetAppStateToDefault();
-                // After reset, the state should be valid, so we can proceed
             }
 
             const currentSession = state.sessions[state.currentSessionIndex];
-            // Ensure exercises is always an array, even if currentSession or currentSession.exercises is undefined/null
             const exercises = (currentSession && Array.isArray(currentSession.exercises)) ? currentSession.exercises : [];
             
-            console.log('createTable - State check:', {
-                sessions: state.sessions,
-                currentSessionIndex: state.currentSessionIndex,
-                currentSession: currentSession,
-                exercises: exercises
-            });
-
             if (!state.isMobileView) {
                 const table = document.createElement("table");
                 table.id = "workoutTable";
@@ -2535,11 +2472,9 @@ body.dark-mode .exercise-card .btn-secondary {
                 table.appendChild(tbody);
                 dom.exerciseListContainer.appendChild(table);
 
-                (exercises || []).forEach((ex, idx) => { // Added (exercises || []) for extra safety
-                    // Explicitly check 'ex' and 'ex.series' before proceeding with its properties
+                (exercises || []).forEach((ex, idx) => {
                     if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) {
-                        console.warn(`Skipping malformed exercise at index ${idx}:`, ex);
-                        return; // Skip this iteration
+                        return;
                     }
 
                     const tr = document.createElement("tr");
@@ -2552,7 +2487,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     }
 
                     let seriesContentHtml = "";
-                    (ex.series || []).forEach((currentSeries, i) => { // Added (ex.series || []) for extra safety
+                    (ex.series || []).forEach((currentSeries, i) => {
                         seriesContentHtml += `<td role="cell"><div class="serie-input">
                             <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
                             <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
@@ -2560,11 +2495,15 @@ body.dark-mode .exercise-card .btn-secondary {
                         </div></td>`;
                     });
 
-                    const remainingCols = 5 - (ex.series ? ex.series.length : 0); // Ensure ex.series is an array before accessing length
+                    const remainingCols = 5 - (ex.series ? ex.series.length : 0);
                     for (let i = 0; i < remainingCols; i++) {
                         seriesContentHtml += `<td role="cell"></td>`;
                     }
                     
+                    // MODIFICATION 3: Display formatted rest time by default
+                    const restSeconds = parseInt(ex.rest) * (String(ex.rest).includes('min') ? 60 : 1) || 0;
+                    const defaultTimerDisplay = formatTimerDisplay(restSeconds);
+
                     tr.innerHTML = `
                         <td class="actions-col" data-label="Actions" role="cell">
                             <button class="quick-edit-btn tooltip" data-action="quick-edit" aria-label="Édition rapide pour ${ex.name}">
@@ -2585,8 +2524,9 @@ body.dark-mode .exercise-card .btn-secondary {
                         </td>
                         ${seriesContentHtml}
                         <td data-label="Tonnage" id="tonnage-${idx}" role="cell">0</td>
-                        <td data-label="Kg/Rép" id="kgrep-${idx}" role="cell">0</td> <td data-label="1RM" id="onerm-${idx}" role="cell">0</td> <td data-label="Repos" role="cell"><div class="timer-container">
-                                <div class="timer-display" id="timer-${idx}" aria-live="polite">0:00</div>
+                        <td data-label="Kg/Rép" id="kgrep-${idx}" role="cell">0</td> <td data-label="1RM" id="onerm-${idx}" role="cell">0</td> <td data-label="Repos" role="cell">${ex.rest || ''}</td>
+                        <td role="cell"><div class="timer-container">
+                                <div class="timer-display" id="timer-${idx}" aria-live="polite">${defaultTimerDisplay}</div>
                                 <button class="timer-btn" data-timer-action="start" aria-label="Démarrer le minuteur pour ${ex.name}"><i class="fas fa-play"></i></button>
                                 <button class="timer-btn hidden" data-timer-action="stop" aria-label="Arrêter le minuteur pour ${ex.name}"><i class="fas fa-stop"></i></button>
                                 <button class="timer-btn" data-timer-action="reset" aria-label="Réinitialiser le minuteur pour ${ex.name}"><i class="fas fa-redo"></i></button>
@@ -2606,11 +2546,9 @@ body.dark-mode .exercise-card .btn-secondary {
                 mobileCardsContainer.setAttribute('role', 'list');
                 dom.exerciseListContainer.appendChild(mobileCardsContainer);
 
-                (exercises || []).forEach((ex, idx) => { // Added (exercises || []) for extra safety
-                    // Explicitly check 'ex' and 'ex.series' before proceeding with its properties
+                (exercises || []).forEach((ex, idx) => {
                     if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) {
-                        console.warn(`Skipping malformed exercise at index ${idx}:`, ex);
-                        return; // Skip this iteration
+                        return;
                     }
 
                     const card = document.createElement("div");
@@ -2624,7 +2562,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     }
 
                     let seriesHtml = '';
-                    (ex.series || []).forEach((currentSeries, i) => { // Added (ex.series || []) for extra safety
+                    (ex.series || []).forEach((currentSeries, i) => {
                         seriesHtml += `
                             <div class="series-row">
                                 <span>Série ${i + 1}:</span>
@@ -2636,6 +2574,10 @@ body.dark-mode .exercise-card .btn-secondary {
                             </div>
                         `;
                     });
+
+                    // MODIFICATION 3: Display formatted rest time by default
+                    const restSeconds = parseInt(ex.rest) * (String(ex.rest).includes('min') ? 60 : 1) || 0;
+                    const defaultTimerDisplay = formatTimerDisplay(restSeconds);
 
                     card.innerHTML = `
                         <h3>
@@ -2668,7 +2610,7 @@ body.dark-mode .exercise-card .btn-secondary {
                             <button class="btn btn-info" data-action="quick-edit" aria-label="Édition rapide pour ${ex.name}"><i class="fas fa-pencil-alt"></i> Éditer</button>
                             <button class="btn btn-secondary link-btn" data-action="link-superset" aria-label="Lier ${ex.name} pour superset"><i class="fas fa-link"></i> Superset</button>
                             <div class="timer-container">
-                                <div class="timer-display" id="timer-${idx}" aria-live="polite">0:00</div>
+                                <div class="timer-display" id="timer-${idx}" aria-live="polite">${defaultTimerDisplay}</div>
                                 <button class="timer-btn" data-timer-action="start" aria-label="Démarrer le minuteur pour ${ex.name}"><i class="fas fa-play"></i></button>
                                 <button class="timer-btn hidden" data-timer-action="stop" aria-label="Arrêter le minuteur pour ${ex.name}"><i class="fas fa-stop"></i></button>
                                 <button class="timer-btn" data-timer-action="reset" aria-label="Réinitialiser le minuteur pour ${ex.name}"><i class="fas fa-redo"></i></button>
@@ -2723,39 +2665,26 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function updateAllTotals() {
-            if (!state.isInitialized) {
-                console.warn('Application not fully initialized. Skipping updateAllTotals.');
-                return;
-            }
-            let totalSessionTonnage = 0; // Total tonnage for the entire session
-            let totalSessionReps = 0;    // Total reps for the entire session
-            let totalSessionKgRep = 0;   // Total Kg/Rep for the entire session
+            if (!state.isInitialized) return;
+            
+            let totalSessionTonnage = 0;
+            let totalSessionReps = 0;
+            let totalSessionKgRep = 0;
             let completedSeriesOverall = 0;
 
-            // Robust defensive check at the very beginning
             if (!isAppStateValid()) {
-                console.warn("Invalid session state detected in updateAllTotals. Attempting to reset to default sessions.");
                 resetAppStateToDefault();
-                updateAllTotals(); // Recursively call updateAllTotals to compute for the now valid default state
-                return; // Exit the current call
+                updateAllTotals();
+                return;
             }
             const currentSession = state.sessions[state.currentSessionIndex];
             const exercises = (currentSession && Array.isArray(currentSession.exercises)) ? currentSession.exercises : [];
             let totalPossibleSeries = 0;
-            let exercisesWith1RM = []; // To store exercises with calculated 1RM
+            let exercisesWith1RM = [];
 
-            console.log('updateAllTotals - State check:', {
-                sessions: state.sessions,
-                currentSessionIndex: state.currentSessionIndex,
-                currentSession: currentSession,
-                exercises: exercises
-            });
-
-            (exercises || []).forEach((ex, idx) => { // Added (exercises || []) for extra safety
-                // Explicitly check 'ex' and 'ex.series' before proceeding with its properties
+            (exercises || []).forEach((ex, idx) => {
                 if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) {
-                    console.warn(`Skipping malformed exercise in updateAllTotals at index ${idx}:`, ex);
-                    return; // Skip this iteration
+                    return;
                 }
 
                 let exerciseTonnage = 0;
@@ -2763,9 +2692,9 @@ body.dark-mode .exercise-card .btn-secondary {
                 let exerciseKgRep = 0;
                 let oneRMs = [];
                 
-                totalPossibleSeries += (ex.series || []).length; // Added (ex.series || []) for extra safety
+                totalPossibleSeries += (ex.series || []).length;
 
-                (ex.series || []).forEach((s, i) => { // Added (ex.series || []) for extra safety
+                (ex.series || []).forEach((s, i) => {
                     const repsInput = document.querySelector(`[data-ex='${idx}'][data-serie='${i}'].reps`);
                     const weightInput = document.querySelector(`[data-ex='${idx}'][data-serie='${i}'].weight`);
                     
@@ -2785,7 +2714,7 @@ body.dark-mode .exercise-card .btn-secondary {
                         const weight = weightSegments[k];
                         
                         currentSeriesTonnage += reps * weight;
-                        currentSeriesReps += reps; // Summing reps for kg/rep calculation
+                        currentSeriesReps += reps;
                         if (reps > 0 && weight > 0) {
                             oneRMs.push(calculate1RM(weight, reps));
                             currentSeriesValid = true;
@@ -2842,16 +2771,15 @@ body.dark-mode .exercise-card .btn-secondary {
                     tonnageEl.textContent = exerciseTonnage.toFixed(0);
                     tonnageEl.classList.toggle('tonnage-high', exerciseTonnage > 0);
                 }
-                const kgRepEl = document.getElementById(`kgrep-${idx}`); // New element for Kg/Rep
+                const kgRepEl = document.getElementById(`kgrep-${idx}`);
                 if (kgRepEl) {
                     kgRepEl.textContent = exerciseKgRep.toFixed(2);
-                    kgRepEl.classList.toggle('kg-rep-high', exerciseKgRep > 0); // Use new class
+                    kgRepEl.classList.toggle('kg-rep-high', exerciseKgRep > 0);
                 }
                 const onermEl = document.getElementById(`onerm-${idx}`);
                 if (onermEl) {
                     onermEl.textContent = weightedAverage1RM > 0 ? weightedAverage1RM.toFixed(1) : '0';
                     onermEl.classList.toggle('onerm-high', weightedAverage1RM > 0);
-                    // Store for dropdown if valid
                     if (weightedAverage1RM > 0) {
                         exercisesWith1RM.push({ name: ex.name, oneRm: weightedAverage1RM.toFixed(1) });
                     }
@@ -2866,12 +2794,12 @@ body.dark-mode .exercise-card .btn-secondary {
 
             const currentKgRep = parseFloat(dom.totalKgRepEl.textContent.replace(' kg/rep', '')) || 0;
             const newKgRep = totalSessionKgRep;
-            animateNumberChange(dom.totalKgRepEl, currentKgRep, newKgRep, 500, ' kg/rep'); // Update total Kg/Rep
+            animateNumberChange(dom.totalKgRepEl, currentKgRep, newKgRep, 500, ' kg/rep');
 
             dom.progressBar.setAttribute('aria-valuenow', (totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0).toFixed(0));
 
             const previous = parseFloat(dom.previousWeekInput.value) || 0;
-            const delta = newKgRep - previous; // Delta now based on Kg/Rep
+            const delta = newKgRep - previous;
             const startDelta = parseFloat(dom.deltaEl.textContent.replace(' kg', '').replace('+', '')) || 0;
             
             const deltaDuration = 500;
@@ -2898,7 +2826,7 @@ body.dark-mode .exercise-card .btn-secondary {
 
             dom.progressFill.style.width = `${totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0}%`;
             saveCurrentState();
-            populateOneRMDropdown(exercisesWith1RM); // Call to populate the dropdown
+            populateOneRMDropdown(exercisesWith1RM);
         }
 
         function populateOneRMDropdown(exercisesWith1RM) {
@@ -3056,7 +2984,6 @@ body.dark-mode .exercise-card .btn-secondary {
             if (!state.workoutStartTime || state.isWorkoutTimerPaused) {
                 return;
             }
-            console.log("Sauvegarde automatique de la session...");
             let currentSessionTonnage = 0;
             let currentSessionReps = 0;
 
@@ -3071,21 +2998,20 @@ body.dark-mode .exercise-card .btn-secondary {
                     
                     const minLength = Math.min(repsValues.length, weightValues.length);
                     
-                    if (minLength > 0) { // If there's a common length, process paired values
+                    if (minLength > 0) {
                         for (let k = 0; k < minLength; k++) {
                             exerciseSeries.push({ reps: repsValues[k], weight: weightValues[k] });
                             exerciseTonnage += repsValues[k] * weightValues[k];
                             exerciseReps += repsValues[k];
                         }
-                    } else if (repsValues.length > 0) { // If only reps exist
+                    } else if (repsValues.length > 0) {
                         repsValues.forEach(r => {
                             exerciseSeries.push({ reps: r, weight: 0 });
                             exerciseReps += r;
                         });
-                    } else if (weightValues.length > 0) { // If only weights exist
+                    } else if (weightValues.length > 0) {
                         weightValues.forEach(w => {
                             exerciseSeries.push({ reps: 0, weight: w });
-                            exerciseTonnage += 0; // Tonnage is 0 if no reps
                         });
                     }
                 });
@@ -3141,21 +3067,20 @@ body.dark-mode .exercise-card .btn-secondary {
                     
                     const minLength = Math.min(repsValues.length, weightValues.length);
                     
-                    if (minLength > 0) { // If there's a common length, process paired values
+                    if (minLength > 0) {
                         for (let k = 0; k < minLength; k++) {
                             exerciseSeries.push({ reps: repsValues[k], weight: weightValues[k] });
                             exerciseTonnage += repsValues[k] * weightValues[k];
                             exerciseReps += repsValues[k];
                         }
-                    } else if (repsValues.length > 0) { // If only reps exist
+                    } else if (repsValues.length > 0) {
                         repsValues.forEach(r => {
                             exerciseSeries.push({ reps: r, weight: 0 });
                             exerciseReps += r;
                         });
-                    } else if (weightValues.length > 0) { // If only weights exist
+                    } else if (weightValues.length > 0) {
                         weightValues.forEach(w => {
                             exerciseSeries.push({ reps: 0, weight: w });
-                            exerciseTonnage += 0; // Tonnage is 0 if no reps
                         });
                     }
                 });
@@ -3174,7 +3099,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 return [];
             });
 
-            if (currentSessionTonnage === 0) { // Check against calculated tonnage
+            if (currentSessionTonnage === 0) {
                 showNotification("Aucune donnée à sauvegarder. La séance n'a pas été enregistrée car le tonnage total est de 0 kg.", "info");
                 return; 
             }
@@ -3209,7 +3134,7 @@ body.dark-mode .exercise-card .btn-secondary {
             localStorage.removeItem('inProgressWorkout');
             createTable();
             dom.totalTimeEl.textContent = "00:00:00";
-            dom.totalKgRepEl.textContent = "0 kg/rep"; // Changed from totalTonnageEl
+            dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
             dom.previousWeekInput.value = "";
             dom.sessionNotesInput.value = "";
@@ -3313,16 +3238,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 return;
             }
 
-            // En-têtes mis à jour pour correspondre exactement à l'image
             const headers = [
-                "Type",
-                "Date/ID",
-                "Nom",
-                "Duree",
-                "Serie",
-                "Reps",
-                "Poids",
-                "Notes"
+                "Type", "Date/ID", "Nom", "Duree", "Serie", "Reps", "Poids", "Notes"
             ];
             let csvContent = headers.join(';') + '\n';
 
@@ -3332,55 +3249,42 @@ body.dark-mode .exercise-card .btn-secondary {
                     hour: '2-digit', minute: '2-digit'
                 });
 
-                // 1. Ligne de Session
                 const sessionRow = [
                     "Session",
                     escapeCsv(sessionDate),
                     escapeCsv(session.sessionName),
                     escapeCsv(session.duration),
-                    "", // Serie
-                    "", // Reps
-                    "", // Poids
+                    "", "", "",
                     escapeCsv(session.notes)
                 ];
                 csvContent += sessionRow.join(';') + '\n';
 
-                // 2. Lignes d'Exercices et de Séries
                 session.exercises.forEach(ex => {
-                    const exerciseRow = [
-                        "Exercice",
-                        "", // Date/ID
-                        escapeCsv(ex.name),
-                        "", // Duree
-                        "", // Serie
-                        "", // Reps
-                        "", // Poids
-                        ""  // Notes
-                    ];
+                    const exerciseRow = ["Exercice", "", escapeCsv(ex.name), "", "", "", "", ""];
                     csvContent += exerciseRow.join(';') + '\n';
 
                     if (ex.series && ex.series.length > 0) {
                         ex.series.forEach((serie, i) => {
                             const serieRow = [
-                                "Serie",
-                                "", // Date/ID
-                                "", // Nom
-                                "", // Duree
-                                `Série ${i + 1}`,
+                                "Serie", "", "", "", `Série ${i + 1}`,
                                 escapeCsv(String(serie.reps).replace('.', ',')),
                                 escapeCsv(String(serie.weight).replace('.', ',')),
-                                "" // Notes
+                                ""
                             ];
                             csvContent += serieRow.join(';') + '\n';
                         });
                     }
                 });
             });
-
+            
+            const currentSessionName = dom.sessionSelect.selectedOptions[0].text;
+            const sanitizedName = currentSessionName.replace(/[\s/\\?%*:|"<>]/g, '_');
+            const dateStr = new Date().toISOString().split('T')[0];
+            
             const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = `historique_seances_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `${sanitizedName}_${dateStr}.csv`;
             link.click();
             URL.revokeObjectURL(link.href);
             showNotification("Exportation de l'historique CSV réussie !", "success");
@@ -3397,7 +3301,6 @@ body.dark-mode .exercise-card .btn-secondary {
             let currentSession = null;
             let currentExercise = null;
 
-            // On commence à la ligne 1 pour sauter les en-têtes
             for (let i = 1; i < lines.length; i++) {
                 const cols = lines[i].split(';').map(c => c.trim().replace(/^"|"$/g, ''));
                 const type = (cols[0] || '').toLowerCase();
@@ -3412,7 +3315,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     currentSession = {
                         id: parsedDate.getTime() + Math.random(),
                         date: parsedDate.toISOString(),
-                        sessionName: cols[2] || 'Séance importée', // Nom est dans la 3ème colonne (index 2)
+                        sessionName: cols[2] || 'Séance importée',
                         duration: cols[3] || '00:00:00',
                         notes: cols[7] || '',
                         exercises: [],
@@ -3424,7 +3327,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     currentExercise = null;
                 } else if (type === 'exercice' && currentSession) {
                     currentExercise = {
-                        name: cols[2] || 'Exercice inconnu', // Nom est dans la 3ème colonne (index 2)
+                        name: cols[2] || 'Exercice inconnu',
                         rest: '1 min',
                         series: [],
                         exerciseTonnage: 0,
@@ -3432,15 +3335,14 @@ body.dark-mode .exercise-card .btn-secondary {
                     };
                     currentSession.exercises.push(currentExercise);
                 } else if (type === 'serie' && currentExercise) {
-                    const reps = (cols[5] || '0').replace(',', '.'); // Reps sont dans la 6ème colonne (index 5)
-                    const weight = (cols[6] || '0').replace(',', '.'); // Poids est dans la 7ème colonne (index 6)
+                    const reps = (cols[5] || '0').replace(',', '.');
+                    const weight = (cols[6] || '0').replace(',', '.');
                     if (parseFloat(reps) > 0 || parseFloat(weight) > 0) {
                         currentExercise.series.push({ reps, weight });
                     }
                 }
             }
 
-            // Recalculer les totaux pour chaque séance importée
             history.forEach(session => {
                 session.exercises.forEach(ex => {
                     ex.series.forEach(serie => {
@@ -3458,66 +3360,6 @@ body.dark-mode .exercise-card .btn-secondary {
             });
 
             return history;
-        }
-        
-        function parseSimpleCsv(lines) {
-            const headers = lines[0].split(';').map(h => h.trim());
-            const sessionsMap = new Map();
-
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(';');
-                if (values.length < headers.length) continue;
-                const row = Object.fromEntries(headers.map((header, index) => [header, values[index]?.trim().replace(/^"|"$/g, '').replace(/""/g, '"') || '']));
-                
-                const dateString = row['DateSession'];
-                if (!dateString) continue;
-
-                const dateParts = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})[,\s]*(\d{2}):(\d{2})/);
-                let parsedDate = dateParts ? new Date(`${dateParts[3]}-${dateParts[2]}-${dateParts[1]}T${dateParts[4]}:${dateParts[5]}:00`) : new Date(dateString);
-                if (isNaN(parsedDate.getTime())) continue;
-
-                let sessionId = parsedDate.getTime() + '_' + row['NomSeance'];
-                if (!sessionsMap.has(sessionId)) {
-                    sessionsMap.set(sessionId, {
-                        id: parsedDate.getTime(),
-                        date: parsedDate.toISOString(),
-                        sessionName: row['NomSeance'],
-                        totalTonnage: 0, // Will be calculated
-                        totalReps: 0,    // Will be calculated
-                        totalKgRep: 0,   // Will be calculated
-                        duration: row['DureeTotaleSeance'] || '00:00:00',
-                        notes: row['Notes'] || '',
-                        exercises: []
-                    });
-                }
-                
-                const currentSession = sessionsMap.get(sessionId);
-                const exerciseName = row['Exercice'];
-                if (exerciseName) {
-                    let currentExercise = currentSession.exercises.find(ex => ex.name === exerciseName);
-                    if (!currentExercise) {
-                        currentExercise = { name: exerciseName, rest: '1 min', series: [], exerciseTonnage: 0, exerciseReps: 0 };
-                        currentSession.exercises.push(currentExercise);
-                    }
-                    const reps = parseFloat(row['Reps']?.replace(',', '.')) || 0;
-                    const weight = parseFloat(row['Poids']?.replace(',', '.')) || 0;
-                    if (reps > 0 || weight > 0) {
-                        currentExercise.series.push({ reps, weight });
-                        currentExercise.exerciseTonnage += reps * weight;
-                        currentExercise.exerciseReps += reps;
-                    }
-                }
-            }
-            const finalHistory = Array.from(sessionsMap.values());
-            finalHistory.forEach(session => {
-                session.exercises.forEach(ex => {
-                    session.totalTonnage += ex.exerciseTonnage;
-                    session.totalReps += ex.exerciseReps;
-                });
-                session.totalKgRep = session.totalReps > 0 ? (session.totalTonnage / session.totalReps).toFixed(2) : 0;
-            });
-            
-            return finalHistory;
         }
         
         function showNotification(message, type = 'info', duration = 5000) { 
@@ -3681,11 +3523,11 @@ body.dark-mode .exercise-card .btn-secondary {
         function applyTheme(theme) {
             if (theme === 'dark') {
                 dom.body.classList.add('dark-mode');
-                dom.themeToggleBtn.innerHTML = '☀️'; // Changed to sun emoji
+                dom.themeToggleBtn.innerHTML = '☀️';
                 dom.themeToggleBtn.setAttribute('title', 'Passer au thème clair');
             } else {
                 dom.body.classList.remove('dark-mode');
-                dom.themeToggleBtn.innerHTML = '🌒'; // Changed to moon emoji
+                dom.themeToggleBtn.innerHTML = '🌒';
                 dom.themeToggleBtn.setAttribute('title', 'Passer au thème sombre');
             }
         }
@@ -3812,7 +3654,7 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.timerPlayPauseText.textContent = 'Play';
             localStorage.removeItem('inProgressWorkout');
             dom.totalTimeEl.textContent = "00:00:00";
-            dom.totalKgRepEl.textContent = "0 kg/rep"; // Changed from totalTonnageEl
+            dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
             dom.previousWeekInput.value = "";
             dom.sessionNotesInput.value = ""; 
@@ -3837,7 +3679,7 @@ body.dark-mode .exercise-card .btn-secondary {
             state.currentSessionIndex = sessionIndexToLoad;
             dom.sessionSelect.value = state.currentSessionIndex; 
             createTable();
-            dom.previousWeekInput.value = historicalSession.totalKgRep || historicalSession.totalTonnage || ""; // Use Kg/Rep for previous week
+            dom.previousWeekInput.value = historicalSession.totalKgRep || historicalSession.totalTonnage || "";
             dom.sessionNotesInput.value = historicalSession.notes || ""; 
             showNotification(`Séance "${historicalSession.sessionName}" ouverte et chargée avec succès.`, "success", 3000);
             dom.loadOptionsModal.classList.remove('show');
@@ -3866,7 +3708,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (existingExIndex !== -1) {
                     const currentEx = currentSession.exercises[existingExIndex];
                     currentEx.series = historicalEx.series.map(s => ({weight: s.weight, reps: s.reps}));
-                    currentEx.exerciseTonnage = historicalEx.exerciseTonnage; // Update tonnage/reps for existing
+                    currentEx.exerciseTonnage = historicalEx.exerciseTonnage;
                     currentEx.exerciseReps = historicalEx.exerciseReps;
                     exercisesUpdated++;
                 } else {
@@ -3874,14 +3716,14 @@ body.dark-mode .exercise-card .btn-secondary {
                         name: historicalEx.name,
                         rest: historicalEx.rest || "1 min",
                         series: historicalEx.series.map(s => ({weight: s.weight, reps: s.reps})),
-                        exerciseTonnage: historicalEx.exerciseTonnage, // Add tonnage/reps for new
+                        exerciseTonnage: historicalEx.exerciseTonnage,
                         exerciseReps: historicalEx.exerciseReps
                     });
                     exercisesAdded++;
                 }
             });
             createTable(); 
-            dom.previousWeekInput.value = historicalSession.totalKgRep || historicalSession.totalTonnage || ""; // Use Kg/Rep for previous week
+            dom.previousWeekInput.value = historicalSession.totalKgRep || historicalSession.totalTonnage || "";
             dom.sessionNotesInput.value = historicalSession.notes || ""; 
             showNotification(`${exercisesAdded} exercices ajoutés et ${exercisesUpdated} mis à jour dans la séance en cours.`, "success", 5000);
             dom.loadOptionsModal.classList.remove('show');
@@ -3933,7 +3775,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.5); 
             } catch (error) {
-                console.warn("Could not play sound: AudioContext not supported or blocked.", error);
+                console.warn("Could not play sound.", error);
             }
         }
 
@@ -4041,7 +3883,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     dom.timerPlayPauseText.textContent = 'Play';
                     localStorage.removeItem('inProgressWorkout');
                     dom.totalTimeEl.textContent = "00:00:00";
-                    dom.totalKgRepEl.textContent = "0 kg/rep"; // Changed from totalTonnageEl
+                    dom.totalKgRepEl.textContent = "0 kg/rep";
                     dom.deltaEl.textContent = "0 kg"; 
                     dom.previousWeekInput.value = "";
                     dom.sessionNotesInput.value = ""; 
@@ -4068,20 +3910,16 @@ body.dark-mode .exercise-card .btn-secondary {
                         dom.autocompleteSuggestions.classList.add('hidden');
                         dom.autocompleteSuggestions.innerHTML = ''; 
                     }, { once: true });
-                    const newElement = document.querySelector(`[data-exercise-index="${state.sessions[state.currentSessionIndex].exercises.length - 1}"]`);
-                    if (newElement) {
-                        newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
                 } else {
                     showNotification("Veuillez entrer un nom d'exercice à ajouter.", "error");
                 }
             });
 
             dom.exerciseListContainer.addEventListener('blur', (e) => {
-    if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
-        handleNumericInput(e);
-    }
-}, true);
+                if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
+                    handleNumericInput(e);
+                }
+            }, true);
 
 
             dom.exerciseListContainer.addEventListener('input', e => { 
@@ -4098,57 +3936,69 @@ body.dark-mode .exercise-card .btn-secondary {
                     const target = e.target;
                     if (target.classList.contains('weight') || target.classList.contains('reps')) {
                         e.preventDefault();
-
-                        const exIndex = parseInt(target.dataset.ex, 10);
-                        const serieIndex = parseInt(target.dataset.serie, 10);
-
-                        if (!isValidAndCompleteNumber(target.value)) {
-                            target.classList.add('is-invalid');
-                            return;
-                        } else {
-                            target.classList.remove('is-invalid');
-                        }
-
-                        if (target.classList.contains('weight')) {
-                        const repsInput = document.querySelector(`[data-ex='${exIndex}'][data-serie='${serieIndex}'].reps`);
-                        if (repsInput && !state.isMobileView) {
-                            repsInput.focus();
-                        }
-                        } else if (target.classList.contains('reps')) {
-                            const weightInput = document.querySelector(`[data-ex='${exIndex}'][data-serie='${serieIndex}'].weight`);
-                            
-                            if (weightInput && isValidAndCompleteNumber(weightInput.value) && isValidAndCompleteNumber(target.value)) {
-                                
-                                const currentExercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
-                                const element = target.closest('.exercise-row') || target.closest('.exercise-card');
-                                if (currentExercise.supersetGroup) {
-                                    handleTimerActions('start', exIndex, element);
-                                }
-
-                                const nextWeightInput = document.querySelector(`[data-ex='${exIndex}'][data-serie='${serieIndex + 1}'].weight`);
-                                if (nextWeightInput) {
-                                    if (nextWeightInput.value.trim() === '') {
-                                        nextWeightInput.value = weightInput.value;
-                                    }
-                                        if (!state.isMobileView) nextWeightInput.focus();
-                                        } else {
-                                            const nextExerciseElement = document.querySelector(`[data-exercise-index="${exIndex + 1}"]`);
-                                            if (nextExerciseElement) {
-                                                const firstWeightInputOfNextEx = nextExerciseElement.querySelector(`.weight[data-serie="0"]`);
-                                                if (firstWeightInputOfNextEx && !state.isMobileView) {
-                                                    firstWeightInputOfNextEx.focus();
-                                        } else {
-                                            target.blur();
-                                        }
-                                    } else {
-                                        target.blur();
-                                    }
-                                }
-                            }
-                        }
+                        target.blur();
                     }
                 }
             });
+
+            // MODIFICATION 1: Event listeners for long press
+            const pressHandler = (e, isTouch = false) => {
+                const button = e.target.closest('.serie-input-delete');
+                if (!button) return;
+
+                state.isLongPress = false;
+                state.pressTimer = setTimeout(() => {
+                    state.isLongPress = true;
+                    if (navigator.vibrate) navigator.vibrate(50);
+
+                    const exIndex = +button.dataset.ex;
+                    const serieIndex = +button.dataset.serie;
+                    const exercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
+
+                    if (exercise.series.length > 1) {
+                        exercise.series.splice(serieIndex, 1);
+                        createTable();
+                        updateAllTotals();
+                        showNotification(`Série ${serieIndex + 1} supprimée.`, "info", 2000);
+                    } else {
+                        showNotification("Un exercice doit avoir au moins une série.", "error", 3000);
+                    }
+                }, 500);
+            };
+
+            const releaseHandler = (e) => {
+                const button = e.target.closest('.serie-input-delete');
+                if (!button) {
+                    clearTimeout(state.pressTimer);
+                    return;
+                };
+
+                if (!state.isLongPress) {
+                    clearTimeout(state.pressTimer);
+                    const exIndex = +button.dataset.ex;
+                    const serieIndex = +button.dataset.serie;
+                    const exercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
+
+                    if (exercise.series[serieIndex]) {
+                        exercise.series[serieIndex].weight = '';
+                        exercise.series[serieIndex].reps = '';
+                        createTable();
+                        updateAllTotals();
+                        showNotification(`Données de la série ${serieIndex + 1} effacées.`, "info", 2000);
+                    }
+                }
+            };
+
+            dom.exerciseListContainer.addEventListener('mousedown', (e) => pressHandler(e));
+            dom.exerciseListContainer.addEventListener('mouseup', (e) => releaseHandler(e));
+            dom.exerciseListContainer.addEventListener('mouseleave', (e) => {
+                if (e.target.closest('.serie-input-delete')) clearTimeout(state.pressTimer);
+            }, true);
+            dom.exerciseListContainer.addEventListener('touchstart', (e) => pressHandler(e, true));
+            dom.exerciseListContainer.addEventListener('touchend', (e) => releaseHandler(e));
+            dom.exerciseListContainer.addEventListener('touchcancel', (e) => {
+                 if (e.target.closest('.serie-input-delete')) clearTimeout(state.pressTimer);
+            }, true);
 
 
             dom.previousWeekInput.addEventListener('input', updateAllTotals); 
@@ -4256,10 +4106,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (state.sessionToLoad) await appendToCurrentSessionLogic(state.sessionToLoad);
             });
 
-            // Added defensive checks and logs for plateCalculatorBtn click
             if (dom.plateCalculatorBtn) {
                 dom.plateCalculatorBtn.addEventListener('click', () => {
-                    console.log('Bouton "Calculateurs" cliqué.'); // Debug log
                     const triggeringElement = document.activeElement;
                     dom.plateCalculatorModal.classList.remove('hidden');
                     dom.plateCalculatorModal.classList.add('show');
@@ -4271,8 +4119,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         }
                     }, { once : true });
                 });
-            } else {
-                console.warn('dom.plateCalculatorBtn non trouvé.');
             }
 
             dom.closePlateCalculatorModal.addEventListener('click', () => {
@@ -4285,50 +4131,43 @@ body.dark-mode .exercise-card .btn-secondary {
                     }
                 }, { once : true });
             });
-            if (dom.targetWeightInput) { // Defensive check
+            if (dom.targetWeightInput) {
                 dom.targetWeightInput.addEventListener('input', calculatePlates);
             }
-            if (dom.barbellWeightInput) { // Defensive check
+            if (dom.barbellWeightInput) {
                 dom.barbellWeightInput.addEventListener('input', calculatePlates);
             }
             
-            // Event listeners for the new radio buttons
             document.querySelectorAll('input[name="oneRmInputMode"]').forEach(radio => {
                 radio.addEventListener('change', (event) => {
                     if (event.target.value === 'manual') {
                         dom.oneRmManualInput.classList.remove('hidden');
                         dom.oneRmSelectInput.classList.add('hidden');
                         dom.oneRmInput.focus();
-                        dom.oneRmExerciseSelect.value = ''; // Clear selection
+                        dom.oneRmExerciseSelect.value = '';
                     } else {
                         dom.oneRmManualInput.classList.add('hidden');
                         dom.oneRmSelectInput.classList.remove('hidden');
                         dom.oneRmExerciseSelect.focus();
-                        dom.oneRmInput.value = ''; // Clear manual input
-                        calculateTrainingGoals(); // Recalculate goals based on cleared manual input
+                        dom.oneRmInput.value = '';
+                        calculateTrainingGoals();
                     }
                 });
             });
 
-            if (dom.oneRmExerciseSelect) { // Defensive check
+            if (dom.oneRmExerciseSelect) {
                 dom.oneRmExerciseSelect.addEventListener('change', () => {
                     dom.oneRmInput.value = dom.oneRmExerciseSelect.value;
                     calculateTrainingGoals();
                 });
-            } else {
-                console.warn('dom.oneRmExerciseSelect non trouvé.');
             }
 
-            if (dom.oneRmInput) { // Defensive check
+            if (dom.oneRmInput) {
                 dom.oneRmInput.addEventListener('input', calculateTrainingGoals);
-            } else {
-                console.warn('dom.oneRmInput non trouvé.');
             }
 
-            // Added logs for tab clicks
             if (dom.plateCalcTab) {
                 dom.plateCalcTab.addEventListener('click', () => {
-                    console.log('Onglet "Calculateur de Plaques" cliqué.'); // Debug log
                     dom.plateCalcTab.classList.add('active');
                     dom.plateCalcTab.setAttribute('aria-selected', 'true');
                     dom.goalCalcTab.classList.remove('active');
@@ -4338,13 +4177,10 @@ body.dark-mode .exercise-card .btn-secondary {
                     const firstInput = dom.plateCalcContent.querySelector('input, button');
                     if (firstInput) firstInput.focus();
                 });
-            } else {
-                console.warn('dom.plateCalcTab non trouvé.');
             }
 
             if (dom.goalCalcTab) {
                 dom.goalCalcTab.addEventListener('click', () => {
-                    console.log('Onglet "Objectifs d\'entraînement" cliqué.'); // Debug log
                     dom.goalCalcTab.classList.add('active');
                     dom.goalCalcTab.setAttribute('aria-selected', 'true');
                     dom.plateCalcTab.classList.remove('active');
@@ -4354,8 +4190,6 @@ body.dark-mode .exercise-card .btn-secondary {
                     const firstInput = dom.goalCalcContent.querySelector('input, button');
                     if (firstInput) firstInput.focus();
                 });
-            } else {
-                console.warn('dom.goalCalcTab non trouvé.');
             }
 
             dom.closeQuickEditModal.addEventListener('click', () => {
@@ -4453,21 +4287,21 @@ body.dark-mode .exercise-card .btn-secondary {
                     dom.sessionNotesSection.classList.add('hide-notes-section');
                 }
             });
-                    dom.bottomScrollBtn.addEventListener('click', () => {
-                        const currentScrollY = window.scrollY;
-                        const windowHeight = window.innerHeight;
-                        const documentHeight = document.documentElement.scrollHeight;
-                    
-                        const distanceToTop = currentScrollY;
-                        const distanceToBottom = documentHeight - windowHeight - currentScrollY;
-                    
-                        if (distanceToBottom > distanceToTop) {
-                            window.scrollTo({ top: documentHeight, behavior: 'smooth' });
-                        } else {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    });
-                dom.bottomViewHistoryBtn.addEventListener('click', () => {
+            dom.bottomScrollBtn.addEventListener('click', () => {
+                const currentScrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+            
+                const distanceToTop = currentScrollY;
+                const distanceToBottom = documentHeight - windowHeight - currentScrollY;
+            
+                if (distanceToBottom > distanceToTop) {
+                    window.scrollTo({ top: documentHeight, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            dom.bottomViewHistoryBtn.addEventListener('click', () => {
                 displayHistory(); 
                 dom.historyModal.classList.remove('hidden'); 
                 dom.historyModal.classList.add('show');
@@ -4508,3 +4342,4 @@ body.dark-mode .exercise-card .btn-secondary {
     </script>
 </body>
 </html>
+"
