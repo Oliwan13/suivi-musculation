@@ -293,7 +293,7 @@
         color: var(--color-text-header);
         margin-bottom: var(--spacing-sm);
         letter-spacing: -0.01em;
-        text-transform: capitalize;
+        text-transform: capitalize; 
     }
     h4 {
         margin: 0 0 var(--spacing-xs) 0;
@@ -688,7 +688,7 @@
         justify-content: center; 
         margin-top: var(--spacing-xxl); 
     }
-    .btn { 
+    .btn, button { 
         padding: var(--spacing-md) var(--spacing-xl);
         min-height: 44px; /* Ensure minimum 44px touch target */
         min-width: 44px; /* Ensure minimum 44px touch target */
@@ -702,6 +702,7 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         box-shadow: var(--btn-shadow-normal); /* Using refactored shadow variable */
         will-change: transform, box-shadow, background-color; /* Optimize animation */
+        text-transform: none; /* Point 1: Ensure button text is not uppercased */
     }
     .btn:hover {
         transform: translateY(-3px);
@@ -1723,7 +1724,6 @@ body.dark-mode .exercise-card .btn-secondary {
             }
             
             const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout'));
-            // MODIFICATION 2: Check if the in-progress session is empty
             if (inProgress && inProgress.customSessions && inProgress.customSessions[inProgress.sessionIndex] && inProgress.customSessions[inProgress.sessionIndex].exercises.length > 0) {
                 state.sessions = Array.isArray(inProgress.customSessions) ? inProgress.customSessions : JSON.parse(JSON.stringify(defaultSessions));
                 state.currentSessionIndex = inProgress.sessionIndex || 0;
@@ -1745,9 +1745,8 @@ body.dark-mode .exercise-card .btn-secondary {
                     dom.timerPlayPauseText.textContent = 'Play';
                 }
             } else {
-                 // If no valid session in progress, load defaults
                  state.sessions = JSON.parse(JSON.stringify(defaultSessions));
-                 localStorage.removeItem('inProgressWorkout'); // Clean up empty session
+                 localStorage.removeItem('inProgressWorkout');
             }
             
             if (state.isMobileView) {
@@ -1876,13 +1875,13 @@ body.dark-mode .exercise-card .btn-secondary {
             isNotesSectionVisible: false,
             deferredPwaPrompt: null,
             isInitialized: false,
-            pressTimer: null, // MODIFICATION 1: For long press tracking
-            isLongPress: false // MODIFICATION 1: For long press tracking
+            pressTimer: null
         };
         
+        // Point 2: Added isDefault property to default sessions
         const defaultSessions = [
           {
-            name: "Haut du Corps (Force)",
+            name: "Haut du Corps (Force)", isDefault: true,
             exercises: [
               { name: "Tractions scapulaires", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
               { name: "Développé couché barre", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
@@ -1896,7 +1895,7 @@ body.dark-mode .exercise-card .btn-secondary {
             ]
           },
           {
-            name: "Bas du Corps (Force)",
+            name: "Bas du Corps (Force)", isDefault: true,
             exercises: [
               { name: "Soulevé de terre roumain (RDL)", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
               { name: "Hip thrust", rest: "120s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
@@ -1906,7 +1905,7 @@ body.dark-mode .exercise-card .btn-secondary {
             ]
           },
           {
-            name: "Haut du Corps (Hypertrophie & Poigne)",
+            name: "Haut du Corps (Hypertrophie & Poigne)", isDefault: true,
             exercises: [
               { name: "Dips", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
               { name: "Tirage vertical prise large", rest: "", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
@@ -1922,7 +1921,7 @@ body.dark-mode .exercise-card .btn-secondary {
             ]
           },
           {
-            name: "Bas du Corps (Hypertrophie & Focus Ischios/Fessiers)",
+            name: "Bas du Corps (Hypertrophie & Focus Ischios/Fessiers)", isDefault: true,
             exercises: [
               { name: "Pendulum Squat", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
               { name: "Hip thrust", rest: "90s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
@@ -1933,7 +1932,7 @@ body.dark-mode .exercise-card .btn-secondary {
             ]
           },
           {
-            name: "Trapèzes & Mobilité ",
+            name: "Trapèzes & Mobilité ", isDefault: true,
             exercises: [
               { name: "Barbell Shrugs", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
               { name: "Face Pull", rest: "60s", series: [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}] },
@@ -1942,7 +1941,7 @@ body.dark-mode .exercise-card .btn-secondary {
             ]
           },
           {
-            name: "Routine Mobilité",
+            name: "Routine Mobilité", isDefault: true,
             exercises: [
               { name: "Pass-throughs avec élastique", rest: "", series: ["2 x 15"] },
               { name: "Wall Slides (Glissements au mur)", rest: "", series: ["2 x 12"] },
@@ -1954,8 +1953,6 @@ body.dark-mode .exercise-card .btn-secondary {
             ]
           }
         ];
-
-        const defaultSessionNames = defaultSessions.map(s => s.name);
         
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -2504,7 +2501,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         seriesContentHtml += `<td role="cell"></td>`;
                     }
                     
-                    // MODIFICATION 3: Display formatted rest time by default
                     const restSeconds = parseInt(ex.rest) * (String(ex.rest).includes('min') ? 60 : 1) || 0;
                     const defaultTimerDisplay = formatTimerDisplay(restSeconds);
 
@@ -2579,7 +2575,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         `;
                     });
 
-                    // MODIFICATION 3: Display formatted rest time by default
                     const restSeconds = parseInt(ex.rest) * (String(ex.rest).includes('min') ? 60 : 1) || 0;
                     const defaultTimerDisplay = formatTimerDisplay(restSeconds);
 
@@ -3583,7 +3578,8 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.newSessionNameError.textContent = '';
 
             const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}];
-            const newSession = { name: newName, exercises: [{ name: "Nouvel Exercice", rest: "60s", series: fourSeries }] };
+            // Point 2: New sessions are not default
+            const newSession = { name: newName, isDefault: false, exercises: [{ name: "Nouvel Exercice", rest: "60s", series: fourSeries }] };
             state.sessions.push(newSession);
             updateSessionSelectOptions(); 
             state.currentSessionIndex = state.sessions.length - 1; 
@@ -3603,39 +3599,58 @@ body.dark-mode .exercise-card .btn-secondary {
 
         function updateDeleteSessionButtonState() {
             const currentSession = state.sessions[state.currentSessionIndex];
-            if (currentSession && !defaultSessionNames.includes(currentSession.name)) {
+            if (currentSession) {
                 dom.deleteCurrentSessionBtn.removeAttribute('disabled');
                 dom.deleteCurrentSessionBtn.classList.remove('btn-outline');
                 dom.deleteCurrentSessionBtn.classList.add('btn-danger');
+                if (currentSession.isDefault) {
+                    dom.deleteCurrentSessionBtn.setAttribute('title', 'Réinitialiser les données de cette séance par défaut');
+                } else {
+                    dom.deleteCurrentSessionBtn.setAttribute('title', 'Supprimer définitivement cette séance personnalisée');
+                }
             } else {
-                dom.deleteCurrentSessionBtn.setAttribute('disabled', 'true');
-                dom.deleteCurrentSessionBtn.classList.remove('btn-danger');
-                dom.deleteCurrentSessionBtn.classList.add('btn-outline');
+                 dom.deleteCurrentSessionBtn.setAttribute('disabled', 'true');
+                 dom.deleteCurrentSessionBtn.classList.remove('btn-danger');
+                 dom.deleteCurrentSessionBtn.classList.add('btn-outline');
             }
         }
 
+        // Point 2: Updated logic for deleting/resetting a session
         async function deleteCurrentSession() {
             const currentSession = state.sessions[state.currentSessionIndex];
-            if (!currentSession || defaultSessionNames.includes(currentSession.name)) {
-                showNotification("Vous ne pouvez pas supprimer une séance par défaut.", "error");
-                return;
-            }
-            const confirmed = await customConfirm(`Êtes-vous sûr de vouloir supprimer définitivement la séance "${currentSession.name}"? Cette action est irréversible.`);
-            if (confirmed) {
-                state.sessions.splice(state.currentSessionIndex, 1);
-                state.currentSessionIndex = 0;
-                updateSessionSelectOptions();
-                dom.sessionSelect.value = state.currentSessionIndex;
-                localStorage.removeItem('inProgressWorkout');
-                state.workoutStartTime = null;
-                state.isWorkoutTimerPaused = false;
-                state.pausedTime = 0;
-                dom.totalTimeEl.textContent = "00:00:00";
-                dom.timerPlayPauseIcon.textContent = '▶️';
-                dom.timerPlayPauseText.textContent = 'Play';
-                createTable();
-                updateAllTotals();
-                showNotification(`Séance "${currentSession.name}" supprimée avec succès.`, "info");
+            if (!currentSession) return;
+
+            if (currentSession.isDefault) {
+                const confirmed = await customConfirm(`Voulez-vous vraiment réinitialiser toutes les données (poids et reps) pour la séance par défaut "${currentSession.name}" ?`);
+                if (confirmed) {
+                    currentSession.exercises.forEach(ex => {
+                        ex.series.forEach(s => {
+                            s.weight = '';
+                            s.reps = '';
+                        });
+                    });
+                    createTable();
+                    updateAllTotals();
+                    showNotification(`Séance par défaut "${currentSession.name}" réinitialisée.`, "info");
+                }
+            } else {
+                const confirmed = await customConfirm(`Êtes-vous sûr de vouloir supprimer définitivement la séance personnalisée "${currentSession.name}"? Cette action est irréversible.`);
+                if (confirmed) {
+                    state.sessions.splice(state.currentSessionIndex, 1);
+                    state.currentSessionIndex = 0;
+                    updateSessionSelectOptions();
+                    dom.sessionSelect.value = state.currentSessionIndex;
+                    localStorage.removeItem('inProgressWorkout');
+                    state.workoutStartTime = null;
+                    state.isWorkoutTimerPaused = false;
+                    state.pausedTime = 0;
+                    dom.totalTimeEl.textContent = "00:00:00";
+                    dom.timerPlayPauseIcon.textContent = '▶️';
+                    dom.timerPlayPauseText.textContent = 'Play';
+                    createTable();
+                    updateAllTotals();
+                    showNotification(`Séance "${currentSession.name}" supprimée avec succès.`, "info");
+                }
             }
         }
 
@@ -3860,6 +3875,31 @@ body.dark-mode .exercise-card .btn-secondary {
             }
         }
         
+        // Point 3: Function for weight auto-completion
+        function handleSeriesUpdate(exerciseIndex, seriesIndex) {
+            const exercise = state.sessions[state.currentSessionIndex].exercises[exerciseIndex];
+            if (!exercise) return;
+
+            const currentSeries = exercise.series[seriesIndex];
+            const nextSeries = exercise.series[seriesIndex + 1];
+
+            const currentWeight = currentSeries.weight?.trim();
+            const currentReps = currentSeries.reps?.trim();
+
+            // Check if current series is filled and there is a next series
+            if (currentWeight && currentReps && nextSeries) {
+                const nextSeriesWeight = nextSeries.weight?.trim();
+                // If the next series weight is empty, pre-fill it
+                if (!nextSeriesWeight) {
+                    nextSeries.weight = currentWeight;
+                    const scrollY = window.scrollY;
+                    createTable(); // Redraw table to show the new value
+                    window.scrollTo(0, scrollY);
+                    showNotification(`Poids pré-rempli pour la série suivante.`, "info", 1500);
+                }
+            }
+        }
+
         function setupEventListeners() {
             dom.sessionSelect.addEventListener('change', async () => {
                 const lastSavedIndex = state.currentSessionIndex;
@@ -3906,7 +3946,7 @@ body.dark-mode .exercise-card .btn-secondary {
                         state.sessions[state.currentSessionIndex].exercises = [];
                     }
                     const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}];
-                    state.sessions[state.currentSessionIndex].exercises.push({ name, rest: "1 min", series: fourSeries });
+                    state.sessions[state.currentSessionIndex].exercises.push({ name, rest: "1 min", series: fourSeries, isDefault: false });
                     createTable(); 
                     window.scrollTo(0, scrollY);
                     dom.customExerciseInput.value = '';
@@ -3924,6 +3964,11 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.exerciseListContainer.addEventListener('blur', (e) => {
                 if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
                     handleNumericInput(e);
+                    // Point 3: Trigger auto-completion on blur
+                    const exIndex = +e.target.dataset.ex;
+                    const serieIndex = +e.target.dataset.serie;
+                    updateStateFromTable(); // First, save the current input value to the state
+                    handleSeriesUpdate(exIndex, serieIndex); // Then, check for auto-completion
                 }
             }, true);
 
@@ -3947,17 +3992,18 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
             });
 
-            // MODIFICATION 1: Event listeners for long press
-            const pressHandler = (e, isTouch = false) => {
+            // MODIFICATION POINT 4: Event listeners for double-click and long-press
+            
+            // --- Long Press Logic (to delete the entire series) ---
+            const pressHandler = (e) => {
                 const button = e.target.closest('.serie-input-delete');
                 if (!button) return;
 
-                state.isLongPress = false;
+                // Set a timer. If it fires, it's a long press.
                 state.pressTimer = setTimeout(() => {
-                    const scrollY = window.scrollY;
-                    state.isLongPress = true;
-                    if (navigator.vibrate) navigator.vibrate(50);
+                    if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback
 
+                    const scrollY = window.scrollY;
                     const exIndex = +button.dataset.ex;
                     const serieIndex = +button.dataset.serie;
                     const exercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
@@ -3971,44 +4017,46 @@ body.dark-mode .exercise-card .btn-secondary {
                     } else {
                         showNotification("Un exercice doit avoir au moins une série.", "error", 3000);
                     }
-                }, 500);
+                }, 500); // 500ms for a long press
             };
 
+            // This handler simply clears the timer if the press is released too early.
             const releaseHandler = (e) => {
-                const button = e.target.closest('.serie-input-delete');
-                if (!button) {
-                    clearTimeout(state.pressTimer);
-                    return;
-                };
-
-                if (!state.isLongPress) {
-                    clearTimeout(state.pressTimer);
-                    const scrollY = window.scrollY;
-                    const exIndex = +button.dataset.ex;
-                    const serieIndex = +button.dataset.serie;
-                    const exercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
-
-                    if (exercise.series[serieIndex]) {
-                        exercise.series[serieIndex].weight = '';
-                        exercise.series[serieIndex].reps = '';
-                        createTable();
-                        window.scrollTo(0, scrollY);
-                        updateAllTotals();
-                        showNotification(`Données de la série ${serieIndex + 1} effacées.`, "info", 2000);
-                    }
-                }
+                clearTimeout(state.pressTimer);
             };
 
-            dom.exerciseListContainer.addEventListener('mousedown', (e) => pressHandler(e));
-            dom.exerciseListContainer.addEventListener('mouseup', (e) => releaseHandler(e));
-            dom.exerciseListContainer.addEventListener('mouseleave', (e) => {
-                if (e.target.closest('.serie-input-delete')) clearTimeout(state.pressTimer);
-            }, true);
-            dom.exerciseListContainer.addEventListener('touchstart', (e) => pressHandler(e, true));
-            dom.exerciseListContainer.addEventListener('touchend', (e) => releaseHandler(e));
-            dom.exerciseListContainer.addEventListener('touchcancel', (e) => {
-                 if (e.target.closest('.serie-input-delete')) clearTimeout(state.pressTimer);
-            }, true);
+            // Add listeners for long press
+            dom.exerciseListContainer.addEventListener('mousedown', pressHandler);
+            dom.exerciseListContainer.addEventListener('mouseup', releaseHandler);
+            dom.exerciseListContainer.addEventListener('mouseleave', releaseHandler, true);
+            dom.exerciseListContainer.addEventListener('touchstart', pressHandler);
+            dom.exerciseListContainer.addEventListener('touchend', releaseHandler);
+            dom.exerciseListContainer.addEventListener('touchcancel', releaseHandler, true);
+
+
+            // --- Double Click Logic (to clear the series data) ---
+            dom.exerciseListContainer.addEventListener('dblclick', (e) => {
+                const button = e.target.closest('.serie-input-delete');
+                if (!button) return;
+
+                // A dblclick event will also fire mousedown/mouseup.
+                // We clear the long-press timer to prevent it from firing.
+                clearTimeout(state.pressTimer);
+
+                const scrollY = window.scrollY;
+                const exIndex = +button.dataset.ex;
+                const serieIndex = +button.dataset.serie;
+                const exercise = state.sessions[state.currentSessionIndex].exercises[exIndex];
+
+                if (exercise && exercise.series[serieIndex]) {
+                    exercise.series[serieIndex].weight = '';
+                    exercise.series[serieIndex].reps = '';
+                    createTable();
+                    window.scrollTo(0, scrollY);
+                    updateAllTotals();
+                    showNotification(`Données de la série ${serieIndex + 1} effacées.`, "info", 2000);
+                }
+            });
 
 
             dom.previousWeekInput.addEventListener('input', updateAllTotals); 
