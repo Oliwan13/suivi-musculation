@@ -25,8 +25,7 @@
 
 @layer base {
     :root {
-        /* Color System - Improved with HSL base values and color-mix concept */
-        /* Define base HSL values for primary colors */
+        /* Color System */
         --color-blue-base: 220 60% 50%;
         --color-green-base: 140 50% 45%;
         --color-orange-base: 40 70% 50%;
@@ -51,8 +50,8 @@
 
         /* Primary Colors */
         --color-primary-default: hsl(var(--color-blue-base));
-        --color-primary-gradient-start: hsl(220, 60%, 70%); /* Specific gradient start */
-        --color-primary-gradient-end: hsl(240, 70%, 75%);   /* Specific gradient end */
+        --color-primary-gradient-start: hsl(220, 60%, 70%);
+        --color-primary-gradient-end: hsl(240, 70%, 75%);
 
         /* Success Colors */
         --color-success-default: hsl(var(--color-green-base));
@@ -74,13 +73,13 @@
         --color-info-gradient-start: hsl(200, 70%, 70%);
         --color-info-gradient-end: hsl(210, 80%, 75%);
 
-        /* Shadow System - Consolidated */
+        /* Shadow System */
         --shadow-xs: hsla(220, 20%, 20%, 0.02);
         --shadow-sm: hsla(220, 20%, 20%, 0.04);
         --shadow-md: hsla(220, 20%, 20%, 0.08);
         --shadow-lg: hsla(220, 20%, 20%, 0.15);
         --shadow-xl: hsla(220, 20%, 20%, 0.25);
-        --shadow-strong: hsla(220, 20%, 20%, 0.4); /* Used in modal-content:focus-within */
+        --shadow-strong: hsla(220, 20%, 20%, 0.4);
 
 
         /* Radius System */
@@ -107,13 +106,9 @@
         --font-size-xl: 1.25rem;
         --font-size-2xl: clamp(2rem, 1.5rem + 2.5vw, 2.75rem);
 
-        color-scheme: light dark; /* Enables native dark mode support */
+        color-scheme: light dark;
 
-        /* Theme Toggle Button Colors */
-        --theme-toggle-bg-light: hsl(var(--color-blue-base));
-        --theme-toggle-color-light: var(--color-text-on-accent);
-
-        /* Tâche 2.2: Refactorisation des gradients et ombres des boutons */
+        /* Button Gradients & Shadows */
         --btn-primary-bg: linear-gradient(135deg, var(--color-primary-gradient-start), var(--color-primary-gradient-end)), radial-gradient(circle at 30% 30%, hsla(220, 60%, 80%, 0.3), transparent);
         --btn-secondary-bg: linear-gradient(135deg, var(--color-warning-gradient-start), var(--color-warning-gradient-end));
         --btn-danger-bg: linear-gradient(135deg, var(--color-danger-gradient-start), var(--color-danger-gradient-end));
@@ -126,7 +121,7 @@
     }
 
     body.dark-mode {
-        /* Dark Mode Colors - Using HSL base values for consistency */
+        /* Dark Mode Colors */
         --color-background-gradient-start: hsl(230, 20%, 18%);
         --color-background-gradient-end: hsl(245, 25%, 22%);
         --color-surface-default: hsla(220, 20%, 25%, 0.95);
@@ -148,7 +143,6 @@
         --color-success-gradient-start: hsl(140, 30%, 40%);
         --color-success-gradient-end: hsl(160, 35%, 45%);
 
-        /* Warning Colors */
         --color-warning-default: hsl(40, 70%, 65%);
         --color-warning-gradient-start: hsl(40, 45%, 50%);
         --color-warning-gradient-end: hsl(30, 50%, 55%);
@@ -166,12 +160,7 @@
         --shadow-md: hsla(220, 20%, 10%, 0.3);
         --shadow-lg: hsla(220, 20%, 10%, 0.4);
         --shadow-xl: hsla(220, 20%, 10%, 0.5);
-        --shadow-strong: hsla(220, 20%, 10%, 0.6); /* Used in modal-content:focus-within */
-
-
-        /* Theme Toggle Button Colors for Dark Mode */
-        --theme-toggle-bg-dark: hsl(220, 20%, 30%); /* Darker background for dark mode button */
-        --theme-toggle-color-dark: hsl(210, 15%, 80%); /* Lighter text for dark mode button */
+        --shadow-strong: hsla(220, 20%, 10%, 0.6);
     }
 
     /* Reduced Motion Support */
@@ -181,20 +170,6 @@
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
         }
-    }
-
-    @keyframes fade-in { from { opacity: 0; } }
-    @keyframes fade-out { to { opacity: 0; } }
-    @keyframes slide-from-right { from { transform: translateX(50px); opacity: 0; } }
-    @keyframes slide-to-left { to { transform: translateX(-50px); opacity: 0; } }
-
-    ::view-transition-old(root) {
-        animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out,
-                300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
-    }
-    ::view-transition-new(root) {
-        animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-in,
-                300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
     }
 
     /* Enhanced Focus Management */
@@ -213,35 +188,10 @@
         border-color: var(--color-primary-default);
         box-shadow: 0 0 0 4px hsla(220, 60%, 75%, 0.3);
     }
-    .modal-content:focus-within { /* Added focus-within for modal content */
-        box-shadow: 0 0 0 3px var(--color-info-default), 0 20px 40px var(--shadow-xl); /* Adjusted to use var(--shadow-xl) for consistency */
+    .modal-content:focus-within {
+        box-shadow: 0 0 0 3px var(--color-info-default), 0 20px 40px var(--shadow-xl);
     }
 
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-    .is-loading {
-        position: relative;
-        color: transparent !important;
-        pointer-events: none;
-    }
-    .is-loading::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 20px;
-        height: 20px;
-        border: 3px solid hsla(0, 0%, 100%, 0.3);
-        border-top-color: var(--color-text-on-accent);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-    input.is-valid {
-        border-color: var(--color-success-default);
-        box-shadow: 0 0 0 4px hsla(140, 60%, 75%, 0.3);
-    }
 } /* End @layer base */
 
 @layer components {
@@ -264,7 +214,7 @@
         background: var(--color-surface-default);
         border-radius: var(--radius-large);
         padding: var(--spacing-xxl);
-        box-shadow: 0 15px 30px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 15px 30px var(--shadow-md);
         backdrop-filter: blur(10px);
         transition: background 0.5s ease;
         position: relative;
@@ -309,7 +259,7 @@
         padding: var(--spacing-lg);
         background: hsla(0, 0%, 100%, 0.1);
         border-radius: var(--radius-large);
-        box-shadow: 0 3px 8px var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: 0 3px 8px var(--shadow-sm);
         transition: background 0.5s ease;
     }
     select, input[type="number"], input[type="text"], textarea {
@@ -346,7 +296,7 @@
         border-radius: var(--radius-large);
         background: var(--color-surface-input);
         margin-bottom: var(--spacing-xxl);
-        box-shadow: 0 6px 15px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 6px 15px var(--shadow-md);
         overflow: hidden;
     }
 
@@ -391,19 +341,19 @@
     }
 
     .exercise-list-container .desktop-table .exercise-row.superset-group {
-        border-inline-start: 4px solid var(--color-info-default); /* Logical property */
+        border-inline-start: 4px solid var(--color-info-default);
     }
 
     .exercise-list-container .desktop-table .actions-col { 
         width: max-content; 
-        padding-inline-start: var(--spacing-sm); /* Logical property */
-        padding-inline-end: var(--spacing-sm); /* Logical property */
+        padding-inline-start: var(--spacing-sm);
+        padding-inline-end: var(--spacing-sm);
     }
     .exercise-list-container .desktop-table .exercise-col {
         width: 0%; 
         max-width: 280px; 
         text-align: left; 
-        padding-inline-start: var(--spacing-md); /* Logical property */
+        padding-inline-start: var(--spacing-md);
         white-space: normal;
         font-weight: 600; 
         font-size: 1.05rem; 
@@ -430,18 +380,18 @@
         background-color: var(--color-surface-input);
         border-radius: var(--radius-medium);
         padding: var(--spacing-md);
-        box-shadow: 0 44px 10px var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: 0 44px 10px var(--shadow-sm);
         display: flex;
         flex-direction: column;
         gap: var(--spacing-sm);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .exercise-card.superset-group {
-        border-inline-start: 4px solid var(--color-info-default); /* Logical property */
+        border-inline-start: 4px solid var(--color-info-default);
     }
     .exercise-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 14px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 6px 14px var(--shadow-md);
     }
     .exercise-card h4 {
         font-size: var(--font-size-xl);
@@ -488,12 +438,12 @@
         color: var(--color-danger-default);
         font-size: 1.1rem;
         cursor: pointer;
-        margin-inline-start: var(--spacing-xxs); /* Logical property */
+        margin-inline-start: var(--spacing-xxs);
         opacity: 0.7;
         transition: opacity 0.2s ease;
         padding: var(--spacing-sm);
-        min-width: 44px; /* Ensure minimum 44px touch target */
-        min-height: 44px; /* Ensure minimum 44px touch target */
+        min-width: 44px;
+        min-height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -575,7 +525,7 @@
         color: var(--color-text-on-accent);
         border-color: var(--color-success-default);
     }
-    .kg-rep-high, .onerm-high { /* Renamed from .tonnage-high */
+    .kg-rep-high, .onerm-high {
         background: linear-gradient(135deg, var(--color-success-gradient-start), var(--color-success-gradient-end));
         color: var(--color-text-on-accent);
         border-radius: var(--radius-xs);
@@ -583,7 +533,7 @@
         font-weight: 600;
         font-size: 0.9rem;
         opacity: 0.9;
-        box-shadow: 0 2px 5px var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: 0 2px 5px var(--shadow-sm);
     }
     .timer-container {
         display: flex;
@@ -593,8 +543,8 @@
     }
     .timer-btn {
         padding: var(--spacing-sm) var(--spacing-md);
-        min-width: 44px; /* Ensure minimum 44px touch target */
-        min-height: 44px; /* Ensure minimum 44px touch target */
+        min-width: 44px;
+        min-height: 44px;
         border: none;
         border-radius: var(--radius-button);
         cursor: pointer;
@@ -602,12 +552,12 @@
         font-weight: 600;
         color: var(--color-text-on-accent);
         transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; 
-        box-shadow: 0 3px 8px var(--shadow-sm); /* Using consolidated shadow variable */
-        will-change: transform, box-shadow, background-color; /* Optimize animation */
+        box-shadow: 0 3px 8px var(--shadow-sm);
+        will-change: transform, box-shadow, background-color;
     }
     .timer-btn:hover { 
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 4px 10px var(--shadow-md);
     }
     .timer-btn[data-timer-action="start"] { background: var(--btn-success-bg); }
     .timer-btn[data-timer-action="stop"] { background: var(--btn-danger-bg); }
@@ -617,7 +567,7 @@
         font-weight: 600;
         color: var(--color-text-default);
         transition: color 0.3s ease;
-        will-change: color; /* Optimize animation */
+        will-change: color;
     }
     .timer-display.timer-active { 
         color: var(--color-success-default);
@@ -634,15 +584,15 @@
     }
     .summary-card { 
         padding: var(--spacing-xl);
-        border-radius: var(--radius-large); /* Made more rounded */
+        border-radius: var(--radius-large);
         text-align: center; 
         background: var(--color-surface-input);
         border: 1px solid var(--color-border-default); 
-        box-shadow: 0 4px 10px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 4px 10px var(--shadow-md);
         transition: transform 0.2s ease, box-shadow 0.2s ease; 
         position: relative;
         overflow: hidden;
-        will-change: transform, box-shadow; /* Optimize animation */
+        will-change: transform, box-shadow;
     }
     @container main (max-width: 600px) {
         .summary-card {
@@ -653,8 +603,8 @@
         }
     }
     .summary-card:hover {
-        transform: translateY(-4px); /* More noticeable lift on hover */
-        box-shadow: 0 8px 20px var(--shadow-xl); /* Using consolidated shadow variable */
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px var(--shadow-xl);
     }
     .summary-card h3 {
         font-size: 1.1rem;
@@ -690,8 +640,8 @@
     }
     .btn, button { 
         padding: var(--spacing-md) var(--spacing-xl);
-        min-height: 44px; /* Ensure minimum 44px touch target */
-        min-width: 44px; /* Ensure minimum 44px touch target */
+        min-height: 44px;
+        min-width: 44px;
         border: none; 
         border-radius: var(--radius-button);
         cursor: pointer; 
@@ -700,17 +650,17 @@
         font-family: 'Inter', sans-serif;
         color: var(--color-text-on-accent);
         transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-        box-shadow: var(--btn-shadow-normal); /* Using refactored shadow variable */
-        will-change: transform, box-shadow, background-color; /* Optimize animation */
+        box-shadow: var(--btn-shadow-normal);
+        will-change: transform, box-shadow, background-color;
         text-transform: none; /* Point 1: Ensure button text is not uppercased */
     }
     .btn:hover {
         transform: translateY(-3px);
-        box-shadow: var(--btn-shadow-hover); /* Using refactored shadow variable */
+        box-shadow: var(--btn-shadow-hover);
     }
     .btn:not(:disabled):active {
         transform: translateY(-1px) scale(0.98);
-        box-shadow: var(--btn-shadow-active); /* Using refactored shadow variable */
+        box-shadow: var(--btn-shadow-active);
     }
     .btn:disabled, .btn.is-disabled {
         cursor: not-allowed;
@@ -721,12 +671,12 @@
     }
 
     .btn-primary { 
-        background: var(--btn-primary-bg); /* Using refactored gradient */
+        background: var(--btn-primary-bg);
     }
-    .btn-secondary { background: var(--btn-secondary-bg); } /* Using refactored gradient */
-    .btn-danger { background: var(--btn-danger-bg); } /* Using refactored gradient */
-    .btn-success { background: var(--btn-success-bg); } /* Using refactored gradient */
-    .btn-info { background: var(--btn-info-bg); } /* Using refactored gradient */
+    .btn-secondary { background: var(--btn-secondary-bg); }
+    .btn-danger { background: var(--btn-danger-bg); }
+    .btn-success { background: var(--btn-success-bg); }
+    .btn-info { background: var(--btn-info-bg); }
 
     .btn-outline {
         background: none;
@@ -736,7 +686,7 @@
     }
     .btn-outline:hover {
         background-color: hsla(220, 60%, 75%, 0.1);
-        box-shadow: var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: var(--shadow-sm);
     }
     .btn-ghost {
         background: none;
@@ -764,17 +714,17 @@
         z-index: 1001; 
         transform: translateX(120%); 
         opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease; /* Consolidated transition */
-        box-shadow: 0 8px 20px var(--shadow-md); /* Using consolidated shadow variable */
-        will-change: transform, opacity; /* Optimize animation */
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        box-shadow: 0 8px 20px var(--shadow-md);
+        will-change: transform, opacity;
     }
     .notification.show { 
         transform: translateX(0);
         opacity: 1;
     }
-    .notification.success { background: var(--btn-success-bg); } /* Using refactored gradient */
-    .notification.error { background: var(--btn-danger-bg); } /* Using refactored gradient */
-    .notification.info { background: var(--btn-info-bg); } /* Using refactored gradient */
+    .notification.success { background: var(--btn-success-bg); }
+    .notification.error { background: var(--btn-danger-bg); }
+    .notification.info { background: var(--btn-info-bg); }
 
     .modal-overlay { 
         position: fixed;
@@ -804,11 +754,11 @@
         max-height: 90vh; 
         overflow-y: auto; 
         position: relative; 
-        box-shadow: 0 20px 40px var(--shadow-xl); /* Using consolidated shadow variable */
+        box-shadow: 0 20px 40px var(--shadow-xl);
         transform: translateY(-20px);
         transition: transform 0.3s ease, opacity 0.3s ease;
         opacity: 0;
-        will-change: transform, opacity; /* Optimize animation */
+        will-change: transform, opacity;
     }
     .modal-overlay.show .modal-content {
         transform: translateY(0);
@@ -851,12 +801,12 @@
         flex-wrap: wrap; 
         gap: var(--spacing-sm); 
         background: var(--color-surface-input);
-        box-shadow: 0 3px 10px var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: 0 3px 10px var(--shadow-sm);
         transition: box-shadow 0.3s ease, transform 0.2s ease;
         scroll-snap-align: start;
     }
     .history-item:hover { 
-        box-shadow: 0 5px 15px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 5px 15px var(--shadow-md);
         transform: translateY(-2px);
     }
     .history-item div:first-child {
@@ -900,7 +850,7 @@
     }
     .progress-fill { 
         height: 100%;
-        background: var(--btn-success-bg); /* Using refactored gradient */
+        background: var(--btn-success-bg);
         border-radius: 5px; 
         transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
@@ -916,25 +866,25 @@
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: 1.5rem;
         border-radius: var(--radius-base);
-        background: transparent; /* Arrière-plan transparent par défaut */
-        color: var(--color-text-default); /* Couleur du texte par défaut */
+        background: transparent;
+        color: var(--color-text-default);
         transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
         line-height: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         border: none;
-        box-shadow: none; /* Aucune ombre par défaut */
+        box-shadow: none;
     }
 
     body.dark-mode .theme-switcher .btn {
-        background: var(--color-surface-muted); /* Fond subtil en mode sombre */
+        background: var(--color-surface-muted);
     }
 
     .theme-switcher .btn:hover {
-        background-color: var(--color-border-default); /* Léger fond au survol */
-        box-shadow: 0 2px 5px var(--shadow-sm); /* Ombre discrète au survol */
-        transform: none; /* Suppression de l'effet de transformation */
+        background-color: var(--color-border-default);
+        box-shadow: 0 2px 5px var(--shadow-sm);
+        transform: none;
     }
 
     .add-exercise-section {
@@ -947,7 +897,7 @@
         border-radius: var(--radius-large); 
         position: relative; 
         align-items: center;
-        box-shadow: 0 3px 8px var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: 0 3px 8px var(--shadow-sm);
     }
     .add-exercise-section .input-group {
         display: flex;
@@ -955,43 +905,7 @@
         max-width: 500px;
         gap: var(--spacing-sm);
     }
-    @media (max-width: 768px) {
-        #autocompleteSuggestions {
-            top: auto;
-            bottom: 100%;
-            left: 0;
-            transform: translateX(0);
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: var(--spacing-xs);
-            max-height: 150px;
-            overflow-y: auto;
-            border-radius: var(--radius-base);
-            box-shadow: 0 -4px 10px var(--shadow-md); /* Using consolidated shadow variable */
-        }
-        .add-exercise-section {
-            position: relative;
-        }
-        .add-exercise-section .input-group {
-            position: relative;
-            flex-direction: column-reverse;
-        }
-    }
-    #autocompleteSuggestions.show {
-        opacity: 1;
-        visibility: visible;
-    }
-    #autocompleteSuggestions div {
-        padding: var(--spacing-sm) var(--spacing-md);
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-    #autocompleteSuggestions div:hover { 
-        background-color: var(--color-border-default);
-        color: var(--color-primary-default);
-        font-weight: 600;
-    }
-
+    
     .btn-danger[data-action="remove"] {
         background: none;
         color: var(--color-danger-default);
@@ -1022,7 +936,7 @@
 
     .link-btn.linking, 
     .link-btn.active-superset {
-        background: var(--btn-info-bg); /* Using refactored gradient */
+        background: var(--btn-info-bg);
         color: var(--color-text-on-accent);
         opacity: 1;
     }
@@ -1038,17 +952,6 @@
         0% { border-color: var(--color-info-default); }
         50% { border-color: transparent; }
         100% { border-color: var(--color-info-default); }
-    }
-    @keyframes pulse-row {
-        0% {
-            box-shadow: inset 0 2px 0 0 var(--color-success-default), inset 0 -2px 0 0 var(--color-success-default);
-        }
-        50% {
-            box-shadow: inset 0 2px 0 0 transparent, inset 0 -2px 0 0 transparent;
-        }
-        100% {
-            box-shadow: inset 0 2px 0 0 var(--color-success-default), inset 0 -2px 0 0 transparent;
-        }
     }
 
     .modal-tabs {
@@ -1083,13 +986,13 @@
         border-radius: var(--radius-base);
         padding: var(--spacing-lg);
         text-align: center;
-        box-shadow: 0 4px 10px var(--shadow-sm); /* Using consolidated shadow variable */
+        box-shadow: 0 4px 10px var(--shadow-sm);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         position: relative;
     }
     .goal-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 15px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 8px 15px var(--shadow-md);
     }
     .goal-card h4 {
         margin: 0 0 var(--spacing-xs) 0;
@@ -1141,11 +1044,11 @@
     }
     .plate-result-message.success {
         color: var(--color-text-on-accent);
-        background: var(--btn-success-bg); /* Using refactored gradient */
+        background: var(--btn-success-bg);
     }
     .plate-result-message.danger {
         color: var(--color-text-on-accent);
-        background: var(--btn-danger-bg); /* Using refactored gradient */
+        background: var(--btn-danger-bg);
     }
     #platesResult h3 {
         font-size: var(--font-size-xl);
@@ -1181,7 +1084,7 @@
         z-index: 1;
         bottom: 125%;
         left: 50%;
-        margin-inline-start: -60px; /* Logical property */
+        margin-inline-start: -60px;
         opacity: 0;
         transition: opacity 0.3s;
         font-size: 0.8rem;
@@ -1192,7 +1095,7 @@
         position: absolute;
         top: 100%;
         left: 50%;
-        margin-inline-start: -5px; /* Logical property */
+        margin-inline-start: -5px;
         border-width: 5px;
         border-style: solid;
         border-color: var(--color-text-header) transparent transparent transparent;
@@ -1207,11 +1110,11 @@
         bottom: var(--spacing-xxl);
         left: 50%;
         transform: translateX(-50%);
-        background: var(--btn-primary-bg); /* Using refactored gradient */
+        background: var(--btn-primary-bg);
         color: var(--color-text-on-accent);
         padding: var(--spacing-md) var(--spacing-lg);
         border-radius: var(--radius-button);
-        box-shadow: 0 5px 15px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 5px 15px var(--shadow-md);
         display: flex;
         align-items: center;
         gap: var(--spacing-md);
@@ -1254,7 +1157,7 @@
         left: 0;
         width: 100%;
         background: var(--color-surface-default);
-        box-shadow: 0 -5px 15px var(--shadow-md); /* Using consolidated shadow variable */
+        box-shadow: 0 -5px 15px var(--shadow-md);
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -1340,19 +1243,6 @@
         .add-exercise-section .input-group { flex-direction: column; }
         .add-exercise-section .input-group input, .add-exercise-section .input-group button { width: 100%; }
 
-        #autocompleteSuggestions {
-            top: auto;
-            bottom: 100%;
-            left: 0;
-            transform: translateX(0);
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: var(--spacing-xs);
-            max-height: 150px;
-            overflow-y: auto;
-            border-radius: var(--radius-base);
-            box-shadow: 0 -4px 10px var(--shadow-md); /* Using consolidated shadow variable */
-        }
         .add-exercise-section {
             position: relative;
         }
@@ -1401,13 +1291,9 @@
             gap: var(--spacing-md);
         }
         .summary-card {
-            /* Remove mobile-specific border styles for consistency */
-            /* border-left: none; */
-            /* border-bottom: 5px solid var(--color-primary-default); */
             padding: var(--spacing-md);
-            /* Ensure it inherits or explicitly sets the standard border and shadow */
             border: 1px solid var(--color-border-default);
-            box-shadow: 0 4px 10px var(--shadow-md); /* Using consolidated shadow variable */
+            box-shadow: 0 4px 10px var(--shadow-md);
         }
     }
     @media (max-width: 480px) {
@@ -1441,7 +1327,7 @@
         border-width: 0;
     }
 
-    /* Tâche 2.3: Classes utilitaires pour icônes colorées */
+    /* Colored Icons */
     .icon-primary { color: var(--color-primary-default); }
     .icon-success { color: var(--color-success-default); }
     .icon-warning { color: var(--color-warning-default); }
@@ -1449,17 +1335,16 @@
     .icon-info { color: var(--color-info-default); }
 } /* End @layer utilities */
 
-/* Correction du contraste pour les boutons de la vue mobile */
+/* Contrast fix for mobile view buttons */
 .exercise-card .btn-outline {
-    font-weight: 600; /* Rend le texte du contour plus gras et lisible */
+    font-weight: 600;
 }
 
 .exercise-card .btn-info,
 .exercise-card .btn-secondary {
-    color: hsl(220, 25%, 25%); /* Assombrit le texte pour un meilleur contraste en mode clair */
+    color: hsl(220, 25%, 25%);
 }
 
-/* Amélioration du contraste pour le mode sombre également */
 body.dark-mode .exercise-card .btn-info,
 body.dark-mode .exercise-card .btn-secondary {
      color: hsl(0, 0%, 95%);
@@ -1698,15 +1583,6 @@ body.dark-mode .exercise-card .btn-secondary {
     </nav>
 
     <script>
-    // Service Worker registration is commented out to prevent potential issues in some environments.
-    // if ('serviceWorker' in navigator) {
-    //   window.addEventListener('load', () => {
-    //     navigator.serviceWorker.register('/service-worker.js')
-    //       .then(registration => console.log('ServiceWorker registration successful'))
-    //       .catch(err => console.log('ServiceWorker registration failed: ', err));
-    //   });
-    // }
-
     window.addEventListener('load', () => {
         
         function init() {
@@ -1810,7 +1686,6 @@ body.dark-mode .exercise-card .btn-secondary {
             loadSessionNameDisplay: document.getElementById('loadSessionName'),
             openNewSessionBtn: document.getElementById('openNewSessionBtn'),
             appendToCurrentSessionBtn: document.getElementById('appendToCurrentSessionBtn'),
-            autocompleteSuggestions: document.getElementById('autocompleteSuggestions'),
             plateCalculatorModal: document.getElementById('plateCalculatorModal'),
             closePlateCalculatorModal: document.getElementById('closePlateCalculatorModal'),
             plateCalculatorBtn: document.getElementById('plateCalculatorBtn'),
@@ -1865,7 +1740,6 @@ body.dark-mode .exercise-card .btn-secondary {
             isWorkoutTimerPaused: false,
             pausedTime: 0,
             sessionToLoad: null,
-            availableExercises: [],
             lastDeletedExercise: null,
             inactivityTimeout: null, 
             autoSaveInterval: null, 
@@ -1878,7 +1752,6 @@ body.dark-mode .exercise-card .btn-secondary {
             pressTimer: null
         };
         
-        // Point 2: Added isDefault property to default sessions
         const defaultSessions = [
           {
             name: "Haut du Corps (Force)", isDefault: true,
@@ -3940,8 +3813,8 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.addExerciseBtn.addEventListener('click', () => {
                 const name = dom.customExerciseInput.value.trim();
                 if (name) {
+                    saveCurrentState(); // Save current inputs before adding new row
                     const scrollY = window.scrollY;
-                    updateStateFromTable();
                     if (!state.sessions[state.currentSessionIndex].exercises) {
                         state.sessions[state.currentSessionIndex].exercises = [];
                     }
@@ -3951,11 +3824,6 @@ body.dark-mode .exercise-card .btn-secondary {
                     window.scrollTo(0, scrollY);
                     dom.customExerciseInput.value = '';
                     showNotification(`Exercice "${name}" ajouté avec succès.`, "info");
-                    dom.autocompleteSuggestions.classList.remove('show');
-                    dom.autocompleteSuggestions.addEventListener('transitionend', () => {
-                        dom.autocompleteSuggestions.classList.add('hidden');
-                        dom.autocompleteSuggestions.innerHTML = ''; 
-                    }, { once: true });
                 } else {
                     showNotification("Veuillez entrer un nom d'exercice à ajouter.", "error");
                 }
@@ -3964,11 +3832,10 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.exerciseListContainer.addEventListener('blur', (e) => {
                 if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
                     handleNumericInput(e);
-                    // Point 3: Trigger auto-completion on blur
                     const exIndex = +e.target.dataset.ex;
                     const serieIndex = +e.target.dataset.serie;
-                    updateStateFromTable(); // First, save the current input value to the state
-                    handleSeriesUpdate(exIndex, serieIndex); // Then, check for auto-completion
+                    saveCurrentState(); 
+                    handleSeriesUpdate(exIndex, serieIndex);
                 }
             }, true);
 
@@ -3992,16 +3859,13 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
             });
 
-            // MODIFICATION POINT 4: Event listeners for double-click and long-press
-            
-            // --- Long Press Logic (to delete the entire series) ---
+            // Point 4: Event listeners for double-click and long-press
             const pressHandler = (e) => {
                 const button = e.target.closest('.serie-input-delete');
                 if (!button) return;
 
-                // Set a timer. If it fires, it's a long press.
                 state.pressTimer = setTimeout(() => {
-                    if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback
+                    if (navigator.vibrate) navigator.vibrate(50);
 
                     const scrollY = window.scrollY;
                     const exIndex = +button.dataset.ex;
@@ -4017,15 +3881,13 @@ body.dark-mode .exercise-card .btn-secondary {
                     } else {
                         showNotification("Un exercice doit avoir au moins une série.", "error", 3000);
                     }
-                }, 500); // 500ms for a long press
+                }, 500);
             };
 
-            // This handler simply clears the timer if the press is released too early.
-            const releaseHandler = (e) => {
+            const releaseHandler = () => {
                 clearTimeout(state.pressTimer);
             };
 
-            // Add listeners for long press
             dom.exerciseListContainer.addEventListener('mousedown', pressHandler);
             dom.exerciseListContainer.addEventListener('mouseup', releaseHandler);
             dom.exerciseListContainer.addEventListener('mouseleave', releaseHandler, true);
@@ -4033,14 +3895,10 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.exerciseListContainer.addEventListener('touchend', releaseHandler);
             dom.exerciseListContainer.addEventListener('touchcancel', releaseHandler, true);
 
-
-            // --- Double Click Logic (to clear the series data) ---
             dom.exerciseListContainer.addEventListener('dblclick', (e) => {
                 const button = e.target.closest('.serie-input-delete');
                 if (!button) return;
 
-                // A dblclick event will also fire mousedown/mouseup.
-                // We clear the long-press timer to prevent it from firing.
                 clearTimeout(state.pressTimer);
 
                 const scrollY = window.scrollY;
@@ -4374,29 +4232,6 @@ body.dark-mode .exercise-card .btn-secondary {
 
         init();
     });
-    </script>
-    <script type="application/json" id="manifest-json">
-    {
-      "name": "Lyftiv",
-      "short_name": "Lyftiv",
-      "description": "Suivi de Séance Musculation",
-      "start_url": "./index.html",
-      "display": "standalone",
-      "background_color": "#eff6ff",
-      "theme_color": "#6a90ff",
-      "icons": [
-        {
-          "src": "/icons/icon-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        },
-        {
-          "src": "/icons/icon-512x512.png",
-          "sizes": "512x512",
-          "type": "image/png"
-        }
-      ]
-    }
     </script>
 </body>
 </html>
