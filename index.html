@@ -2679,6 +2679,17 @@ body.dark-mode .exercise-card .btn-secondary {
             const currentSession = state.sessions[state.currentSessionIndex];
             const exercises = (currentSession && Array.isArray(currentSession.exercises)) ? currentSession.exercises : [];
             
+            (exercises || []).forEach((ex, idx) => {
+                if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) {
+                    return;
+                }
+                
+                // Normalize series to have at least 4 entries
+                while (ex.series.length < 4) {
+                    ex.series.push({ weight: '', reps: '' });
+                }
+            });
+            
             if (!state.isMobileView) {
                 const table = document.createElement("table");
                 table.id = "workoutTable";
@@ -4177,7 +4188,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     if (!state.sessions[state.currentSessionIndex].exercises) {
                         state.sessions[state.currentSessionIndex].exercises = [];
                     }
-                    const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}];
+                    const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: ''}];
                     state.sessions[state.currentSessionIndex].exercises.push({ name, rest: "1 min", series: fourSeries, isDefault: false });
                     createTable(); 
                     window.scrollTo(0, scrollY);
