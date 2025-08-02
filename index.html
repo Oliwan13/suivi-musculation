@@ -966,25 +966,27 @@
         opacity: 1;
     }
     
-    .modal-close-btn { 
+    .modal-close-btn {
         position: absolute;
-        top: var(--spacing-md); 
-        right: var(--spacing-md); 
-        background: transparent; 
-        color: var(--color-text-default); 
-        border: none; 
-        border-radius: 50%; 
-        width: 44px;
-        height: 44px; 
-        font-size: 1.8rem;
+        top: var(--spacing-md);
+        right: var(--spacing-md);
+        width: 32px;
+        height: 32px;
+        font-size: 1.2rem;
+        border-radius: var(--radius-base);
+        background: var(--color-surface-muted);
+        color: var(--color-text-header);
+        border: none;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.2s ease, color 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
     }
+
     .modal-close-btn:hover {
-        background-color: var(--color-border-default);
+        background: var(--color-border-default);
+        color: var(--color-danger-default);
     }
 
     #historyList { 
@@ -2486,63 +2488,83 @@ body.dark-mode .exercise-card .btn-secondary {
         }
         
         function handleTimerActions(timerAction, idx, element) {
-             const timerDisplay = element.querySelector('.timer-display');
-             const startBtn = element.querySelector('[data-timer-action="start"]');
-             const stopBtn = element.querySelector('[data-timer-action="stop"]');
-             const exercise = state.sessions[state.currentSessionIndex].exercises[idx];
-             const restString = exercise.rest;
-             let restSeconds = parseInt(restString) * (restString.includes('min') ? 60 : 1) || 60;
-             const duration = Math.max(restSeconds, 60); 
+            const timerDisplay = element.querySelector('.timer-display');
+            const startBtn = element.querySelector('[data-timer-action="start"]');
+            const stopBtn = element.querySelector('[data-timer-action="stop"]'); // This is now our Pause/Resume button
+            const exercise = state.sessions[state.currentSessionIndex].exercises[idx];
+            const restString = exercise.rest;
+            const duration = parseInt(restString) * (restString.includes('min') ? 60 : 1) || 60;
 
-            if (timerAction === 'start') {
+            // Initialize timer state if it doesn't exist
+            if (!state.timers[idx]) {
+                state.timers[idx] = {
+                    interval: null,
+                    remaining: duration,
+                    isPaused: false,
+                    duration: duration
+                };
+            }
+            
+            const runTimer = () => {
+                const timerState = state.timers[idx];
                 if ('Notification' in window && Notification.permission === 'default') {
                     Notification.requestPermission();
                 }
 
-                localStorage.setItem(`timer-${idx}`, JSON.stringify({
-                    endTime: Date.now() + duration * 1000,
-                    name: exercise.name,
-                    startTime: Date.now(),
-                    duration: duration
-                }));
+                if (timerState.interval) clearInterval(timerState.interval);
                 
-                if (state.timers[idx] && state.timers[idx].interval) clearInterval(state.timers[idx].interval);
-                state.timers[idx] = {
-                    secondsElapsed: 0,
-                    duration: duration,
-                    interval: setInterval(() => {
-                        state.timers[idx].secondsElapsed++;
-                        const remaining = state.timers[idx].duration - state.timers[idx].secondsElapsed;
-                        if (remaining <= 0) {
-                            timerDisplay.textContent = formatTimerDisplay(0);
-                            timerDisplay.classList.remove('timer-active');
-                            clearInterval(state.timers[idx].interval);
-                            localStorage.removeItem(`timer-${idx}`);
-                            playBeep(); 
-                            if(Notification.permission === "granted") {
-                                new Notification('Lyftiv - Repos Terminé !', { body: `Le temps de repos pour ${exercise.name} est terminé.`});
-                            }
-                            startBtn.classList.remove('hidden'); 
-                            stopBtn.classList.add('hidden'); 
-                            
-                            const exercises = state.sessions[state.currentSessionIndex].exercises;
-                            const parentIndex = exercises.findIndex(ex => ex.supersetWith === idx);
-                            if (parentIndex !== -1) {
-                                const parentExercise = exercises[parentIndex];
-                                const parentElement = document.querySelector(`[data-exercise-index="${parentIndex}"]`);
-                                parentElement?.classList.add('next-superset-exercise');
-                                showNotification(`Fin du repos ! Reprenez avec ${parentExercise.name}`, "info");
-                            }
+                const endTime = Date.now() + timerState.remaining * 1000;
+                localStorage.setItem(`timer-${idx}`, JSON.stringify({ endTime: endTime, name: exercise.name, duration: timerState.duration }));
 
-                        } else {
-                            timerDisplay.textContent = formatTimerDisplay(remaining); 
+                timerState.interval = setInterval(() => {
+                    const now = Date.now();
+                    const remainingSeconds = Math.round((endTime - now) / 1000);
+                    
+                    if (remainingSeconds <= 0) {
+                        clearInterval(timerState.interval);
+                        timerDisplay.textContent = formatTimerDisplay(0);
+                        timerDisplay.classList.remove('timer-active');
+                        localStorage.removeItem(`timer-${idx}`);
+                        playBeep();
+                        if (Notification.permission === "granted") {
+                            new Notification('Lyftiv - Repos Terminé !', { body: `Le temps de repos pour ${exercise.name} est terminé.` });
                         }
-                    }, 1000) 
-                };
-                timerDisplay.textContent = formatTimerDisplay(duration); 
-                timerDisplay.classList.add('timer-active'); 
-                startBtn.classList.add('hidden'); 
-                stopBtn.classList.remove('hidden'); 
+                        startBtn.classList.remove('hidden');
+                        stopBtn.classList.add('hidden');
+                        state.timers[idx].remaining = state.timers[idx].duration; // Reset for next time
+                    } else {
+                        timerState.remaining = remainingSeconds;
+                        timerDisplay.textContent = formatTimerDisplay(remainingSeconds);
+                    }
+                }, 1000);
+
+                timerDisplay.classList.add('timer-active');
+                startBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                stopBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                stopBtn.style.background = 'var(--btn-danger-bg)';
+            };
+
+            if (timerAction === 'start' || (timerAction === 'stop' && state.timers[idx].isPaused)) { // Start or Resume
+                state.timers[idx].isPaused = false;
+                runTimer();
+            } else if (timerAction === 'stop' && !state.timers[idx].isPaused) { // Pause
+                state.timers[idx].isPaused = true;
+                clearInterval(state.timers[idx].interval);
+                localStorage.removeItem(`timer-${idx}`);
+                timerDisplay.classList.remove('timer-active');
+                stopBtn.innerHTML = '<i class="fas fa-play"></i>'; // Set icon to Resume/Play
+                stopBtn.style.background = 'var(--btn-success-bg)';
+            } else if (timerAction === 'reset') { // Reset
+                clearInterval(state.timers[idx].interval);
+                localStorage.removeItem(`timer-${idx}`);
+                state.timers[idx] = null; // Clear the state
+                timerDisplay.textContent = formatTimerDisplay(duration);
+                timerDisplay.classList.remove('timer-active');
+                startBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
+                stopBtn.innerHTML = '<i class="fas fa-pause"></i>'; // Reset icon
+                stopBtn.style.background = 'var(--btn-danger-bg)';
             }
         }
 
@@ -2740,7 +2762,7 @@ body.dark-mode .exercise-card .btn-secondary {
                         <td role="cell"><div class="timer-container">
                                 <div class="timer-display" id="timer-${idx}" aria-live="polite">${defaultTimerDisplay}</div>
                                 <button class="timer-btn" data-timer-action="start" aria-label="Démarrer le minuteur pour ${ex.name}"><i class="fas fa-play"></i></button>
-                                <button class="timer-btn hidden" data-timer-action="stop" aria-label="Arrêter le minuteur pour ${ex.name}"><i class="fas fa-stop"></i></button>
+                                <button class="timer-btn hidden" data-timer-action="stop" aria-label="Arrêter le minuteur pour ${ex.name}"><i class="fas fa-pause"></i></button>
                                 <button class="timer-btn" data-timer-action="reset" aria-label="Réinitialiser le minuteur pour ${ex.name}"><i class="fas fa-redo"></i></button>
                             </div>
                         </td>
@@ -2819,7 +2841,7 @@ body.dark-mode .exercise-card .btn-secondary {
                             <div class="timer-container">
                                 <div class="timer-display" id="timer-${idx}" aria-live="polite">${defaultTimerDisplay}</div>
                                 <button class="timer-btn" data-timer-action="start" aria-label="Démarrer le minuteur pour ${ex.name}"><i class="fas fa-play"></i></button>
-                                <button class="timer-btn hidden" data-timer-action="stop" aria-label="Arrêter le minuteur pour ${ex.name}"><i class="fas fa-stop"></i></button>
+                                <button class="timer-btn hidden" data-timer-action="stop" aria-label="Arrêter le minuteur pour ${ex.name}"><i class="fas fa-pause"></i></button>
                                 <button class="timer-btn" data-timer-action="reset" aria-label="Réinitialiser le minuteur pour ${ex.name}"><i class="fas fa-redo"></i></button>
                             </div>
                         </div>
