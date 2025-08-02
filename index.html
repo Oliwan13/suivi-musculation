@@ -208,6 +208,203 @@
         color: var(--color-text-default);
         transition: background 0.6s ease, color 0.6s ease;
     }
+    
+    .dashboard-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        /* MODIFICATION: Alignement changé de 'center' à 'flex-start' pour permettre le scroll depuis le haut */
+        align-items: flex-start;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--color-background-gradient-start) 0%, var(--color-background-gradient-end) 100%);
+        z-index: 2000;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        padding: var(--spacing-lg);
+        overflow-y: auto;
+    }
+
+    .dashboard-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 900px;
+        width: 100%;
+        padding: var(--spacing-xl) 0;
+    }
+
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .dashboard-header .lyftiv-logo {
+        width: clamp(40px, 32px + 2.5vw, 52px);
+        height: clamp(40px, 32px + 2.5vw, 52px);
+    }
+
+    .dashboard-header .app-name {
+        font-size: clamp(2rem, 1.5rem + 2.5vw, 2.75rem);
+        font-weight: 800;
+        color: var(--color-text-header);
+        letter-spacing: -0.03em;
+    }
+
+
+    .dashboard-content h1 {
+        font-size: clamp(1.8rem, 1.5rem + 1.5vw, 2.5rem);
+        color: var(--color-text-header);
+        margin-bottom: var(--spacing-md);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-md);
+    }
+    
+    .dashboard-intro {
+        max-width: 60ch;
+        margin-bottom: var(--spacing-xxl);
+        font-size: var(--font-size-lg);
+        color: var(--color-text-subheader);
+        line-height: 1.7;
+    }
+
+    .session-selector {
+        width: 100%;
+        margin-bottom: var(--spacing-xxxl);
+    }
+    
+    .session-selector-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--spacing-lg);
+    }
+    
+    .session-card {
+        background: var(--color-surface-default);
+        border-radius: var(--radius-large);
+        padding: var(--spacing-lg);
+        text-align: center;
+        border: 1px solid var(--color-border-default);
+        box-shadow: 0 5px 15px var(--shadow-sm);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        color: var(--color-text-default);
+    }
+    
+    .session-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px var(--shadow-md);
+    }
+
+    .session-card-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-sm);
+        line-height: 1;
+    }
+    
+    .session-card h3 {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--color-text-header);
+        margin: 0;
+    }
+    
+    .session-card p {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-subheader);
+        margin: 0;
+    }
+    
+    .session-card.create-new {
+        border-style: dashed;
+        border-width: 2px;
+        background: transparent;
+    }
+    
+    .session-card.create-new h3 {
+        color: var(--color-primary-default);
+    }
+    
+    .app-guide {
+        width: 100%;
+        text-align: left;
+    }
+    
+    .app-guide h2 {
+        text-align: center;
+        font-size: var(--font-size-xl);
+        color: var(--color-text-header);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .app-guide-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .app-guide-accordion details {
+        background: var(--color-surface-default);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-base);
+        padding: var(--spacing-md);
+    }
+    
+    .app-guide-accordion summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--color-text-header);
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .app-guide-accordion summary::after {
+        content: '▼';
+        transition: transform 0.2s ease;
+    }
+    
+    .app-guide-accordion details[open] summary::after {
+        transform: rotate(180deg);
+    }
+
+    .app-guide-accordion details > div {
+        padding-top: var(--spacing-md);
+        color: var(--color-text-subheader);
+    }
+    
+    .app-guide-accordion details p {
+        margin: 0 0 var(--spacing-sm) 0;
+    }
+    
+    .app-guide-accordion details i {
+        color: var(--color-info-default);
+        margin-right: var(--spacing-xs);
+    }
+
+
+    #app-container.hidden, .dashboard-container.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
     .main-container {
         max-width: 1600px;
         margin: 0 auto;
@@ -652,7 +849,7 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         box-shadow: var(--btn-shadow-normal);
         will-change: transform, box-shadow, background-color;
-        text-transform: none; /* Point 1: Ensure button text is not uppercased */
+        text-transform: none;
     }
     .btn:hover {
         transform: translateY(-3px);
@@ -760,10 +957,15 @@
         opacity: 0;
         will-change: transform, opacity;
     }
+    
+    .modal-content h2 {
+        padding-right: var(--spacing-xxl);
+    }
     .modal-overlay.show .modal-content {
         transform: translateY(0);
         opacity: 1;
     }
+    
     .modal-close-btn { 
         position: absolute;
         top: var(--spacing-md); 
@@ -776,11 +978,13 @@
         height: 44px; 
         font-size: 1.8rem;
         cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.3s ease;
+        transition: background-color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .modal-close-btn:hover {
         background-color: var(--color-border-default);
-        transform: rotate(90deg); 
     }
 
     #historyList { 
@@ -860,6 +1064,12 @@
     }
     .hide-notes-section {
         display: none !important;
+    }
+
+    .theme-switcher {
+        display: flex;
+        gap: var(--spacing-sm);
+        align-items: center;
     }
 
     .theme-switcher .btn {
@@ -1308,7 +1518,6 @@
 } /* End @layer components */
 
 @layer utilities {
-    /* Utility Classes */
     .flex-center {
         display: flex;
         align-items: center;
@@ -1327,7 +1536,6 @@
         border-width: 0;
     }
 
-    /* Colored Icons */
     .icon-primary { color: var(--color-primary-default); }
     .icon-success { color: var(--color-success-default); }
     .icon-warning { color: var(--color-warning-default); }
@@ -1335,7 +1543,6 @@
     .icon-info { color: var(--color-info-default); }
 } /* End @layer utilities */
 
-/* Contrast fix for mobile view buttons */
 .exercise-card .btn-outline {
     font-weight: 600;
 }
@@ -1353,100 +1560,166 @@ body.dark-mode .exercise-card .btn-secondary {
     </style>
 </head>
 <body>
-    <main class="main-container">
-        <div class="theme-switcher">
-            <button id="themeToggleBtn" aria-label="Changer de thème"></button>
+    <div id="dashboard" class="dashboard-container">
+        <div class="dashboard-content">
+            <header class="dashboard-header">
+                <svg class="lyftiv-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="lyftivLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="hsl(200, 80%, 85%)" />
+                            <stop offset="100%" stop-color="hsl(260, 60%, 85%)" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#lyftivLogoGradient)"/>
+                    <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220, 60%, 55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <circle cx="25" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
+                </svg>
+                <span class="app-name">Lyftiv</span>
+            </header>
+    
+            <section class="session-selector" aria-labelledby="session-selector-title">
+                <h2 id="session-selector-title" class="sr-only">Choisissez votre séance</h2>
+                <div class="session-selector-grid" id="sessionSelectorGrid">
+                </div>
+            </section>
+    
+            <section class="app-guide" aria-labelledby="app-guide-title">
+                <h2 id="app-guide-title">Maîtrisez Lyftiv</h2>
+                <div class="app-guide-accordion">
+                    <details>
+                        <summary><strong>Les Calculateurs : Votre Assistant Personnel</strong></summary>
+                        <div>
+                            <p><strong>Calculateur de Plaques :</strong> Fini les maths ! Dites-lui le poids que vous visez, il vous dit quelles plaques mettre sur la barre.</p>
+                            <p><strong>Calculateur d'Objectifs :</strong> Entrez votre record (1RM), et il vous donne les poids parfaits pour vos objectifs : prendre du muscle (hypertrophie) ou gagner en force.</p>
+                        </div>
+                    </details>
+                    <details>
+                        <summary><strong>Le Jargon du Fitness, simplifié</strong></summary>
+                        <div>
+                             <p><strong>Kg/Rép :</strong> La charge moyenne que vous soulevez à chaque répétition. Un chiffre qui doit augmenter avec le temps !</p>
+                             <p><strong>1RM (Répétition Maximale) :</strong> Une estimation de la charge maximale que vous pouvez soulever une seule fois. C'est la base pour calculer vos objectifs.</p>
+                        </div>
+                    </details>
+                    <details>
+                        <summary><strong>Les Fonctions "Pro" à connaître</strong></summary>
+                        <div>
+                            <p><i class="fas fa-link"></i> <strong>Le Superset :</strong> Liez deux exercices pour les enchaîner sans repos.</p>
+                            <p><i class="fas fa-play"></i> <strong>Le Minuteur :</strong> Lancez-le à la fin d'un exercice pour un temps de repos parfait.</p>
+                            <p><i class="fas fa-history"></i> <strong>L'Historique :</strong> Retrouvez toutes vos séances passées pour suivre vos progrès.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
         </div>
-        <h2>
-            <svg class="lyftiv-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="lyftivLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="hsl(200, 80%, 85%)" />
-                        <stop offset="100%" stop-color="hsl(260, 60%, 85%)" />
-                    </linearGradient>
-                </defs>
-                <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#lyftivLogoGradient)"/>
-                <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220, 60%, 55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                <circle cx="25" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
-                <circle cx="25" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
-                <circle cx="25" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
-                <circle cx="75" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
-                <circle cx="75" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
-                <circle cx="75" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
-                <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
-            </svg>
-            Lyftiv
-        </h2>
-        
-        <div class="controls">
-          <label for="sessionSelect"><strong>Séance:</strong></label>
-          <select id="sessionSelect" aria-label="Sélectionner une séance d'entraînement">
-            </select>
-          <button class="btn btn-outline" id="createNewSessionTypeBtn" aria-label="Créer une nouvelle séance">Nouvelle séance</button>
-          <button class="btn btn-danger" id="deleteCurrentSessionBtn" aria-label="Supprimer la séance actuelle" title="Supprimer la séance actuelle (personnalisée)">Supprimer la séance</button>
-        </div>
-        
-        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        
-        <div id="exerciseListContainer" class="exercise-list-container">
-            </div>
-        
-        <section class="controls add-exercise-section" id="addExerciseSection" aria-labelledby="addExerciseTitle">
-            <h2 id="addExerciseTitle" class="sr-only">Ajouter un exercice</h2>
-            <div class="input-group">
-                <input type="text" id="customExercise" placeholder="Ajouter un exercice" aria-label="Nom de l'exercice personnalisé">
-                <button class="btn btn-success" id="addExerciseBtn" aria-label="Ajouter l'exercice"> Ajouter</button>
-            </div>
-        </section>
-
-        <section class="summary-section" aria-labelledby="summarySectionTitle">
-            <h2 id="summarySectionTitle" class="sr-only">Résumé de la séance</h2>
-            <div class="summary-card">
-                <span class="card-icon fas fa-dumbbell" aria-hidden="true"></span>
-                <h3>Total kg/rép</h3> <div class="value" id="totalKgRep" aria-live="polite">0 kg/rep</div> </div>
-            <div class="summary-card">
-                <span class="card-icon fas fa-calendar-alt" aria-hidden="true"></span>
-                <h3>Semaine précédente</h3>
-                <input type="text" inputmode="decimal" id="previousWeek" placeholder="kg/rep" aria-label="Performance de la semaine précédente">
-            </div>
-            <div class="summary-card">
-                <span class="card-icon fas fa-chart-line" aria-hidden="true"></span>
-                <h3>Progression</h3>
-                <div class="value" id="delta" aria-live="polite">0 kg</div>
-            </div>
-            <div class="summary-card">
-                <span class="card-icon fas fa-clock" aria-hidden="true"></span>
-                <h3>Temps total</h3>
-                <div class="value" id="totalTime" aria-live="polite">00:00:00</div>
-                <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur" style="margin-top: var(--spacing-sm);">
-                    <span id="timerPlayPauseIcon" aria-hidden="true">⏯️</span>
-                    <span id="timerPlayPauseText">Pause</span>
+    </div>
+    
+    <div id="app-container" class="hidden">
+        <main class="main-container">
+            <div class="theme-switcher">
+                <button id="homeBtn" class="btn" aria-label="Retourner à l'accueil" title="Accueil">
+                    <i class="fas fa-home"></i>
                 </button>
+                <button id="themeToggleBtn" class="btn" aria-label="Changer de thème"></button>
             </div>
-        </section>
-
-        <section class="controls session-notes-section" id="sessionNotesSection" aria-labelledby="sessionNotesTitle">
-            <h2 id="sessionNotesTitle" class="sr-only">Notes de séance</h2>
-            <label for="sessionNotes"><strong>Notes de séance:</strong></label>
-            <textarea id="sessionNotes" placeholder="Ajouter des notes sur la séance..." aria-label="Notes de séance"></textarea>
-        </section>
-        
-        <section class="action-buttons" aria-labelledby="actionButtonsTitle">
-            <h2 id="actionButtonsTitle" class="sr-only">Actions principales</h2>
-            <button class="btn btn-success" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">Terminer & sauvegarder</button>
-            <button class="btn btn-primary" id="viewHistoryBtn" aria-label="Voir l'historique">Historique</button>
-            <button class="btn btn-primary" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">Calculateurs</button>
-        </section>
-
-        <section class="action-buttons" style="margin-top: var(--spacing-md);" aria-labelledby="dataManagementTitle">
-            <h2 id="dataManagementTitle" class="sr-only">Gestion des données</h2>
-            <button class="btn btn-info" id="exportBtn" aria-label="Exporter les données">Exporter</button>
-            <button class="btn btn-info" id="importBtn" aria-label="Importer les données">Importer</button>
-        </section>
-        <input type="file" id="importFile" class="hidden" accept=".json,.csv" aria-label="Fichier d'importation">
-    </main> <div id="notification-container" aria-live="polite" aria-atomic="true"></div>
+            <h2>
+                <svg class="lyftiv-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="lyftivLogoGradientMain" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="hsl(200, 80%, 85%)" />
+                            <stop offset="100%" stop-color="hsl(260, 60%, 85%)" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#lyftivLogoGradientMain)"/>
+                    <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220, 60%, 55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <circle cx="25" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
+                </svg>
+                Lyftiv
+            </h2>
+            
+            <div class="controls">
+              <label for="sessionSelect"><strong>Séance:</strong></label>
+              <select id="sessionSelect" aria-label="Sélectionner une séance d'entraînement">
+                </select>
+              <button class="btn btn-outline" id="createNewSessionTypeBtn" aria-label="Créer une nouvelle séance">Nouvelle séance</button>
+              <button class="btn btn-danger" id="deleteCurrentSessionBtn" aria-label="Supprimer la séance actuelle" title="Supprimer la séance actuelle (personnalisée)">Supprimer la séance</button>
+            </div>
+            
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div id="exerciseListContainer" class="exercise-list-container">
+                </div>
+            
+            <section class="controls add-exercise-section" id="addExerciseSection" aria-labelledby="addExerciseTitle">
+                <h2 id="addExerciseTitle" class="sr-only">Ajouter un exercice</h2>
+                <div class="input-group">
+                    <input type="text" id="customExercise" placeholder="Ajouter un exercice" aria-label="Nom de l'exercice personnalisé">
+                    <button class="btn btn-success" id="addExerciseBtn" aria-label="Ajouter l'exercice"> Ajouter</button>
+                </div>
+            </section>
+    
+            <section class="summary-section" aria-labelledby="summarySectionTitle">
+                <h2 id="summarySectionTitle" class="sr-only">Résumé de la séance</h2>
+                <div class="summary-card">
+                    <span class="card-icon fas fa-bullseye" aria-hidden="true"></span>
+                    <h3>Total kg/rép</h3> <div class="value" id="totalKgRep" aria-live="polite">0 kg/rep</div> </div>
+                <div class="summary-card">
+                    <span class="card-icon fas fa-calendar-alt" aria-hidden="true"></span>
+                    <h3>Semaine précédente</h3>
+                    <input type="text" inputmode="decimal" id="previousWeek" placeholder="kg/rep" aria-label="Performance de la semaine précédente">
+                </div>
+                <div class="summary-card">
+                    <span class="card-icon fas fa-chart-line" aria-hidden="true"></span>
+                    <h3>Progression</h3>
+                    <div class="value" id="delta" aria-live="polite">0 kg</div>
+                </div>
+                <div class="summary-card">
+                    <span class="card-icon fas fa-clock" aria-hidden="true"></span>
+                    <h3>Temps total</h3>
+                    <div class="value" id="totalTime" aria-live="polite">00:00:00</div>
+                    <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur" style="margin-top: var(--spacing-sm);">
+                        <span id="timerPlayPauseIcon" aria-hidden="true">⏯️</span>
+                        <span id="timerPlayPauseText">Pause</span>
+                    </button>
+                </div>
+            </section>
+    
+            <section class="controls session-notes-section" id="sessionNotesSection" aria-labelledby="sessionNotesTitle">
+                <h2 id="sessionNotesTitle" class="sr-only">Notes de séance</h2>
+                <label for="sessionNotes"><strong>Notes de séance:</strong></label>
+                <textarea id="sessionNotes" placeholder="Ajouter des notes sur la séance..." aria-label="Notes de séance"></textarea>
+            </section>
+            
+            <section class="action-buttons" aria-labelledby="actionButtonsTitle">
+                <h2 id="actionButtonsTitle" class="sr-only">Actions principales</h2>
+                <button class="btn btn-success" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">Terminer & sauvegarder</button>
+                <button class="btn btn-primary" id="viewHistoryBtn" aria-label="Voir l'historique">Historique</button>
+                <button class="btn btn-primary" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">Calculateurs</button>
+            </section>
+    
+            <section class="action-buttons" style="margin-top: var(--spacing-md);" aria-labelledby="dataManagementTitle">
+                <h2 id="dataManagementTitle" class="sr-only">Gestion des données</h2>
+                <button class="btn btn-info" id="exportBtn" aria-label="Exporter les données">Exporter</button>
+                <button class="btn btn-info" id="importBtn" aria-label="Importer les données">Importer</button>
+            </section>
+            <input type="file" id="importFile" class="hidden" accept=".json,.csv" aria-label="Fichier d'importation">
+        </main> 
+    </div>
+    
+    <div id="notification-container" aria-live="polite" aria-atomic="true"></div>
     
     <div id="pwaInstallPrompt" class="hidden" role="dialog" aria-modal="true" aria-labelledby="pwaInstallTitle">
         <span id="pwaInstallTitle" style="font-weight: 600;">Ajoutez Lyftiv à votre écran d'accueil !</span>
@@ -1585,6 +1858,66 @@ body.dark-mode .exercise-card .btn-secondary {
     <script>
     window.addEventListener('load', () => {
         
+        const dashboard = document.getElementById('dashboard');
+        const appContainer = document.getElementById('app-container');
+        const sessionSelectorGrid = document.getElementById('sessionSelectorGrid');
+
+        function populateDashboard() {
+            sessionSelectorGrid.innerHTML = '';
+            const allSessions = state.sessions;
+
+            allSessions.forEach((session, index) => {
+                const card = document.createElement('button');
+                card.className = 'session-card';
+                card.dataset.sessionIndex = index;
+                const icon = session.name.toLowerCase().includes('haut') ? '🏋️‍♂️' : 
+                             session.name.toLowerCase().includes('bas') ? '🦵' : '💪';
+                card.innerHTML = `
+                    <span class="session-card-icon">${icon}</span>
+                    <h3>${session.name}</h3>
+                    <p>${session.exercises.length} exercices</p>
+                `;
+                card.addEventListener('click', () => startSessionFromDashboard(index));
+                sessionSelectorGrid.appendChild(card);
+            });
+
+            const createCard = document.createElement('button');
+            createCard.className = 'session-card create-new';
+            createCard.id = 'dashboard-create-session-btn';
+            createCard.innerHTML = `
+                <span class="session-card-icon">➕</span>
+                <h3>Créer une séance</h3>
+                <p>Bâtissez votre propre entraînement</p>
+            `;
+            createCard.addEventListener('click', () => {
+                dashboard.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                sessionStorage.setItem('dashboardShown', 'true');
+                showNewSessionModal();
+            });
+            sessionSelectorGrid.appendChild(createCard);
+        }
+
+        function startSessionFromDashboard(sessionIndex) {
+            dom.sessionSelect.value = sessionIndex;
+            state.currentSessionIndex = +sessionIndex;
+            createTable();
+            updateDeleteSessionButtonState();
+
+            dashboard.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            sessionStorage.setItem('dashboardShown', 'true');
+        }
+        
+        if (sessionStorage.getItem('dashboardShown')) {
+            dashboard.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+        } else {
+            appContainer.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        }
+
+
         function init() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
@@ -1633,6 +1966,10 @@ body.dark-mode .exercise-card .btn-secondary {
                 state.isNotesSectionVisible = true;
             }
 
+            if (!sessionStorage.getItem('dashboardShown')) {
+                populateDashboard();
+            }
+
             updateSessionSelectOptions(); 
             dom.sessionSelect.value = state.currentSessionIndex;
             createTable();
@@ -1672,6 +2009,7 @@ body.dark-mode .exercise-card .btn-secondary {
             historyList: document.getElementById('historyList'),
             importFileInput: document.getElementById('importFile'),
             themeToggleBtn: document.getElementById('themeToggleBtn'),
+            homeBtn: document.getElementById('homeBtn'),
             body: document.body,
             toggleWorkoutTimerBtn: document.getElementById('toggleWorkoutTimerBtn'),
             newSessionModal: document.getElementById('newSessionModal'),
@@ -2332,8 +2670,8 @@ body.dark-mode .exercise-card .btn-secondary {
                         <th class="actions-col" scope="col">Actions</th>
                         <th scope="col">Exercice</th>
                         <th colspan="5" scope="colgroup">Séries</th>
-                        <th scope="col">Tonnage</th>
-                        <th scope="col">Kg/Rép</th> <th scope="col">1RM</th>
+                        <th scope="col">Kg/Rép</th>
+                        <th scope="col">1RM</th>
                         <th scope="col">Repos</th>
                         <th scope="col">Minuteur</th>
                         <th scope="col"></th> 
@@ -2363,8 +2701,8 @@ body.dark-mode .exercise-card .btn-secondary {
                     let seriesContentHtml = "";
                     (ex.series || []).forEach((currentSeries, i) => {
                         seriesContentHtml += `<td role="cell"><div class="serie-input">
-                            <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
-                            <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
+                            <input type="text" inputmode="decimal" pattern="[0-9.,+]*" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
+                            <input type="text" inputmode="decimal" pattern="[0-9.,+]*" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
                             <button class="serie-input-delete" data-ex="${idx}" data-serie="${i}" aria-label="Effacer cette série">&times;</button>
                         </div></td>`;
                     });
@@ -2396,8 +2734,9 @@ body.dark-mode .exercise-card .btn-secondary {
                             <span>${ex.name}</span>
                         </td>
                         ${seriesContentHtml}
-                        <td data-label="Tonnage" id="tonnage-${idx}" role="cell">0</td>
-                        <td data-label="Kg/Rép" id="kgrep-${idx}" role="cell">0</td> <td data-label="1RM" id="onerm-${idx}" role="cell">0</td> <td data-label="Repos" role="cell">${ex.rest || ''}</td>
+                        <td data-label="Kg/Rép" id="kgrep-${idx}" role="cell">0</td>
+                        <td data-label="1RM" id="onerm-${idx}" role="cell">0</td>
+                        <td data-label="Repos" role="cell">${ex.rest || ''}</td>
                         <td role="cell"><div class="timer-container">
                                 <div class="timer-display" id="timer-${idx}" aria-live="polite">${defaultTimerDisplay}</div>
                                 <button class="timer-btn" data-timer-action="start" aria-label="Démarrer le minuteur pour ${ex.name}"><i class="fas fa-play"></i></button>
@@ -2440,8 +2779,8 @@ body.dark-mode .exercise-card .btn-secondary {
                             <div class="series-row">
                                 <span>Série ${i + 1}:</span>
                                 <div class="series-input-group">
-                                    <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
-                                    <input type="text" inputmode="text" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
+                                    <input type="text" inputmode="decimal" pattern="[0-9.,+]*" data-ex="${idx}" data-serie="${i}" class="weight" placeholder="kg" aria-label="Poids pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.weight || ''}">
+                                    <input type="text" inputmode="decimal" pattern="[0-9.,+]*" data-ex="${idx}" data-serie="${i}" class="reps" placeholder="Reps" aria-label="Reps pour l'exercice ${ex.name} série ${i+1}" value="${currentSeries.reps || ''}">
                                     <button class="serie-input-delete" data-ex="${idx}" data-serie="${i}" aria-label="Effacer série ${i+1} pour ${ex.name}">&times;</button>
                                 </div>
                             </div>
@@ -2464,10 +2803,6 @@ body.dark-mode .exercise-card .btn-secondary {
                             </button>
                         </div>
                         <div class="card-stats">
-                            <div class="card-stat-item">
-                                <span class="card-stat-label">Tonnage</span>
-                                <span class="card-stat-value" id="tonnage-${idx}">0</span>
-                            </div>
                             <div class="card-stat-item">
                                 <span class="card-stat-label">Kg/Rép</span> <span class="card-stat-value" id="kgrep-${idx}">0</span> </div>
                             <div class="card-stat-item">
@@ -2539,10 +2874,10 @@ body.dark-mode .exercise-card .btn-secondary {
         function updateAllTotals() {
             if (!state.isInitialized) return;
             
-            let totalSessionTonnage = 0;
             let totalSessionReps = 0;
             let totalSessionKgRep = 0;
             let completedSeriesOverall = 0;
+            let totalTonnageForKgRep = 0;
 
             if (!isAppStateValid()) {
                 resetAppStateToDefault();
@@ -2638,11 +2973,6 @@ body.dark-mode .exercise-card .btn-secondary {
                     weightedAverage1RM = totalWeighted1RM / totalWeightSum;
                 }
 
-                const tonnageEl = document.getElementById(`tonnage-${idx}`);
-                if(tonnageEl) {
-                    tonnageEl.textContent = exerciseTonnage.toFixed(0);
-                    tonnageEl.classList.toggle('tonnage-high', exerciseTonnage > 0);
-                }
                 const kgRepEl = document.getElementById(`kgrep-${idx}`);
                 if (kgRepEl) {
                     kgRepEl.textContent = exerciseKgRep.toFixed(2);
@@ -2656,12 +2986,12 @@ body.dark-mode .exercise-card .btn-secondary {
                         exercisesWith1RM.push({ name: ex.name, oneRm: weightedAverage1RM.toFixed(1) });
                     }
                 }
-                totalSessionTonnage += exerciseTonnage;
+                totalTonnageForKgRep += exerciseTonnage;
                 totalSessionReps += exerciseTotalReps;
             });
 
             if (totalSessionReps > 0) {
-                totalSessionKgRep = totalSessionTonnage / totalSessionReps;
+                totalSessionKgRep = totalTonnageForKgRep / totalSessionReps;
             }
 
             const currentKgRep = parseFloat(dom.totalKgRepEl.textContent.replace(' kg/rep', '')) || 0;
@@ -2856,8 +3186,8 @@ body.dark-mode .exercise-card .btn-secondary {
             if (!state.workoutStartTime || state.isWorkoutTimerPaused) {
                 return;
             }
-            let currentSessionTonnage = 0;
             let currentSessionReps = 0;
+            let currentSessionTonnage = 0;
 
             const exercisesData = (state.sessions[state.currentSessionIndex]?.exercises || []).flatMap((ex, idx) => {
                 const exerciseSeries = [];
@@ -2895,7 +3225,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         name: ex.name,
                         rest: ex.rest || "1 min",
                         series: exerciseSeries.filter(s => s.reps > 0 || s.weight > 0),
-                        exerciseTonnage: exerciseTonnage,
                         exerciseReps: exerciseReps
                     }];
                 }
@@ -2906,7 +3235,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 id: state.workoutStartTime, 
                 date: new Date().toISOString(),
                 sessionName: dom.sessionSelect.selectedOptions[0].text,
-                totalTonnage: currentSessionTonnage,
                 totalReps: currentSessionReps,
                 totalKgRep: currentSessionReps > 0 ? (currentSessionTonnage / currentSessionReps).toFixed(2) : 0,
                 duration: dom.totalTimeEl.textContent,
@@ -2925,8 +3253,8 @@ body.dark-mode .exercise-card .btn-secondary {
         }
         
         function finishAndSaveSession() {
-            let currentSessionTonnage = 0;
             let currentSessionReps = 0;
+            let currentSessionTonnage = 0;
 
             const exercisesData = (state.sessions[state.currentSessionIndex]?.exercises || []).flatMap((ex, idx) => {
                 const exerciseSeries = [];
@@ -2964,15 +3292,14 @@ body.dark-mode .exercise-card .btn-secondary {
                         name: ex.name,
                         rest: ex.rest || "1 min",
                         series: exerciseSeries.filter(s => s.reps > 0 || s.weight > 0),
-                        exerciseTonnage: exerciseTonnage,
                         exerciseReps: exerciseReps
                     }];
                 }
                 return [];
             });
 
-            if (currentSessionTonnage === 0) {
-                showNotification("Aucune donnée à sauvegarder. La séance n'a pas été enregistrée car le tonnage total est de 0 kg.", "info");
+            if (currentSessionReps === 0) {
+                showNotification("Aucune donnée à sauvegarder. La séance n'a pas été enregistrée car aucune répétition n'a été effectuée.", "info");
                 return; 
             }
             pauseTotalWorkoutTimer(); 
@@ -2981,7 +3308,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 id: Date.now(),
                 date: new Date().toISOString(),
                 sessionName: dom.sessionSelect.selectedOptions[0].text,
-                totalTonnage: currentSessionTonnage,
                 totalReps: currentSessionReps,
                 totalKgRep: currentSessionReps > 0 ? (currentSessionTonnage / currentSessionReps).toFixed(2) : 0,
                 duration: dom.totalTimeEl.textContent,
@@ -3030,7 +3356,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 item.innerHTML = `
                     <div>
                         ${new Date(session.date).toLocaleDateString('fr-FR')} - 
-                        <strong>${session.sessionName}</strong> (${session.totalKgRep || session.totalTonnage} kg/rep) ${session.duration ? ` - ⏱️ ${session.duration}` : ''}
+                        <strong>${session.sessionName}</strong> (${session.totalKgRep} kg/rep) ${session.duration ? ` - ⏱️ ${session.duration}` : ''}
                     </div>
                     <div style="display: flex; gap: var(--spacing-xs);">
                         <button class="btn btn-ghost" data-history-action="details" data-history-id="${session.id}" title="Voir les détails de ${session.sessionName}"><i class="fas fa-eye"></i></button>
@@ -3054,7 +3380,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 const session = getHistory().find(s => s.id == id);
                 if (session) {
                     let detailsHtml = `<h4>Détails de la Séance :</h4>
-                                       <p><strong>Tonnage Total :</strong> ${session.totalTonnage || 0} kg</p>
                                        <p><strong>Total Kg/Rép :</strong> ${session.totalKgRep || 0} kg/rep</p>`;
                     if (session.notes) {
                         detailsHtml += `<p><strong>Notes :</strong> ${session.notes}</p>`;
@@ -3062,12 +3387,14 @@ body.dark-mode .exercise-card .btn-secondary {
                     detailsHtml += `<ul>`;
                     session.exercises.forEach(ex => {
                         let exerciseOneRMs = [];
+                        let exerciseTonnage = 0;
                         if (ex.series && ex.series.length > 0) {
                             ex.series.forEach(s => {
                                 const reps = parseFloat(String(s.reps).replace(',', '.')) || 0;
                                 const weight = parseFloat(String(s.weight).replace(',', '.')) || 0;
                                 if (reps > 0 && weight > 0) {
                                     exerciseOneRMs.push(calculate1RM(weight, reps));
+                                    exerciseTonnage += reps * weight;
                                 }
                             });
                         }
@@ -3083,9 +3410,9 @@ body.dark-mode .exercise-card .btn-secondary {
                             }
                             weightedAverage1RM = totalWeighted1RM / totalWeightSum;
                         }
-                        const exerciseKgRep = (ex.exerciseReps > 0) ? (ex.exerciseTonnage / ex.exerciseReps).toFixed(2) : 0;
+                        const exerciseKgRep = (ex.exerciseReps > 0) ? (exerciseTonnage / ex.exerciseReps).toFixed(2) : 0;
 
-                        detailsHtml += `<li><strong>${ex.name}</strong> - Tonnage: ${ex.exerciseTonnage || 0} kg, Kg/Rép: ${exerciseKgRep} kg/rep, 1RM Moy: ${weightedAverage1RM.toFixed(1)} kg</li>`;
+                        detailsHtml += `<li><strong>${ex.name}</strong> - Kg/Rép: ${exerciseKgRep} kg/rep, 1RM Moy: ${weightedAverage1RM.toFixed(1)} kg</li>`;
                     });
                     detailsHtml += '</ul>';
                     detailsDiv.innerHTML = detailsHtml;
@@ -3191,7 +3518,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         duration: cols[3] || '00:00:00',
                         notes: cols[7] || '',
                         exercises: [],
-                        totalTonnage: 0,
                         totalReps: 0,
                         totalKgRep: 0
                     };
@@ -3202,7 +3528,6 @@ body.dark-mode .exercise-card .btn-secondary {
                         name: cols[2] || 'Exercice inconnu',
                         rest: '1 min',
                         series: [],
-                        exerciseTonnage: 0,
                         exerciseReps: 0
                     };
                     currentSession.exercises.push(currentExercise);
@@ -3216,18 +3541,20 @@ body.dark-mode .exercise-card .btn-secondary {
             }
 
             history.forEach(session => {
+                let sessionTonnage = 0;
                 session.exercises.forEach(ex => {
+                    let exerciseTonnage = 0;
                     ex.series.forEach(serie => {
                         const reps = parseFloat(serie.reps) || 0;
                         const weight = parseFloat(serie.weight) || 0;
-                        ex.exerciseTonnage += reps * weight;
+                        exerciseTonnage += reps * weight;
                         ex.exerciseReps += reps;
                     });
-                    session.totalTonnage += ex.exerciseTonnage;
+                    sessionTonnage += exerciseTonnage;
                     session.totalReps += ex.exerciseReps;
                 });
                 if (session.totalReps > 0) {
-                    session.totalKgRep = (session.totalTonnage / session.totalReps).toFixed(2);
+                    session.totalKgRep = (sessionTonnage / session.totalReps).toFixed(2);
                 }
             });
 
@@ -3450,24 +3777,29 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.newSessionNameInput.classList.remove('is-invalid');
             dom.newSessionNameError.textContent = '';
 
-            const fourSeries = [{weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}, {weight: '', reps: ''}];
-            // Point 2: New sessions are not default
-            const newSession = { name: newName, isDefault: false, exercises: [{ name: "Nouvel Exercice", rest: "60s", series: fourSeries }] };
+            const newSession = { name: newName, isDefault: false, exercises: [] };
             state.sessions.push(newSession);
             updateSessionSelectOptions(); 
-            state.currentSessionIndex = state.sessions.length - 1; 
-            dom.sessionSelect.value = state.currentSessionIndex;
-            localStorage.removeItem('inProgressWorkout');
-            state.workoutStartTime = null;
-            state.isWorkoutTimerPaused = false;
-            state.pausedTime = 0;
-            dom.totalTimeEl.textContent = "00:00:00";
-            dom.timerPlayPauseIcon.textContent = '▶️';
-            dom.timerPlayPauseText.textContent = 'Play';
-            createTable(); 
-            updateAllTotals(); 
-            showNotification(`Séance "${newName}" créée avec succès !`, "success");
+            const newSessionIndex = state.sessions.length - 1;
+            
             hideNewSessionModal();
+            showNotification(`Séance "${newName}" créée avec succès !`, "success");
+            
+            if (!dashboard.classList.contains('hidden')) {
+                startSessionFromDashboard(newSessionIndex);
+            } else {
+                state.currentSessionIndex = newSessionIndex; 
+                dom.sessionSelect.value = state.currentSessionIndex;
+                localStorage.removeItem('inProgressWorkout');
+                state.workoutStartTime = null;
+                state.isWorkoutTimerPaused = false;
+                state.pausedTime = 0;
+                dom.totalTimeEl.textContent = "00:00:00";
+                dom.timerPlayPauseIcon.textContent = '▶️';
+                dom.timerPlayPauseText.textContent = 'Play';
+                createTable(); 
+                updateAllTotals(); 
+            }
         }
 
         function updateDeleteSessionButtonState() {
@@ -3488,7 +3820,6 @@ body.dark-mode .exercise-card .btn-secondary {
             }
         }
 
-        // Point 2: Updated logic for deleting/resetting a session
         async function deleteCurrentSession() {
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession) return;
@@ -3571,7 +3902,7 @@ body.dark-mode .exercise-card .btn-secondary {
             state.currentSessionIndex = sessionIndexToLoad;
             dom.sessionSelect.value = state.currentSessionIndex; 
             createTable();
-            dom.previousWeekInput.value = historicalSession.totalKgRep || historicalSession.totalTonnage || "";
+            dom.previousWeekInput.value = historicalSession.totalKgRep || "";
             dom.sessionNotesInput.value = historicalSession.notes || ""; 
             showNotification(`Séance "${historicalSession.sessionName}" ouverte et chargée avec succès.`, "success", 3000);
             dom.loadOptionsModal.classList.remove('show');
@@ -3600,22 +3931,18 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (existingExIndex !== -1) {
                     const currentEx = currentSession.exercises[existingExIndex];
                     currentEx.series = historicalEx.series.map(s => ({weight: s.weight, reps: s.reps}));
-                    currentEx.exerciseTonnage = historicalEx.exerciseTonnage;
-                    currentEx.exerciseReps = historicalEx.exerciseReps;
                     exercisesUpdated++;
                 } else {
                     currentSession.exercises.push({
                         name: historicalEx.name,
                         rest: historicalEx.rest || "1 min",
-                        series: historicalEx.series.map(s => ({weight: s.weight, reps: s.reps})),
-                        exerciseTonnage: historicalEx.exerciseTonnage,
-                        exerciseReps: historicalEx.exerciseReps
+                        series: historicalEx.series.map(s => ({weight: s.weight, reps: s.reps}))
                     });
                     exercisesAdded++;
                 }
             });
             createTable(); 
-            dom.previousWeekInput.value = historicalSession.totalKgRep || historicalSession.totalTonnage || "";
+            dom.previousWeekInput.value = historicalSession.totalKgRep || "";
             dom.sessionNotesInput.value = historicalSession.notes || ""; 
             showNotification(`${exercisesAdded} exercices ajoutés et ${exercisesUpdated} mis à jour dans la séance en cours.`, "success", 5000);
             dom.loadOptionsModal.classList.remove('show');
@@ -3748,7 +4075,6 @@ body.dark-mode .exercise-card .btn-secondary {
             }
         }
         
-        // Point 3: Function for weight auto-completion
         function handleSeriesUpdate(exerciseIndex, seriesIndex) {
             const exercise = state.sessions[state.currentSessionIndex].exercises[exerciseIndex];
             if (!exercise) return;
@@ -3759,14 +4085,12 @@ body.dark-mode .exercise-card .btn-secondary {
             const currentWeight = currentSeries.weight?.trim();
             const currentReps = currentSeries.reps?.trim();
 
-            // Check if current series is filled and there is a next series
             if (currentWeight && currentReps && nextSeries) {
                 const nextSeriesWeight = nextSeries.weight?.trim();
-                // If the next series weight is empty, pre-fill it
                 if (!nextSeriesWeight) {
                     nextSeries.weight = currentWeight;
                     const scrollY = window.scrollY;
-                    createTable(); // Redraw table to show the new value
+                    createTable();
                     window.scrollTo(0, scrollY);
                     showNotification(`Poids pré-rempli pour la série suivante.`, "info", 1500);
                 }
@@ -3774,6 +4098,19 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function setupEventListeners() {
+            document.querySelectorAll('input[inputmode="decimal"]').forEach(input => {
+                input.addEventListener('input', e => {
+                    e.target.value = e.target.value.replace(/,/g, '.');
+                });
+            });
+
+            dom.homeBtn.addEventListener('click', () => {
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('hidden');
+                sessionStorage.removeItem('dashboardShown'); 
+                populateDashboard();
+            });
+
             dom.sessionSelect.addEventListener('change', async () => {
                 const lastSavedIndex = state.currentSessionIndex;
                 if (localStorage.getItem('inProgressWorkout')) {
@@ -3813,7 +4150,7 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.addExerciseBtn.addEventListener('click', () => {
                 const name = dom.customExerciseInput.value.trim();
                 if (name) {
-                    saveCurrentState(); // Save current inputs before adding new row
+                    saveCurrentState();
                     const scrollY = window.scrollY;
                     if (!state.sessions[state.currentSessionIndex].exercises) {
                         state.sessions[state.currentSessionIndex].exercises = [];
@@ -3859,7 +4196,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
             });
 
-            // Point 4: Event listeners for double-click and long-press
             const pressHandler = (e) => {
                 const button = e.target.closest('.serie-input-delete');
                 if (!button) return;
