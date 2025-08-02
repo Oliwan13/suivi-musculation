@@ -1976,10 +1976,12 @@ body.dark-mode .exercise-card .btn-secondary {
                     state.totalPausedDuration = inProgress.totalPausedDuration || 0;
 
                     if (!state.isWorkoutTimerPaused) {
-                         // If the timer was running when the page was closed, resume it
+                         // If the timer was running when the page was closed, calculate the time elapsed since and resume it.
+                        state.pauseStartTime = inProgress.pauseStartTime; // It wouldn't exist, but good practice
                         startTotalWorkoutTimer();
                     } else {
-                        // If it was paused, just display the correct time and button state
+                        // If it was paused, store the pause start time and display the correct time and button state
+                        state.pauseStartTime = inProgress.pauseStartTime || Date.now();
                         updateTotalTimeDisplay();
                         updateTimerToggleButtonUI(true); // isPaused = true
                     }
@@ -2381,9 +2383,9 @@ body.dark-mode .exercise-card .btn-secondary {
             const oneRm = parseFloat(dom.oneRmInput.value);
 
             const goals = [
-                { name: 'Hypertrophie', icon: '<i class="fas fa-person"></i>', minPercent: 0.60, maxPercent: 0.80, a_class: 'hypertrophy', tooltip: '60-80% du 1RM', reps: '6-12 Répétitions' },
+                { name: 'Hypertrophie', icon: '<i class="fas fa-child-reaching"></i>', minPercent: 0.60, maxPercent: 0.80, a_class: 'hypertrophy', tooltip: '60-80% du 1RM', reps: '6-12 Répétitions' },
                 { name: 'Force', icon: '<i class="fas fa-dumbbell"></i>', minPercent: 0.80, maxPercent: 1.00, a_class: 'strength', tooltip: '80-100% du 1RM', reps: '1-5 Répétitions' },
-                { name: 'Endurance', icon: '<i class="fas fa-fire"></i>', minPercent: 0, maxPercent: 0.60, a_class: 'endurance', tooltip: '<60% du 1RM', reps: '15+ Répétitions' },
+                { name: 'Endurance', icon: '<i class="fas fa-person-running"></i>', minPercent: 0, maxPercent: 0.60, a_class: 'endurance', tooltip: '<60% du 1RM', reps: '15+ Répétitions' },
                 { name: 'Power', icon: '<i class="fas fa-bolt"></i>', minPercent: 0.30, maxPercent: 0.70, a_class: 'power', tooltip: '30-70% du 1RM', reps: '3-6 Répétitions (explosif)' }
             ];
 
@@ -2673,8 +2675,8 @@ body.dark-mode .exercise-card .btn-secondary {
             });
             state.timers = {};
             
-            // MODIFICATION: Call the dedicated reset function
-            resetTotalWorkoutTimer();
+            // MODIFICATION: Call the dedicated reset function without confirmation
+            resetTotalWorkoutTimer(false);
             
             dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
@@ -3139,13 +3141,20 @@ body.dark-mode .exercise-card .btn-secondary {
             }
 
             // MODIFICATION: Save the robust timer state
+            // Calculate total paused duration correctly before saving
+            let currentTotalPaused = state.totalPausedDuration;
+            if (state.isWorkoutTimerPaused && state.pauseStartTime > 0) {
+                currentTotalPaused += (Date.now() - state.pauseStartTime);
+            }
+
             const data = {
                 previousWeek: dom.previousWeekInput.value,
                 sessionIndex: state.currentSessionIndex,
                 customSessions: state.sessions,
                 workoutStartTime: state.workoutStartTime,
                 isWorkoutTimerPaused: state.isWorkoutTimerPaused,
-                totalPausedDuration: state.totalPausedDuration + (state.isWorkoutTimerPaused ? Date.now() - state.pauseStartTime : 0),
+                totalPausedDuration: state.totalPausedDuration,
+                pauseStartTime: state.pauseStartTime,
                 sessionNotes: dom.sessionNotesInput.value
             };
             try {
@@ -3387,8 +3396,8 @@ body.dark-mode .exercise-card .btn-secondary {
             });
             state.timers = {};
             
-            // MODIFICATION: Reset timer state fully
-            resetTotalWorkoutTimer();
+            // MODIFICATION: Reset timer state fully without confirmation
+            resetTotalWorkoutTimer(false);
             localStorage.removeItem('inProgressWorkout');
             createTable();
             
@@ -3661,6 +3670,7 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function formatTime(totalMilliseconds) {
+            if (totalMilliseconds < 0) totalMilliseconds = 0;
             const totalSeconds = Math.floor(totalMilliseconds / 1000);
             const h = Math.floor(totalSeconds / 3600);
             const m = Math.floor((totalSeconds % 3600) / 60);
@@ -3681,19 +3691,21 @@ body.dark-mode .exercise-card .btn-secondary {
                 dom.totalTimeEl.textContent = "00:00:00";
                 return;
             }
+
+            // Calculate elapsed time based on timestamps, not a simple counter
             const elapsed = state.isWorkoutTimerPaused 
                 ? state.pauseStartTime - state.workoutStartTime - state.totalPausedDuration 
                 : Date.now() - state.workoutStartTime - state.totalPausedDuration;
                 
-            dom.totalTimeEl.textContent = formatTime(Math.max(0, elapsed));
+            dom.totalTimeEl.textContent = formatTime(elapsed);
         }
 
         function updateTimerToggleButtonUI(isPaused) {
             if (isPaused) {
-                dom.timerPlayPauseIcon.textContent = '▶️';
-                dom.timerPlayPauseText.textContent = 'Reprendre';
+                dom.timerPlayPauseIcon.className = 'fas fa-play';
+                dom.timerPlayPauseText.textContent = state.workoutStartTime ? 'Reprendre' : 'Démarrer';
             } else {
-                dom.timerPlayPauseIcon.textContent = '⏸️';
+                dom.timerPlayPauseIcon.className = 'fas fa-pause';
                 dom.timerPlayPauseText.textContent = 'Pause';
             }
         }
@@ -3702,38 +3714,46 @@ body.dark-mode .exercise-card .btn-secondary {
             if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
 
             if (!state.workoutStartTime) {
+                // First start
                 state.workoutStartTime = Date.now();
                 state.totalPausedDuration = 0;
             }
             
-            if (state.isWorkoutTimerPaused) {
-                // When resuming, add the duration of the just-ended pause to the total.
+            if (state.isWorkoutTimerPaused && state.pauseStartTime > 0) {
+                // Resuming from a pause
                 const currentPauseDuration = Date.now() - state.pauseStartTime;
                 state.totalPausedDuration += currentPauseDuration;
             }
             
             state.isWorkoutTimerPaused = false;
+            state.pauseStartTime = 0;
             updateTimerToggleButtonUI(false);
 
-            // The interval only updates the UI. The core logic is based on timestamps.
             state.totalWorkoutTimeInterval = setInterval(updateTotalTimeDisplay, 1000);
             updateTotalTimeDisplay(); 
             saveCurrentState();
         }
 
         function pauseTotalWorkoutTimer() {
-            if (!state.isWorkoutTimerPaused) {
+            if (state.workoutStartTime && !state.isWorkoutTimerPaused) {
                 if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
                 state.isWorkoutTimerPaused = true;
-                state.pauseStartTime = Date.now(); // Record when the pause starts
+                state.pauseStartTime = Date.now();
                 updateTimerToggleButtonUI(true);
                 updateTotalTimeDisplay(); 
                 saveCurrentState();
             }
         }
         
-        async function resetTotalWorkoutTimer() {
-            const confirmed = await customConfirm("Voulez-vous vraiment réinitialiser le minuteur de la séance ?");
+        async function resetTotalWorkoutTimer(withConfirmation = true) {
+            let confirmed = false;
+            if (withConfirmation) {
+                if (!state.workoutStartTime) return; // Don't ask to reset if not started
+                confirmed = await customConfirm("Voulez-vous vraiment réinitialiser le minuteur de la séance ?");
+            } else {
+                confirmed = true;
+            }
+
             if (confirmed) {
                 if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
                 
@@ -3744,11 +3764,19 @@ body.dark-mode .exercise-card .btn-secondary {
                 state.pauseStartTime = 0;
                 
                 dom.totalTimeEl.textContent = "00:00:00";
-                updateTimerToggleButtonUI(true); // Set to initial "Démarrer" state
-                dom.timerPlayPauseText.textContent = 'Démarrer';
+                updateTimerToggleButtonUI(true); 
                 
-                localStorage.removeItem('inProgressWorkout'); // Also clear the persisted state
-                showNotification("Minuteur de la séance réinitialisé.", "info");
+                // Clear only timer-related parts from persisted state
+                const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout')) || {};
+                delete inProgress.workoutStartTime;
+                delete inProgress.isWorkoutTimerPaused;
+                delete inProgress.totalPausedDuration;
+                delete inProgress.pauseStartTime;
+                localStorage.setItem('inProgressWorkout', JSON.stringify(inProgress));
+
+                if (withConfirmation) {
+                    showNotification("Minuteur de la séance réinitialisé.", "info");
+                }
             }
         }
 
@@ -3839,7 +3867,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 state.currentSessionIndex = newSessionIndex; 
                 dom.sessionSelect.value = state.currentSessionIndex;
                 localStorage.removeItem('inProgressWorkout');
-                resetTotalWorkoutTimer(); // Reset timer for new session
+                resetTotalWorkoutTimer(false); // Reset timer for new session
                 createTable(); 
                 updateAllTotals(); 
             }
@@ -3888,7 +3916,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     updateSessionSelectOptions();
                     dom.sessionSelect.value = state.currentSessionIndex;
                     localStorage.removeItem('inProgressWorkout');
-                    resetTotalWorkoutTimer(); // Reset timer
+                    resetTotalWorkoutTimer(false); // Reset timer
                     createTable();
                     updateAllTotals();
                     showNotification(`Séance "${currentSession.name}" supprimée avec succès.`, "info");
@@ -3904,7 +3932,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (timer && timer.interval) clearInterval(timer.interval);
             });
             state.timers = {};
-            resetTotalWorkoutTimer(); // Reset timer completely
+            resetTotalWorkoutTimer(false); // Reset timer completely
             localStorage.removeItem('inProgressWorkout');
             
             dom.totalKgRepEl.textContent = "0 kg/rep";
@@ -4157,7 +4185,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     }
                     state.timers = {};
                     
-                    resetTotalWorkoutTimer(); // MODIFICATION: Reset timer state fully
+                    resetTotalWorkoutTimer(false); // MODIFICATION: Reset timer state fully
                     localStorage.removeItem('inProgressWorkout');
 
                     dom.totalKgRepEl.textContent = "0 kg/rep";
@@ -4373,7 +4401,7 @@ body.dark-mode .exercise-card .btn-secondary {
             });
 
             // MODIFICATION: Event listener for the new reset button
-            dom.resetWorkoutTimerBtn.addEventListener('click', resetTotalWorkoutTimer);
+            dom.resetWorkoutTimerBtn.addEventListener('click', () => resetTotalWorkoutTimer(true));
 
             dom.createNewSessionTypeBtn.addEventListener('click', showNewSessionModal);
             dom.deleteCurrentSessionBtn.addEventListener('click', deleteCurrentSession);
