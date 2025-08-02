@@ -827,6 +827,20 @@
         top: var(--spacing-sm);
         right: var(--spacing-sm);
     }
+     /* Buttons inside summary card */
+    .summary-card .timer-controls {
+        display: flex;
+        gap: var(--spacing-sm);
+        justify-content: center;
+        margin-top: var(--spacing-sm);
+    }
+    .summary-card .btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.8rem;
+        border-radius: var(--radius-base);
+        min-height: auto;
+    }
+
 
     .action-buttons { 
         display: flex;
@@ -945,7 +959,9 @@
     }
     .modal-content { 
         background: var(--color-surface-default);
-        padding: var(--spacing-xxl);
+        /* MODIFICATION: Increased padding and added top padding for close button */
+        padding: var(--spacing-lg);
+        padding-top: 56px; 
         border-radius: var(--radius-large);
         max-width: 900px;
         max-height: 90vh; 
@@ -968,8 +984,9 @@
     
     .modal-close-btn {
         position: absolute;
-        top: var(--spacing-md);
-        right: var(--spacing-md);
+        /* MODIFICATION: Positioned at the very top right */
+        top: 12px;
+        right: 12px;
         width: 32px;
         height: 32px;
         font-size: 1.2rem;
@@ -982,6 +999,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 1001; /* Ensure it's above other modal content */
     }
 
     .modal-close-btn:hover {
@@ -1495,7 +1513,8 @@
         .modal-content { 
             width: calc(100% - var(--spacing-md) * 2);
             margin: var(--spacing-sm); 
-            padding: var(--spacing-lg); 
+            padding: var(--spacing-lg);
+            padding-top: 56px; /* MODIFICATION: Ensure padding for close button on mobile */
             border-radius: var(--radius-base); 
         }
         .summary-section {
@@ -1692,10 +1711,16 @@ body.dark-mode .exercise-card .btn-secondary {
                     <span class="card-icon fas fa-clock" aria-hidden="true"></span>
                     <h3>Temps total</h3>
                     <div class="value" id="totalTime" aria-live="polite">00:00:00</div>
-                    <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur" style="margin-top: var(--spacing-sm);">
-                        <span id="timerPlayPauseIcon" aria-hidden="true">⏯️</span>
-                        <span id="timerPlayPauseText">Pause</span>
-                    </button>
+                    <div class="timer-controls">
+                        <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur">
+                            <span id="timerPlayPauseIcon" aria-hidden="true">▶️</span>
+                            <span id="timerPlayPauseText">Démarrer</span>
+                        </button>
+                        <button id="resetWorkoutTimerBtn" class="btn btn-danger" aria-label="Réinitialiser le minuteur">
+                            <i class="fas fa-redo" aria-hidden="true"></i>
+                            <span>Réinitialiser</span>
+                        </button>
+                    </div>
                 </div>
             </section>
     
@@ -1766,10 +1791,10 @@ body.dark-mode .exercise-card .btn-secondary {
 
     <div id="plateCalculatorModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="plateCalcModalTitle">
         <div class="modal-content">
-            <button id="closePlateCalculatorModal" class="modal-close-btn" aria-label="Fermer le modal du calculateur de plaques">&times;</button>
+            <button id="closePlateCalculatorModal" class="modal-close-btn" aria-label="Fermer le modal du calculateur">&times;</button>
             <div class="modal-tabs" role="tablist">
-                <button class="modal-tab-btn" id="plateCalcTab" aria-controls="plateCalcContent" role="tab" aria-selected="false">Calculateur de plaques</button>
                 <button class="modal-tab-btn active" id="goalCalcTab" aria-controls="goalCalcContent" role="tab" aria-selected="true">Objectifs d'entraînement</button>
+                <button class="modal-tab-btn" id="plateCalcTab" aria-controls="plateCalcContent" role="tab" aria-selected="false">Calculateur de plaques</button>
             </div>
             
             <div id="plateCalcContent" class="modal-tab-content hidden" role="tabpanel" aria-labelledby="plateCalcTab">
@@ -1873,7 +1898,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 card.className = 'session-card';
                 card.dataset.sessionIndex = index;
                 const icon = session.name.toLowerCase().includes('haut') ? '🏋️‍♂️' : 
-                             session.name.toLowerCase().includes('bas') ? '🦵' : '💪';
+                             session.name.toLowerCase().includes('bas') ? '🦵' : '';
                 card.innerHTML = `
                     <span class="session-card-icon">${icon}</span>
                     <h3>${session.name}</h3>
@@ -1934,26 +1959,30 @@ body.dark-mode .exercise-card .btn-secondary {
                 });
             }
             
+            // MODIFICATION: Refactored logic to handle persisted timer state
             const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout'));
-            if (inProgress && inProgress.customSessions && inProgress.customSessions[inProgress.sessionIndex] && inProgress.customSessions[inProgress.sessionIndex].exercises.length > 0) {
+            if (inProgress) {
+                // Load session data
                 state.sessions = Array.isArray(inProgress.customSessions) ? inProgress.customSessions : JSON.parse(JSON.stringify(defaultSessions));
                 state.currentSessionIndex = inProgress.sessionIndex || 0;
                 if (state.currentSessionIndex >= state.sessions.length) {
                     state.currentSessionIndex = 0;
                 }
-                
-                state.workoutStartTime = inProgress.workoutStartTime || null;
-                state.isWorkoutTimerPaused = inProgress.isWorkoutTimerPaused;
-                state.pausedTime = inProgress.pausedTime || 0;
-                
-                if (state.workoutStartTime && !state.isWorkoutTimerPaused) {
-                    const elapsedSinceSave = (Date.now() - (inProgress.saveTimestamp || new Date(state.workoutStartTime).getTime())) / 1000;
-                    state.pausedTime = (inProgress.pausedTime || 0) + elapsedSinceSave;
-                    startTotalWorkoutTimer();
-                } else if (state.workoutStartTime) {
-                    dom.totalTimeEl.textContent = formatTime(state.pausedTime);
-                    dom.timerPlayPauseIcon.textContent = '▶️';
-                    dom.timerPlayPauseText.textContent = 'Play';
+
+                // Load timer state
+                if (inProgress.workoutStartTime) {
+                    state.workoutStartTime = inProgress.workoutStartTime;
+                    state.isWorkoutTimerPaused = inProgress.isWorkoutTimerPaused;
+                    state.totalPausedDuration = inProgress.totalPausedDuration || 0;
+
+                    if (!state.isWorkoutTimerPaused) {
+                         // If the timer was running when the page was closed, resume it
+                        startTotalWorkoutTimer();
+                    } else {
+                        // If it was paused, just display the correct time and button state
+                        updateTotalTimeDisplay();
+                        updateTimerToggleButtonUI(true); // isPaused = true
+                    }
                 }
             } else {
                  state.sessions = JSON.parse(JSON.stringify(defaultSessions));
@@ -2014,6 +2043,7 @@ body.dark-mode .exercise-card .btn-secondary {
             homeBtn: document.getElementById('homeBtn'),
             body: document.body,
             toggleWorkoutTimerBtn: document.getElementById('toggleWorkoutTimerBtn'),
+            resetWorkoutTimerBtn: document.getElementById('resetWorkoutTimerBtn'),
             newSessionModal: document.getElementById('newSessionModal'),
             closeNewSessionModal: document.getElementById('closeNewSessionModal'),
             newSessionNameInput: document.getElementById('newSessionNameInput'),
@@ -2071,18 +2101,21 @@ body.dark-mode .exercise-card .btn-secondary {
             closePwaPrompt: document.getElementById('closePwaPrompt')
         };
 
+        // MODIFICATION: Refactored state for robust timer management
         let state = {
             sessions: [], 
             currentSessionIndex: 0,
-            timers: {},
-            workoutStartTime: null,
-            totalWorkoutTimeInterval: null,
-            isWorkoutTimerPaused: false,
-            pausedTime: 0,
+            timers: {}, // For individual exercise rest timers
+            
+            // Main Workout Timer State
+            workoutStartTime: null, // Timestamp (ms) when the session started
+            totalWorkoutTimeInterval: null, // Holds the setInterval ID for UI updates
+            isWorkoutTimerPaused: true, // Timer starts in a paused state
+            totalPausedDuration: 0, // Accumulated time in ms the timer was paused
+            pauseStartTime: 0, // Timestamp when the current pause began
+            
             sessionToLoad: null,
             lastDeletedExercise: null,
-            inactivityTimeout: null, 
-            autoSaveInterval: null, 
             linkingState: { active: false, fromIndex: null }, 
             quickEditIndex: null,
             isMobileView: window.matchMedia("(max-width: 768px)").matches,
@@ -2639,16 +2672,14 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (timer && timer.interval) clearInterval(timer.interval);
             });
             state.timers = {};
-            state.workoutStartTime = null;
-            state.isWorkoutTimerPaused = false;
-            state.pausedTime = 0;
-            dom.totalTimeEl.textContent = "00:00:00";
+            
+            // MODIFICATION: Call the dedicated reset function
+            resetTotalWorkoutTimer();
+            
             dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
             dom.previousWeekInput.value = "";
             dom.sessionNotesInput.value = "";
-            dom.timerPlayPauseIcon.textContent = '▶️';
-            dom.timerPlayPauseText.textContent = 'Play';
             updateSessionSelectOptions();
             dom.sessionSelect.value = state.currentSessionIndex;
             updateDeleteSessionButtonState();
@@ -3107,14 +3138,14 @@ body.dark-mode .exercise-card .btn-secondary {
                 console.error("Erreur lors de la sauvegarde de l'état du calculateur :", e);
             }
 
+            // MODIFICATION: Save the robust timer state
             const data = {
                 previousWeek: dom.previousWeekInput.value,
                 sessionIndex: state.currentSessionIndex,
                 customSessions: state.sessions,
                 workoutStartTime: state.workoutStartTime,
                 isWorkoutTimerPaused: state.isWorkoutTimerPaused,
-                pausedTime: state.isWorkoutTimerPaused ? state.pausedTime : (state.workoutStartTime ? (Date.now() - new Date(state.workoutStartTime).getTime()) / 1000 : 0),
-                saveTimestamp: Date.now(),
+                totalPausedDuration: state.totalPausedDuration + (state.isWorkoutTimerPaused ? Date.now() - state.pauseStartTime : 0),
                 sessionNotes: dom.sessionNotesInput.value
             };
             try {
@@ -3216,9 +3247,7 @@ body.dark-mode .exercise-card .btn-secondary {
         }
         
         function autoSaveSession() {
-            if (!state.workoutStartTime || state.isWorkoutTimerPaused) {
-                return;
-            }
+            // This function is kept for potential future use, but is no longer called automatically.
             let currentSessionReps = 0;
             let currentSessionTonnage = 0;
 
@@ -3357,14 +3386,12 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (timer && timer.interval) clearInterval(timer.interval);
             });
             state.timers = {};
-            state.workoutStartTime = null;
-            state.isWorkoutTimerPaused = false;
-            state.pausedTime = 0;
-            dom.timerPlayPauseIcon.textContent = '▶️';
-            dom.timerPlayPauseText.textContent = 'Play';
+            
+            // MODIFICATION: Reset timer state fully
+            resetTotalWorkoutTimer();
             localStorage.removeItem('inProgressWorkout');
             createTable();
-            dom.totalTimeEl.textContent = "00:00:00";
+            
             dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
             dom.previousWeekInput.value = "";
@@ -3633,10 +3660,11 @@ body.dark-mode .exercise-card .btn-secondary {
             timer = setTimeout(closeNotification, duration);
         }
 
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = Math.floor(seconds % 60);
+        function formatTime(totalMilliseconds) {
+            const totalSeconds = Math.floor(totalMilliseconds / 1000);
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = Math.floor(totalSeconds % 60);
             return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
         
@@ -3646,108 +3674,95 @@ body.dark-mode .exercise-card .btn-secondary {
              return `${m}:${String(s).padStart(2, '0')}`;
         }
 
+        // --- NEW/REFACTORED WORKOUT TIMER FUNCTIONS ---
+
         function updateTotalTimeDisplay() {
             if (!state.workoutStartTime) {
                 dom.totalTimeEl.textContent = "00:00:00";
                 return;
             }
-            const elapsedSeconds = state.isWorkoutTimerPaused ? state.pausedTime : (Date.now() - new Date(state.workoutStartTime).getTime()) / 1000;
-            dom.totalTimeEl.textContent = formatTime(elapsedSeconds);
+            const elapsed = state.isWorkoutTimerPaused 
+                ? state.pauseStartTime - state.workoutStartTime - state.totalPausedDuration 
+                : Date.now() - state.workoutStartTime - state.totalPausedDuration;
+                
+            dom.totalTimeEl.textContent = formatTime(Math.max(0, elapsed));
         }
-        
-        function resetInactivityTimer() {
-            clearTimeout(state.inactivityTimeout);
-            if (state.workoutStartTime && !state.isWorkoutTimerPaused) {
-                state.inactivityTimeout = setTimeout(() => {
-                    pauseTotalWorkoutTimer();
-                    showNotification("Minuteur mis en pause pour inactivité.", "info");
-                }, 600000);
+
+        function updateTimerToggleButtonUI(isPaused) {
+            if (isPaused) {
+                dom.timerPlayPauseIcon.textContent = '▶️';
+                dom.timerPlayPauseText.textContent = 'Reprendre';
+            } else {
+                dom.timerPlayPauseIcon.textContent = '⏸️';
+                dom.timerPlayPauseText.textContent = 'Pause';
             }
         }
-
-        function startInactivityAndAutoSaveTimers() {
-            resetInactivityTimer();
-            if (state.autoSaveInterval) clearInterval(state.autoSaveInterval);
-            state.autoSaveInterval = setInterval(autoSaveSession, 2400000);
-            document.addEventListener('mousemove', resetInactivityTimer);
-            document.addEventListener('keydown', resetInactivityTimer);
-            document.addEventListener('click', resetInactivityTimer);
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-        }
-
-        function stopInactivityAndAutoSaveTimers() {
-            clearTimeout(state.inactivityTimeout);
-            clearInterval(state.autoSaveInterval);
-            state.autoSaveInterval = null;
-            document.removeEventListener('mousemove', resetInactivityTimer);
-            document.removeEventListener('keydown', resetInactivityTimer);
-            document.removeEventListener('click', resetInactivityTimer);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        }
-
+        
         function startTotalWorkoutTimer() {
             if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
 
             if (!state.workoutStartTime) {
-                 state.workoutStartTime = new Date().toISOString();
-                 state.pausedTime = 0; 
-            } else if (state.isWorkoutTimerPaused) {
-                state.workoutStartTime = new Date(Date.now() - state.pausedTime * 1000).toISOString();
+                state.workoutStartTime = Date.now();
+                state.totalPausedDuration = 0;
+            }
+            
+            if (state.isWorkoutTimerPaused) {
+                // When resuming, add the duration of the just-ended pause to the total.
+                const currentPauseDuration = Date.now() - state.pauseStartTime;
+                state.totalPausedDuration += currentPauseDuration;
             }
             
             state.isWorkoutTimerPaused = false;
+            updateTimerToggleButtonUI(false);
+
+            // The interval only updates the UI. The core logic is based on timestamps.
             state.totalWorkoutTimeInterval = setInterval(updateTotalTimeDisplay, 1000);
-            startInactivityAndAutoSaveTimers();
             updateTotalTimeDisplay(); 
-            dom.timerPlayPauseIcon.textContent = '⏸️';
-            dom.timerPlayPauseText.textContent = 'Pause';
             saveCurrentState();
         }
 
         function pauseTotalWorkoutTimer() {
-            if (state.totalWorkoutTimeInterval) {
-                clearInterval(state.totalWorkoutTimeInterval);
+            if (!state.isWorkoutTimerPaused) {
+                if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
+                state.isWorkoutTimerPaused = true;
+                state.pauseStartTime = Date.now(); // Record when the pause starts
+                updateTimerToggleButtonUI(true);
+                updateTotalTimeDisplay(); 
+                saveCurrentState();
+            }
+        }
+        
+        async function resetTotalWorkoutTimer() {
+            const confirmed = await customConfirm("Voulez-vous vraiment réinitialiser le minuteur de la séance ?");
+            if (confirmed) {
+                if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
+                
+                state.workoutStartTime = null;
                 state.totalWorkoutTimeInterval = null;
+                state.isWorkoutTimerPaused = true;
+                state.totalPausedDuration = 0;
+                state.pauseStartTime = 0;
+                
+                dom.totalTimeEl.textContent = "00:00:00";
+                updateTimerToggleButtonUI(true); // Set to initial "Démarrer" state
+                dom.timerPlayPauseText.textContent = 'Démarrer';
+                
+                localStorage.removeItem('inProgressWorkout'); // Also clear the persisted state
+                showNotification("Minuteur de la séance réinitialisé.", "info");
             }
-            if (state.workoutStartTime) {
-                state.pausedTime = (Date.now() - new Date(state.workoutStartTime).getTime()) / 1000;
-            }
-            state.isWorkoutTimerPaused = true;
-            stopInactivityAndAutoSaveTimers();
-            dom.timerPlayPauseIcon.textContent = '▶️';
-            dom.timerPlayPauseText.textContent = 'Play';
-            updateTotalTimeDisplay(); 
-            saveCurrentState();
         }
 
         function handleVisibilityChange() {
+            // MODIFICATION: No longer automatically pausing timer.
+            // This function is kept for individual rest timers.
             if (document.hidden) {
-                if (state.workoutStartTime && !state.isWorkoutTimerPaused) {
-                    pauseTotalWorkoutTimer();
-                    saveCurrentState();
-                }
                 for (const idx in state.timers) {
                     if (state.timers[idx] && state.timers[idx].interval) {
                         clearInterval(state.timers[idx].interval);
                     }
                 }
             } else {
-                const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout'));
-                if (inProgress && inProgress.workoutStartTime) {
-                    state.workoutStartTime = inProgress.workoutStartTime;
-                    state.isWorkoutTimerPaused = inProgress.isWorkoutTimerPaused;
-                    state.pausedTime = inProgress.pausedTime;
-
-                    if (!state.isWorkoutTimerPaused) {
-                        const elapsedSinceSave = (Date.now() - (inProgress.saveTimestamp || new Date(state.workoutStartTime).getTime())) / 1000;
-                        state.pausedTime = (inProgress.pausedTime || 0) + elapsedSinceSave;
-                        startTotalWorkoutTimer();
-                    } else {
-                        dom.totalTimeEl.textContent = formatTime(state.pausedTime);
-                        dom.timerPlayPauseIcon.textContent = '▶️';
-                        dom.timerPlayPauseText.textContent = 'Play';
-                    }
-                }
+                // When returning to the tab, reload the individual timers from localStorage
                 loadPersistentIndividualTimers();
             }
         }
@@ -3824,12 +3839,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 state.currentSessionIndex = newSessionIndex; 
                 dom.sessionSelect.value = state.currentSessionIndex;
                 localStorage.removeItem('inProgressWorkout');
-                state.workoutStartTime = null;
-                state.isWorkoutTimerPaused = false;
-                state.pausedTime = 0;
-                dom.totalTimeEl.textContent = "00:00:00";
-                dom.timerPlayPauseIcon.textContent = '▶️';
-                dom.timerPlayPauseText.textContent = 'Play';
+                resetTotalWorkoutTimer(); // Reset timer for new session
                 createTable(); 
                 updateAllTotals(); 
             }
@@ -3878,12 +3888,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     updateSessionSelectOptions();
                     dom.sessionSelect.value = state.currentSessionIndex;
                     localStorage.removeItem('inProgressWorkout');
-                    state.workoutStartTime = null;
-                    state.isWorkoutTimerPaused = false;
-                    state.pausedTime = 0;
-                    dom.totalTimeEl.textContent = "00:00:00";
-                    dom.timerPlayPauseIcon.textContent = '▶️';
-                    dom.timerPlayPauseText.textContent = 'Play';
+                    resetTotalWorkoutTimer(); // Reset timer
                     createTable();
                     updateAllTotals();
                     showNotification(`Séance "${currentSession.name}" supprimée avec succès.`, "info");
@@ -3899,17 +3904,9 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (timer && timer.interval) clearInterval(timer.interval);
             });
             state.timers = {};
-            if (state.totalWorkoutTimeInterval) {
-                clearInterval(state.totalWorkoutTimeInterval);
-                state.totalWorkoutTimeInterval = null;
-            }
-            state.workoutStartTime = null;
-            state.isWorkoutTimerPaused = false;
-            state.pausedTime = 0;
-            dom.timerPlayPauseIcon.textContent = '▶️';
-            dom.timerPlayPauseText.textContent = 'Play';
+            resetTotalWorkoutTimer(); // Reset timer completely
             localStorage.removeItem('inProgressWorkout');
-            dom.totalTimeEl.textContent = "00:00:00";
+            
             dom.totalKgRepEl.textContent = "0 kg/rep";
             dom.deltaEl.textContent = "0 kg";
             dom.previousWeekInput.value = "";
@@ -4159,17 +4156,10 @@ body.dark-mode .exercise-card .btn-secondary {
                         }
                     }
                     state.timers = {};
-                    if (state.totalWorkoutTimeInterval) {
-                        clearInterval(state.totalWorkoutTimeInterval);
-                        state.totalWorkoutTimeInterval = null;
-                    }
-                    state.workoutStartTime = null;
-                    state.isWorkoutTimerPaused = false;
-                    state.pausedTime = 0;
-                    dom.timerPlayPauseIcon.textContent = '▶️';
-                    dom.timerPlayPauseText.textContent = 'Play';
+                    
+                    resetTotalWorkoutTimer(); // MODIFICATION: Reset timer state fully
                     localStorage.removeItem('inProgressWorkout');
-                    dom.totalTimeEl.textContent = "00:00:00";
+
                     dom.totalKgRepEl.textContent = "0 kg/rep";
                     dom.deltaEl.textContent = "0 kg"; 
                     dom.previousWeekInput.value = "";
@@ -4212,6 +4202,7 @@ body.dark-mode .exercise-card .btn-secondary {
 
             dom.exerciseListContainer.addEventListener('input', e => { 
                 if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
+                    // Start timer on first input
                     if (!state.workoutStartTime) {
                         startTotalWorkoutTimer();
                     }
@@ -4371,6 +4362,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
             });
+            
+            // MODIFICATION: Event listener for the main timer toggle button
             dom.toggleWorkoutTimerBtn.addEventListener('click', () => {
                 if (state.isWorkoutTimerPaused) {
                     startTotalWorkoutTimer();
@@ -4378,6 +4371,10 @@ body.dark-mode .exercise-card .btn-secondary {
                     pauseTotalWorkoutTimer();
                 }
             });
+
+            // MODIFICATION: Event listener for the new reset button
+            dom.resetWorkoutTimerBtn.addEventListener('click', resetTotalWorkoutTimer);
+
             dom.createNewSessionTypeBtn.addEventListener('click', showNewSessionModal);
             dom.deleteCurrentSessionBtn.addEventListener('click', deleteCurrentSession);
             dom.closeNewSessionModal.addEventListener('click', hideNewSessionModal);
@@ -4597,6 +4594,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 dom.plateCalculatorModal.classList.add('show');
                 dom.closePlateCalculatorModal.focus();
             });
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
         }
 
         init();
