@@ -216,7 +216,6 @@
         width: 100%;
         height: 100%;
         display: flex;
-        /* MODIFICATION: Alignement changé de 'center' à 'flex-start' pour permettre le scroll depuis le haut */
         align-items: flex-start;
         justify-content: center;
         background: linear-gradient(135deg, var(--color-background-gradient-start) 0%, var(--color-background-gradient-end) 100%);
@@ -1049,8 +1048,9 @@
     }
     .history-details.visible { 
         display: block; 
-        max-height: 500px;
+        max-height: none; /* CHANGEMENT: Permet au conteneur de s'étendre */
         opacity: 1;
+        overflow: hidden; /* La barre de défilement est gérée par #historyList */
     }
     .history-details ul {
         list-style: none;
@@ -2712,6 +2712,13 @@ body.dark-mode .exercise-card .btn-secondary {
             const currentSession = state.sessions[state.currentSessionIndex];
             const exercises = (currentSession && Array.isArray(currentSession.exercises)) ? currentSession.exercises : [];
             
+            // Correction : S'assurer que chaque exercice a un temps de repos par défaut.
+            (exercises || []).forEach(ex => {
+                if (!ex.rest || String(ex.rest).trim() === "") {
+                    ex.rest = "1 min";
+                }
+            });
+            
             (exercises || []).forEach((ex, idx) => {
                 if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) {
                     return;
@@ -3487,6 +3494,9 @@ body.dark-mode .exercise-card .btn-secondary {
                     detailsDiv.innerHTML = detailsHtml;
                     detailsDiv.classList.add('visible');
                     button.setAttribute('aria-expanded', 'true');
+                    
+                    // AJOUT : Scroll automatique pour voir le contenu
+                    detailsDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
                 }
             } 
         }
