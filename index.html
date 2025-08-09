@@ -1675,7 +1675,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 </select>
               <button class="btn btn-outline" id="createNewSessionTypeBtn" aria-label="Créer une nouvelle séance">Nouvelle séance</button>
               <button class="btn btn-danger" id="deleteCurrentSessionBtn" aria-label="Supprimer la séance actuelle" title="Supprimer la séance actuelle (personnalisée)">Supprimer la séance</button>
-            </div>
+              <button class="btn btn-secondary" id="resetCurrentSessionBtn" aria-label="Réinitialiser les données de la séance actuelle" title="Vider toutes les données (poids et reps) de la séance">Réinitialiser</button>
+              </div>
             
             <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
               <div class="progress-fill" id="progressFill"></div>
@@ -2053,6 +2054,9 @@ body.dark-mode .exercise-card .btn-secondary {
             createNewSessionBtn: document.getElementById('createNewSessionBtn'),
             createNewSessionTypeBtn: document.getElementById('createNewSessionTypeBtn'),
             deleteCurrentSessionBtn: document.getElementById('deleteCurrentSessionBtn'),
+            // MODIFICATION START: Added reference for the new reset button
+            resetCurrentSessionBtn: document.getElementById('resetCurrentSessionBtn'),
+            // MODIFICATION END
             loadOptionsModal: document.getElementById('loadOptionsModal'),
             closeLoadOptionsModal: document.getElementById('closeLoadOptionsModal'),
             loadSessionNameDisplay: document.getElementById('loadSessionName'),
@@ -3934,6 +3938,27 @@ body.dark-mode .exercise-card .btn-secondary {
             }
         }
 
+        // MODIFICATION START: Added function to reset the current session's data
+        async function resetCurrentSession() {
+            const currentSession = state.sessions[state.currentSessionIndex];
+            if (!currentSession) return;
+
+            const confirmed = await customConfirm(`Voulez-vous vraiment réinitialiser toutes les données (poids et reps) pour la séance "${currentSession.name}" ?`);
+            if (confirmed) {
+                currentSession.exercises.forEach(ex => {
+                    if (ex.series && Array.isArray(ex.series)) {
+                        ex.series.forEach(s => {
+                            s.weight = '';
+                            s.reps = '';
+                        });
+                    }
+                });
+                createTable(); // Re-render the table with empty inputs
+                updateAllTotals(); // Recalculate and update summary data
+                showNotification(`Séance "${currentSession.name}" réinitialisée.`, "info");
+            }
+        }
+        // MODIFICATION END
 
         async function openNewSessionLogic(historicalSession) {
             const confirmed = await customConfirm("Ouvrir cette séance ? La séance en cours sera remplacée et toutes les données non sauvegardées seront perdues.");
@@ -4415,6 +4440,9 @@ body.dark-mode .exercise-card .btn-secondary {
 
             dom.createNewSessionTypeBtn.addEventListener('click', showNewSessionModal);
             dom.deleteCurrentSessionBtn.addEventListener('click', deleteCurrentSession);
+            // MODIFICATION START: Added event listener for the new reset button
+            dom.resetCurrentSessionBtn.addEventListener('click', resetCurrentSession);
+            // MODIFICATION END
             dom.closeNewSessionModal.addEventListener('click', hideNewSessionModal);
             dom.cancelNewSessionBtn.addEventListener('click', hideNewSessionModal);
             dom.createNewSessionBtn.addEventListener('click', createNewSession);
