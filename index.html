@@ -2,7 +2,39 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <script>
+      // Prevents "Flash of Incorrect Theme" (FOIT)
+      (function() {
+        function getInitialTheme() {
+          const persistedTheme = window.localStorage.getItem('theme');
+          if (persistedTheme) {
+            return persistedTheme;
+          }
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          return systemPrefersDark ? 'dark' : 'light';
+        }
+
+        const theme = getInitialTheme();
+        if (theme === 'dark') {
+          // Use a class on <html> to apply styles before the body exists.
+          document.documentElement.classList.add('dark-mode-preload');
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline'; 
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+        connect-src 'self';
+        img-src 'self' data:;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta name="theme-color" content="#e9f2ff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#2a2d38" media="(prefers-color-scheme: dark)">
     <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,12 +42,13 @@
 
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="app.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      <link rel="stylesheet" href="app.css">
     </noscript>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta name="robots" content="noindex, nofollow">
     <title>Lyftiv - Suivi Séance Musculation</title>
     
@@ -81,7 +114,6 @@
         --shadow-xl: hsla(220, 20%, 20%, 0.25);
         --shadow-strong: hsla(220, 20%, 20%, 0.4);
 
-
         /* Radius System */
         --radius-xs: 6px;
         --radius-base: 12px;
@@ -120,7 +152,9 @@
         --btn-shadow-active: 0 2px 5px var(--shadow-sm);
     }
 
-    body.dark-mode {
+    /* MODIFIED: Added html.dark-mode-preload to prevent flash of incorrect theme */
+    body.dark-mode,
+    html.dark-mode-preload body {
         /* Dark Mode Colors */
         --color-background-gradient-start: hsl(230, 20%, 18%);
         --color-background-gradient-end: hsl(245, 25%, 22%);
@@ -162,6 +196,10 @@
         --shadow-xl: hsla(220, 20%, 10%, 0.5);
         --shadow-strong: hsla(220, 20%, 10%, 0.6);
     }
+    html.dark-mode-preload body .exercise-card .btn-info,
+    html.dark-mode-preload body .exercise-card .btn-secondary {
+         color: hsl(0, 0%, 95%);
+    }
 
     /* Reduced Motion Support */
     @media (prefers-reduced-motion: reduce) {
@@ -195,6 +233,7 @@
 } /* End @layer base */
 
 @layer components {
+    /* Critical styles required for initial paint */
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -208,7 +247,8 @@
         color: var(--color-text-default);
         transition: background 0.6s ease, color 0.6s ease;
     }
-    
+
+    /* Dashboard is part of the initial view */
     .dashboard-container {
         position: fixed;
         top: 0;
@@ -256,7 +296,6 @@
         color: var(--color-text-header);
         letter-spacing: -0.03em;
     }
-
 
     .dashboard-content h1 {
         font-size: clamp(1.8rem, 1.5rem + 1.5vw, 2.5rem);
@@ -403,20 +442,7 @@
         visibility: hidden;
         pointer-events: none;
     }
-
-    .main-container {
-        max-width: 1600px;
-        margin: 0 auto;
-        background: var(--color-surface-default);
-        border-radius: var(--radius-large);
-        padding: var(--spacing-xxl);
-        box-shadow: 0 15px 30px var(--shadow-md);
-        backdrop-filter: blur(10px);
-        transition: background 0.5s ease;
-        position: relative;
-        container-type: inline-size;
-        container-name: main;
-    }
+    
     h2 {
         text-align: center;
         color: var(--color-text-header);
@@ -433,310 +459,7 @@
         width: clamp(40px, 32px + 2.5vw, 52px);
         height: clamp(40px, 32px + 2.5vw, 52px);
     }
-    h3 {
-        font-weight: 700;
-        font-size: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
-        color: var(--color-text-header);
-        margin-bottom: var(--spacing-sm);
-        letter-spacing: -0.01em;
-        text-transform: capitalize; 
-    }
-    h4 {
-        margin: 0 0 var(--spacing-xs) 0;
-        font-size: var(--font-size-lg);
-        color: var(--color-text-subheader);
-    }
-    .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-lg);
-        align-items: center;
-        margin-bottom: var(--spacing-xl);
-        padding: var(--spacing-lg);
-        background: hsla(0, 0%, 100%, 0.1);
-        border-radius: var(--radius-large);
-        box-shadow: 0 3px 8px var(--shadow-sm);
-        transition: background 0.5s ease;
-    }
-    select, input[type="number"], input[type="text"], textarea {
-        padding: var(--spacing-sm) var(--spacing-md);
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-base);
-        font-size: var(--font-size-base);
-        background-color: var(--color-surface-input);
-        color: var(--color-text-default);
-        font-weight: 500;
-        width: 100%;
-        max-width: 300px;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        font-family: 'Inter', sans-serif;
-    }
-    input.is-invalid {
-        border-color: var(--color-danger-default);
-        box-shadow: 0 0 0 4px hsla(0, 60%, 75%, 0.3);
-    }
-    .error-message {
-        color: var(--color-danger-default);
-        font-size: var(--font-size-sm);
-        margin-top: var(--spacing-xxs);
-        text-align: center;
-        width: 100%;
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 110px;
-        max-width: 100%;
-    }
-    .exercise-list-container {
-        border-radius: var(--radius-large);
-        background: var(--color-surface-input);
-        margin-bottom: var(--spacing-xxl);
-        box-shadow: 0 6px 15px var(--shadow-md);
-        overflow: hidden;
-    }
-
-    .exercise-list-container .desktop-table {
-        width: 100%;
-        border-collapse: separate; 
-        border-spacing: 0; 
-        table-layout: auto; 
-    }
-    .exercise-list-container .desktop-table th, 
-    .exercise-list-container .desktop-table td {
-        padding: var(--spacing-md) var(--spacing-sm);
-        text-align: center;
-        border-bottom: 1px solid var(--color-border-default); 
-        transition: background-color 0.3s ease;
-        font-weight: 500;
-    }
-    .exercise-list-container .desktop-table th {
-        background: linear-gradient(135deg, var(--color-primary-gradient-start), var(--color-primary-gradient-end));
-        color: var(--color-text-on-accent);
-        font-size: var(--font-size-sm); 
-        letter-spacing: 1px; 
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        font-weight: 700;
-    }
-    .exercise-list-container .desktop-table th:first-child { border-top-left-radius: var(--radius-large); }
-    .exercise-list-container .desktop-table th:last-child { border-top-right-radius: var(--radius-large); }
-
-    .exercise-list-container .desktop-table .exercise-row {
-        transition: background-color 0.3s ease; 
-    }
-    .exercise-list-container .desktop-table .exercise-row:nth-child(even) {
-        background-color: var(--color-surface-muted);
-    }
-    .exercise-list-container .desktop-table .exercise-row:hover {
-        background-color: hsla(200, 70%, 95%, 0.3); 
-    }
-    body.dark-mode .exercise-list-container .desktop-table .exercise-row:hover {
-        background-color: hsla(220, 20%, 28%, 0.5); 
-    }
-
-    .exercise-list-container .desktop-table .exercise-row.superset-group {
-        border-inline-start: 4px solid var(--color-info-default);
-    }
-
-    .exercise-list-container .desktop-table .actions-col { 
-        width: max-content; 
-        padding-inline-start: var(--spacing-sm);
-        padding-inline-end: var(--spacing-sm);
-    }
-    .exercise-list-container .desktop-table .exercise-col {
-        width: 0%; 
-        max-width: 280px; 
-        text-align: left; 
-        padding-inline-start: var(--spacing-md);
-        white-space: normal;
-        font-weight: 600; 
-        font-size: 1.05rem; 
-    }
-
-    .exercise-list-container .desktop-table .serie-input input {
-        text-align: center;
-    }
-    .modal-content .controls input[type="number"],
-    .modal-content .controls input[type="text"] {
-        text-align: center;
-    }
-    .modal-content .controls {
-        justify-content: center;
-    }
-
-    .exercise-list-container .mobile-cards {
-        display: none;
-        flex-direction: column;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-lg);
-    }
-    .exercise-card {
-        background-color: var(--color-surface-input);
-        border-radius: var(--radius-medium);
-        padding: var(--spacing-md);
-        box-shadow: 0 44px 10px var(--shadow-sm);
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .exercise-card.superset-group {
-        border-inline-start: 4px solid var(--color-info-default);
-    }
-    .exercise-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 14px var(--shadow-md);
-    }
-    .exercise-card h4 {
-        font-size: var(--font-size-xl);
-        font-weight: 700;
-        color: var(--color-text-header);
-        margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .exercise-card .series-group {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-xs);
-        padding: var(--spacing-sm) 0;
-        border-top: 1px solid var(--color-border-default);
-        border-bottom: 1px solid var(--color-border-default);
-    }
-    .exercise-card .series-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.95rem;
-        color: var(--color-text-default);
-    }
-    .exercise-card .series-row strong {
-        font-weight: 600;
-        color: var(--color-primary-default);
-    }
-    .exercise-card .series-input-group {
-        display: flex;
-        gap: var(--spacing-xs);
-        align-items: center;
-    }
-    .exercise-card .series-input-group input {
-        width: 65px;
-        padding: var(--spacing-xs);
-        font-size: 0.9rem;
-        text-align: center;
-    }
-    .serie-input-delete {
-        background: none;
-        border: none;
-        color: var(--color-danger-default);
-        font-size: 1.1rem;
-        cursor: pointer;
-        margin-inline-start: var(--spacing-xxs);
-        opacity: 0.7;
-        transition: opacity 0.2s ease;
-        padding: var(--spacing-sm);
-        min-width: 44px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-    }
-    .serie-input-delete:hover {
-        opacity: 1;
-    }
-    .exercise-card .series-input-group input.completed {
-        background: linear-gradient(135deg, var(--color-success-gradient-start), var(--color-success-gradient-end));
-        color: var(--color-text-on-accent);
-        border-color: var(--color-success-default);
-    }
-    .exercise-card .card-stats {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: var(--spacing-sm);
-        font-size: 0.9rem;
-    }
-    .exercise-card .card-stat-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacing-xxs);
-    }
-    .exercise-card .card-stat-label {
-        color: var(--color-text-subheader);
-        font-size: var(--font-size-sm);
-    }
-    .exercise-card .card-stat-value {
-        font-weight: 700;
-        color: var(--color-primary-default);
-        font-size: var(--font-size-lg);
-    }
-    .exercise-card .card-actions {
-        display: flex;
-        justify-content: space-around;
-        gap: var(--spacing-sm);
-        margin-top: var(--spacing-md);
-        align-items: center;
-    }
-    .exercise-card .card-actions .btn {
-        flex-grow: 1;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: 0.9rem;
-        border-radius: var(--radius-base);
-    }
-    @media (max-width: 768px) {
-        .exercise-card .card-actions .btn[data-action="quick-edit"] {
-            background: none;
-            color: var(--color-info-default);
-            border: none;
-            box-shadow: none;
-            opacity: 0.8;
-        }
-        .exercise-card .card-actions .btn[data-action="quick-edit"]:hover {
-            background-color: hsla(200, 70%, 95%, 0.3);
-            color: var(--color-info-default);
-        }
-    }
-
-    .serie-input {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-xs);
-        align-items: center;
-    }
-    .serie-input input {
-        width: 60px;
-        padding: var(--spacing-xs);
-        font-size: 0.95rem;
-        text-align: center;
-        font-weight: 500;
-        border-radius: var(--radius-xs);
-    }
-    .serie-input input.completed {
-        background: linear-gradient(135deg, var(--color-success-gradient-start), var(--color-success-gradient-end));
-        color: var(--color-text-on-accent);
-        border-color: var(--color-success-default);
-    }
-    .kg-rep-high, .onerm-high {
-        background: linear-gradient(135deg, var(--color-success-gradient-start), var(--color-success-gradient-end));
-        color: var(--color-text-on-accent);
-        border-radius: var(--radius-xs);
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-weight: 600;
-        font-size: 0.9rem;
-        opacity: 0.9;
-        box-shadow: 0 2px 5px var(--shadow-sm);
-    }
-    .timer-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }
+    
     .timer-btn {
         padding: var(--spacing-sm) var(--spacing-md);
         min-width: 44px;
@@ -771,83 +494,7 @@
         font-weight: 700;
     }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-    .summary-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--spacing-lg);
-        margin-bottom: var(--spacing-xxl);
-    }
-    .summary-card { 
-        padding: var(--spacing-xl);
-        border-radius: var(--radius-large);
-        text-align: center; 
-        background: var(--color-surface-input);
-        border: 1px solid var(--color-border-default); 
-        box-shadow: 0 4px 10px var(--shadow-md);
-        transition: transform 0.2s ease, box-shadow 0.2s ease; 
-        position: relative;
-        overflow: hidden;
-        will-change: transform, box-shadow;
-    }
-    @container main (max-width: 600px) {
-        .summary-card {
-            padding: var(--spacing-lg);
-        }
-        .summary-card .value {
-            font-size: clamp(2rem, 1.5rem + 2.5vw, 2.2rem);
-        }
-    }
-    .summary-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px var(--shadow-xl);
-    }
-    .summary-card h3 {
-        font-size: 1.1rem;
-        color: var(--color-text-subheader);
-        margin-bottom: var(--spacing-sm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-xs);
-    }
-
-    .summary-card .value {
-        font-weight: 700;
-        font-size: 1.8rem;
-        color: var(--color-primary-default);
-    }
-
-    .summary-card .card-icon {
-        font-size: 1.5rem;
-        color: var(--color-primary-default);
-        opacity: 0.2;
-        position: absolute;
-        top: var(--spacing-sm);
-        right: var(--spacing-sm);
-    }
-     /* Buttons inside summary card */
-    .summary-card .timer-controls {
-        display: flex;
-        gap: var(--spacing-sm);
-        justify-content: center;
-        margin-top: var(--spacing-sm);
-    }
-    .summary-card .btn {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: 0.8rem;
-        border-radius: var(--radius-base);
-        min-height: auto;
-    }
-
-
-    .action-buttons { 
-        display: flex;
-        flex-wrap: wrap; 
-        gap: var(--spacing-lg);
-        justify-content: center; 
-        margin-top: var(--spacing-xxl); 
-    }
+    
     .btn, button { 
         padding: var(--spacing-md) var(--spacing-xl);
         min-height: 44px;
@@ -880,662 +527,14 @@
         transform: none;
     }
 
-    .btn-primary { 
-        background: var(--btn-primary-bg);
-    }
+    .btn-primary { background: var(--btn-primary-bg); }
     .btn-secondary { background: var(--btn-secondary-bg); }
     .btn-danger { background: var(--btn-danger-bg); }
     .btn-success { background: var(--btn-success-bg); }
     .btn-info { background: var(--btn-info-bg); }
-
-    .btn-outline {
-        background: none;
-        color: var(--color-primary-default);
-        border: 2px solid var(--color-primary-default);
-        box-shadow: none;
-    }
-    .btn-outline:hover {
-        background-color: hsla(220, 60%, 75%, 0.1);
-        box-shadow: var(--shadow-sm);
-    }
-    .btn-ghost {
-        background: none;
-        color: var(--color-info-default);
-        border: 1px solid transparent;
-        box-shadow: none;
-    }
-    .btn-ghost:hover {
-        background: hsla(200, 70%, 90%, 0.2);
-        border-color: var(--color-info-default);
-        color: var(--color-info-default);
-    }
-    body.dark-mode .btn-ghost:hover {
-        background: hsla(200, 45%, 50%, 0.2);
-    }
-
-
-    .notification { 
-        position: fixed;
-        top: var(--spacing-xl); 
-        right: var(--spacing-xl); 
-        padding: var(--spacing-md) var(--spacing-lg);
-        border-radius: var(--radius-base);
-        color: var(--color-text-on-accent); 
-        z-index: 1001; 
-        transform: translateX(120%); 
-        opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        box-shadow: 0 8px 20px var(--shadow-md);
-        will-change: transform, opacity;
-    }
-    .notification.show { 
-        transform: translateX(0);
-        opacity: 1;
-    }
-    .notification.success { background: var(--btn-success-bg); }
-    .notification.error { background: var(--btn-danger-bg); }
-    .notification.info { background: var(--btn-info-bg); }
-
-    .modal-overlay { 
-        position: fixed;
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%; 
-        background: hsla(220, 10%, 10%, 0.6);
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
-        z-index: 1000; 
-        backdrop-filter: blur(8px);
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .modal-overlay.show {
-        opacity: 1;
-        visibility: visible;
-    }
-    .modal-content { 
-        background: var(--color-surface-default);
-        /* MODIFICATION: Increased padding and added top padding for close button */
-        padding: var(--spacing-lg);
-        padding-top: 56px; 
-        border-radius: var(--radius-large);
-        max-width: 900px;
-        max-height: 90vh; 
-        overflow-y: auto; 
-        position: relative; 
-        box-shadow: 0 20px 40px var(--shadow-xl);
-        transform: translateY(-20px);
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        opacity: 0;
-        will-change: transform, opacity;
-    }
     
-    .modal-content h2 {
-        padding-right: var(--spacing-xxl);
-    }
-    .modal-overlay.show .modal-content {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    
-    .modal-close-btn {
-        position: absolute;
-        /* MODIFICATION: Positioned at the very top right */
-        top: 12px;
-        right: 12px;
-        width: 32px;
-        height: 32px;
-        font-size: 1.2rem;
-        border-radius: var(--radius-base);
-        background: var(--color-surface-muted);
-        color: var(--color-text-header);
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.2s ease, color 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1001; /* Ensure it's above other modal content */
-    }
-
-    .modal-close-btn:hover {
-        background: var(--color-border-default);
-        color: var(--color-danger-default);
-    }
-
-    #historyList { 
-        display: flex; 
-        flex-direction: column; 
-        gap: var(--spacing-md);
-        scroll-snap-type: y mandatory;
-        overflow-y: auto;
-        max-height: 70vh;
-    }
-    .history-item { 
-        border: 1px solid var(--color-border-default);
-        border-radius: var(--radius-base);
-        padding: var(--spacing-md);
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        flex-wrap: wrap; 
-        gap: var(--spacing-sm); 
-        background: var(--color-surface-input);
-        box-shadow: 0 3px 10px var(--shadow-sm);
-        transition: box-shadow 0.3s ease, transform 0.2s ease;
-        scroll-snap-align: start;
-    }
-    .history-item:hover { 
-        box-shadow: 0 5px 15px var(--shadow-md);
-        transform: translateY(-2px);
-    }
-    .history-item div:first-child {
-        flex-grow: 1;
-        font-size: 0.95rem;
-    }
-    .history-details { 
-        width: 100%; 
-        margin-top: var(--spacing-md);
-        padding-top: var(--spacing-md); 
-        border-top: 1px solid var(--color-border-default);
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.5s ease-in-out;
-    }
-    .history-details.visible { 
-        display: block; 
-        max-height: none; /* CHANGEMENT: Permet au conteneur de s'étendre */
-        opacity: 1;
-        overflow: hidden; /* La barre de défilement est gérée par #historyList */
-    }
-    .history-details ul {
-        list-style: none;
-        padding: 0;
-        margin: var(--spacing-sm) 0 0 0;
-    }
-    .history-details li {
-        padding: var(--spacing-xs) 0;
-        border-bottom: 1px dashed var(--color-border-default);
-    }
-    .history-details li:last-child {
-        border-bottom: none;
-    }
-    .progress-bar { 
-        width: 100%;
-        height: 10px;
-        background: var(--color-border-default); 
-        border-radius: 5px;
-        overflow: hidden; 
-        margin: var(--spacing-xl) 0;
-    }
-    .progress-fill { 
-        height: 100%;
-        background: var(--btn-success-bg);
-        border-radius: 5px; 
-        transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
     .hidden { display: none !important; }
-    .show-notes-section {
-        display: block !important;
-    }
-    .hide-notes-section {
-        display: none !important;
-    }
 
-    .theme-switcher {
-        display: flex;
-        gap: var(--spacing-sm);
-        align-items: center;
-    }
-
-    .theme-switcher .btn {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: 1.5rem;
-        border-radius: var(--radius-base);
-        background: transparent;
-        color: var(--color-text-default);
-        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        box-shadow: none;
-    }
-
-    body.dark-mode .theme-switcher .btn {
-        background: var(--color-surface-muted);
-    }
-
-    .theme-switcher .btn:hover {
-        background-color: var(--color-border-default);
-        box-shadow: 0 2px 5px var(--shadow-sm);
-        transform: none;
-    }
-
-    .add-exercise-section {
-        display: flex;
-        justify-content: center; 
-        gap: var(--spacing-md);
-        margin-top: var(--spacing-xl); 
-        padding: var(--spacing-lg); 
-        background: hsla(0, 0%, 100%, 0.1); 
-        border-radius: var(--radius-large); 
-        position: relative; 
-        align-items: center;
-        box-shadow: 0 3px 8px var(--shadow-sm);
-    }
-    .add-exercise-section .input-group {
-        display: flex;
-        width: 100%;
-        max-width: 500px;
-        gap: var(--spacing-sm);
-    }
-    
-    .btn-danger[data-action="remove"] {
-        background: none;
-        color: var(--color-danger-default);
-        padding: var(--spacing-xs) var(--spacing-sm);
-        border: none;
-        font-size: 1.2rem; 
-        opacity: 0.7;
-        box-shadow: none;
-    }
-    .btn-danger[data-action="remove"]:hover {
-        background: hsla(0, 60%, 80%, 0.15);
-        color: var(--color-danger-default); 
-        opacity: 1;
-        transform: none;
-        box-shadow: none;
-    }
-    .quick-edit-btn, .link-btn {
-        background: none; border: none; font-size: 1rem; color: var(--color-info-default);
-        cursor: pointer; padding: var(--spacing-xs); border-radius: var(--radius-xs); 
-        transition: background-color 0.2s ease, opacity 0.2s ease;
-        opacity: 0.8;
-    }
-    .quick-edit-btn:hover, .link-btn:hover { 
-        background-color: hsla(200, 70%, 75%, 0.15);
-        opacity: 1; 
-        transform: none;
-    }
-
-    .link-btn.linking, 
-    .link-btn.active-superset {
-        background: var(--btn-info-bg);
-        color: var(--color-text-on-accent);
-        opacity: 1;
-    }
-    .link-btn.active-superset:hover {
-        background: linear-gradient(135deg, var(--color-info-gradient-end), var(--color-info-gradient-start));
-    }
-
-    .next-superset-exercise {
-        animation: pulse-border 1.5s infinite;
-        box-shadow: 0 0 10px 3px var(--color-info-default);
-    }
-    @keyframes pulse-border {
-        0% { border-color: var(--color-info-default); }
-        50% { border-color: transparent; }
-        100% { border-color: var(--color-info-default); }
-    }
-
-    .modal-tabs {
-        display: flex;
-        border-bottom: 1px solid var(--color-border-default);
-        margin-bottom: var(--spacing-lg);
-    }
-    .modal-tab-btn {
-        padding: var(--spacing-sm) var(--spacing-lg);
-        cursor: pointer;
-        border: none;
-        background-color: transparent;
-        color: var(--color-text-default);
-        font-weight: 600;
-        border-bottom: 3px solid transparent;
-        transition: color 0.3s ease, border-bottom-color 0.3s ease;
-        flex-grow: 1;
-    }
-    .modal-tab-btn.active {
-        color: var(--color-primary-default);
-        border-bottom-color: var(--color-primary-default);
-    }
-    #goalResultsContainer {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: var(--spacing-lg);
-        margin-top: var(--spacing-xl);
-    }
-    .goal-card {
-        background-color: hsl(200, 80%, 95%);
-        border: 1px solid hsl(200, 80%, 85%);
-        border-radius: var(--radius-base);
-        padding: var(--spacing-lg);
-        text-align: center;
-        box-shadow: 0 4px 10px var(--shadow-sm);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        position: relative;
-    }
-    .goal-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px var(--shadow-md);
-    }
-    .goal-card h4 {
-        margin: 0 0 var(--spacing-xs) 0;
-        font-size: var(--font-size-lg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-xs);
-        color: var(--color-text-header);
-    }
-    .goal-card .icon {
-        font-size: 1.6rem;
-        color: var(--color-primary-default);
-    }
-    .goal-card .weight-range {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-success-default);
-    }
-    .goal-card .rep-range {
-        font-size: 0.95rem;
-        color: var(--color-text-subheader);
-        opacity: 0.9;
-        margin-top: var(--spacing-sm);
-    }
-    .goal-card.hypertrophy {
-        background-color: hsl(200, 80%, 95%);
-        border: 1px solid hsl(200, 80%, 85%);
-    }
-    .goal-card.strength {
-        background-color: hsl(0, 70%, 95%);
-        border: 1px solid hsl(0, 70%, 85%);
-    }
-    .goal-card.endurance {
-        background-color: hsl(40, 90%, 95%);
-        border: 1px solid hsl(40, 90%, 85%);
-    }
-    .goal-card.power {
-        background-color: hsl(260, 70%, 95%);
-        border: 1px solid hsl(260, 70%, 85%);
-    }
-
-    .plate-result-message {
-        font-weight: bold;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        border-radius: var(--radius-xs);
-        display: inline-block;
-        margin-top: var(--spacing-sm);
-    }
-    .plate-result-message.success {
-        color: var(--color-text-on-accent);
-        background: var(--btn-success-bg);
-    }
-    .plate-result-message.danger {
-        color: var(--color-text-on-accent);
-        background: var(--btn-danger-bg);
-    }
-    #platesResult h3 {
-        font-size: var(--font-size-xl);
-        margin-bottom: var(--spacing-sm);
-        color: var(--color-text-header);
-    }
-    #platesResult p span {
-        font-weight: 700;
-        color: var(--color-primary-default);
-    }
-    #platesResult p span {
-        background-color: var(--color-border-default);
-        padding: 3px 6px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.9em;
-        color: var(--color-text-default);
-        white-space: nowrap;
-    }
-
-    .tooltip {
-        position: relative;
-        display: inline-block;
-    }
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        background-color: var(--color-text-header);
-        color: var(--color-text-on-accent);
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 10px;
-        position: absolute;
-        z-index: 1;
-        bottom: 125%;
-        left: 50%;
-        margin-inline-start: -60px;
-        opacity: 0;
-        transition: opacity 0.3s;
-        font-size: 0.8rem;
-        width: 120px;
-    }
-    .tooltip .tooltiptext::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        margin-inline-start: -5px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: var(--color-text-header) transparent transparent transparent;
-    }
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-    }
-
-    #pwaInstallPrompt {
-        position: fixed;
-        bottom: var(--spacing-xxl);
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--btn-primary-bg);
-        color: var(--color-text-on-accent);
-        padding: var(--spacing-md) var(--spacing-lg);
-        border-radius: var(--radius-button);
-        box-shadow: 0 5px 15px var(--shadow-md);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    #pwaInstallPrompt.show {
-        opacity: 1;
-        visibility: visible;
-    }
-    #pwaInstallPrompt button {
-        background: var(--color-text-on-accent);
-        color: var(--color-primary-default);
-        border: none;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        border-radius: var(--radius-base);
-        font-weight: 600;
-        cursor: pointer;
-        transition: opacity 0.2s ease;
-    }
-    #pwaInstallPrompt button:hover {
-        opacity: 0.9;
-    }
-    #pwaInstallPrompt .close-btn {
-        background: none;
-        color: var(--color-text-on-accent);
-        font-size: 1.2rem;
-        opacity: 0.7;
-    }
-    #pwaInstallPrompt .close-btn:hover {
-        opacity: 1;
-    }
-
-
-    .bottom-navigation {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: var(--color-surface-default);
-        box-shadow: 0 -5px 15px var(--shadow-md);
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        padding: var(--spacing-sm) var(--spacing-xs);
-        z-index: 999;
-        border-top-left-radius: var(--radius-large);
-        border-top-right-radius: var(--radius-large);
-        padding-bottom: env(safe-area-inset-bottom, var(--spacing-sm));
-        height: 70px;
-    }
-    .bottom-navigation .btn {
-        flex: 1;
-        margin: 0 var(--spacing-xxs);
-        padding: var(--spacing-sm);
-        font-size: 0.9rem;
-        border-radius: var(--radius-medium);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-xxs);
-        color: var(--color-text-default);
-        background: none;
-        box-shadow: none;
-        transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-    }
-    .bottom-navigation .btn i {
-        font-size: 1.2rem;
-        color: var(--color-text-subheader);
-    }
-    .bottom-navigation .btn span {
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    .bottom-navigation .btn:hover {
-        background-color: var(--color-border-default);
-        transform: translateY(-2px);
-    }
-    .bottom-navigation .btn-active {
-        color: var(--color-primary-default);
-        background: hsla(220, 60%, 75%, 0.1);
-    }
-    .bottom-navigation .btn-active i {
-        color: var(--color-primary-default);
-    }
-
-    @media (min-width: 769px) {
-        .exercise-list-container .mobile-cards {
-            display: none !important;
-        }
-        .bottom-navigation {
-            display: none !important;
-        }
-        body {
-            padding-bottom: var(--spacing-xxl);
-        }
-        .session-notes-section {
-            display: block !important;
-        }
-    }
-
-    @media (max-width: 768px) {
-        body { 
-            padding: var(--spacing-lg); 
-            padding-bottom: calc(var(--spacing-lg) + 70px);
-        }
-        .main-container { 
-            padding: var(--spacing-lg); 
-            border-radius: var(--radius-base); 
-        }
-        h2 { 
-            margin-bottom: var(--spacing-xl); 
-        }
-        .controls, .add-exercise-section { 
-            flex-direction: column; 
-            align-items: stretch; 
-            gap: var(--spacing-md);
-        }
-        .controls label, .controls input, .controls select, .add-exercise-section .input-group, .add-exercise-section button {
-            max-width: 100%;
-            width: 100%;
-        }
-        .add-exercise-section .input-group { flex-direction: column; }
-        .add-exercise-section .input-group input, .add-exercise-section .input-group button { width: 100%; }
-
-        .add-exercise-section {
-            position: relative;
-        }
-        .add-exercise-section .input-group {
-            position: relative;
-            flex-direction: column-reverse;
-        }
-
-        .exercise-list-container .desktop-table {
-            display: none; 
-        }
-        .exercise-list-container .mobile-cards {
-            display: flex;
-        }
-
-        .action-buttons { 
-            display: flex;
-            margin-top: var(--spacing-xl);
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: var(--spacing-md);
-        }
-        .action-buttons .btn {
-            width: calc(50% - var(--spacing-sm));
-            padding: var(--spacing-sm) var(--spacing-md);
-            font-size: 0.9rem;
-        }
-        .action-buttons .btn i {
-            font-size: 1.1rem;
-        }
-
-        .notification { 
-            width: calc(100% - var(--spacing-lg) * 2);
-            left: var(--spacing-lg); 
-            right: var(--spacing-lg); 
-            top: var(--spacing-md); 
-        }
-        .modal-content { 
-            width: calc(100% - var(--spacing-md) * 2);
-            margin: var(--spacing-sm); 
-            padding: var(--spacing-lg);
-            padding-top: 56px; /* MODIFICATION: Ensure padding for close button on mobile */
-            border-radius: var(--radius-base); 
-        }
-        .summary-section {
-            grid-template-columns: 1fr;
-            gap: var(--spacing-md);
-        }
-        .summary-card {
-            padding: var(--spacing-md);
-            border: 1px solid var(--color-border-default);
-            box-shadow: 0 4px 10px var(--shadow-md);
-        }
-    }
-    @media (max-width: 480px) {
-        body {
-            padding: var(--spacing-md);
-            padding-bottom: calc(var(--spacing-md) + 70px);
-        }
-        .main-container {
-            padding: var(--spacing-md);
-        }
-    }
 } /* End @layer components */
 
 @layer utilities {
@@ -1564,23 +563,11 @@
     .icon-info { color: var(--color-info-default); }
 } /* End @layer utilities */
 
-.exercise-card .btn-outline {
-    font-weight: 600;
-}
-
-.exercise-card .btn-info,
-.exercise-card .btn-secondary {
-    color: hsl(220, 25%, 25%);
-}
-
-body.dark-mode .exercise-card .btn-info,
-body.dark-mode .exercise-card .btn-secondary {
-     color: hsl(0, 0%, 95%);
-}
-
     </style>
 </head>
 <body>
+    <a href="#app-container" class="sr-only">Passer au contenu principal</a>
+    
     <div id="dashboard" class="dashboard-container">
         <div class="dashboard-content">
             <header class="dashboard-header">
@@ -1688,7 +675,7 @@ body.dark-mode .exercise-card .btn-secondary {
             <section class="controls add-exercise-section" id="addExerciseSection" aria-labelledby="addExerciseTitle">
                 <h2 id="addExerciseTitle" class="sr-only">Ajouter un exercice</h2>
                 <div class="input-group">
-                    <input type="text" id="customExercise" placeholder="Ajouter un exercice" aria-label="Nom de l'exercice personnalisé">
+                    <input type="text" id="customExercise" placeholder="Ajouter un exercice" aria-label="Nom de l'exercice personnalisé" autocomplete="off">
                     <button class="btn btn-success" id="addExerciseBtn" aria-label="Ajouter l'exercice"> Ajouter</button>
                 </div>
             </section>
@@ -1701,7 +688,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 <div class="summary-card">
                     <span class="card-icon fas fa-calendar-alt" aria-hidden="true"></span>
                     <h3>Semaine précédente</h3>
-                    <input type="text" inputmode="decimal" id="previousWeek" placeholder="kg/rep" aria-label="Performance de la semaine précédente">
+                    <input type="text" inputmode="decimal" id="previousWeek" placeholder="kg/rep" aria-label="Performance de la semaine précédente" pattern="^\d+([.,]\d{1,2})?$" autocomplete="off">
                 </div>
                 <div class="summary-card">
                     <span class="card-icon fas fa-chart-line" aria-hidden="true"></span>
@@ -1714,7 +701,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     <div class="value" id="totalTime" aria-live="polite">00:00:00</div>
                     <div class="timer-controls">
                         <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur">
-                            <span id="timerPlayPauseIcon" aria-hidden="true">▶️</span>
+                            <span id="timerPlayPauseIcon" class="fas fa-play" aria-hidden="true"></span>
                             <span id="timerPlayPauseText">Démarrer</span>
                         </button>
                         <button id="resetWorkoutTimerBtn" class="btn btn-danger" aria-label="Réinitialiser le minuteur">
@@ -1768,7 +755,7 @@ body.dark-mode .exercise-card .btn-secondary {
             <button id="closeNewSessionModal" class="modal-close-btn" aria-label="Fermer le modal de nouvelle séance">&times;</button>
             <h2 id="newSessionModalTitle">Créer une nouvelle séance</h2>
             <div class="input-group-modal">
-                <input type="text" id="newSessionNameInput" placeholder="Nom de la nouvelle séance" aria-label="Nom de la nouvelle séance">
+                <input type="text" id="newSessionNameInput" placeholder="Nom de la nouvelle séance" aria-label="Nom de la nouvelle séance" aria-describedby="newSessionNameError" autocomplete="off">
                 <div id="newSessionNameError" class="error-message"></div>
             </div>
             <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
@@ -1802,11 +789,11 @@ body.dark-mode .exercise-card .btn-secondary {
                 <h2 id="plateCalcModalTitle">Calculateur de plaques</h2>
                 <div class="controls">
                     <div class="input-group-modal">
-                        <input type="text" inputmode="decimal" id="targetWeightInput" placeholder="Poids cible (kg)" aria-label="Poids cible">
+                        <input type="text" inputmode="decimal" id="targetWeightInput" placeholder="Poids cible (kg)" aria-label="Poids cible" pattern="^\d+([.,]\d{1,2})?$" aria-describedby="targetWeightError" autocomplete="off">
                         <div id="targetWeightError" class="error-message"></div>
                     </div>
                     <div class="input-group-modal">
-                        <input type="text" inputmode="decimal" id="barbellWeightInput" placeholder="Poids barre (kg)" aria-label="Poids de la barre">
+                        <input type="text" inputmode="decimal" id="barbellWeightInput" placeholder="Poids barre (kg)" aria-label="Poids de la barre" pattern="^\d+([.,]\d{1,2})?$" aria-describedby="barbellWeightError" autocomplete="off">
                         <div id="barbellWeightError" class="error-message"></div>
                     </div>
                 </div>
@@ -1826,7 +813,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     </div>
 
                     <div id="oneRmManualInput" class="input-group-modal">
-                        <input type="text" inputmode="decimal" id="oneRmInput" placeholder="Votre 1RM (kg)" aria-label="Votre 1RM">
+                        <input type="text" inputmode="decimal" id="oneRmInput" placeholder="Votre 1RM (kg)" aria-label="Votre 1RM" pattern="^\d+([.,]\d{1,2})?$" aria-describedby="oneRmError" autocomplete="off">
                         <div id="oneRmError" class="error-message"></div>
                     </div>
 
@@ -1848,11 +835,11 @@ body.dark-mode .exercise-card .btn-secondary {
           <p>Appliquer à toutes les séries de : <strong id="quickEditExerciseName"></strong></p>
           <div class="controls">
               <div class="input-group-modal">
-                  <input type="text" inputmode="decimal" id="quickEditWeight" placeholder="Poids (kg)" aria-label="Poids pour édition rapide">
+                  <input type="text" inputmode="decimal" id="quickEditWeight" placeholder="Poids (kg)" aria-label="Poids pour édition rapide" pattern="^\d+([.,]\d{1,2})?$" aria-describedby="quickEditWeightError" autocomplete="off">
                   <div id="quickEditWeightError" class="error-message"></div>
               </div>
               <div class="input-group-modal">
-                  <input type="text" inputmode="decimal" id="quickEditReps" placeholder="Reps" aria-label="Répétitions pour édition rapide">
+                  <input type="text" inputmode="decimal" id="quickEditReps" placeholder="Reps" aria-label="Répétitions pour édition rapide" pattern="^\d+([.,]\d{1,2})?$" aria-describedby="quickEditRepsError" autocomplete="off">
                   <div id="quickEditRepsError" class="error-message"></div>
               </div>
           </div>
@@ -1885,6 +872,81 @@ body.dark-mode .exercise-card .btn-secondary {
 
     <script>
     window.addEventListener('load', () => {
+
+        // --- Accessible Modal Utility ---
+        let lastActiveElement;
+
+        function openModal(modalElement) {
+            if (!modalElement) return;
+            
+            lastActiveElement = document.activeElement;
+            
+            document.getElementById('app-container').inert = true;
+            document.getElementById('dashboard').inert = true;
+
+            modalElement.classList.remove('hidden');
+            modalElement.classList.add('show');
+            
+            const firstFocusable = modalElement.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (firstFocusable) {
+                firstFocusable.focus();
+            }
+            
+            document.addEventListener('keydown', handleModalKeydown);
+        }
+
+        function closeModal(modalElement) {
+            if (!modalElement || modalElement.classList.contains('hidden')) return;
+
+            modalElement.classList.remove('show');
+            
+            const onTransitionEnd = () => {
+                modalElement.classList.add('hidden');
+                document.getElementById('app-container').inert = false;
+                document.getElementById('dashboard').inert = false;
+                if (lastActiveElement) {
+                    lastActiveElement.focus();
+                }
+                modalElement.removeEventListener('transitionend', onTransitionEnd);
+            };
+            modalElement.addEventListener('transitionend', onTransitionEnd);
+            
+            document.removeEventListener('keydown', handleModalKeydown);
+        }
+
+        function handleModalKeydown(e) {
+            if (e.key === 'Escape') {
+                const openedModal = document.querySelector('.modal-overlay.show');
+                if (openedModal) {
+                    closeModal(openedModal);
+                }
+            }
+            if (e.key === 'Tab') {
+                const openedModal = document.querySelector('.modal-overlay.show .modal-content');
+                if(openedModal) trapFocus(e, openedModal);
+            }
+        }
+
+        function trapFocus(e, modalElement) {
+            const focusableElements = Array.from(modalElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => !el.disabled && el.offsetWidth > 0 && el.offsetHeight > 0);
+            if (focusableElements.length === 0) return;
+            
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) { 
+                if (document.activeElement === firstElement) {
+                    lastElement.focus();
+                    e.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    firstElement.focus();
+                    e.preventDefault();
+                }
+            }
+        }
+        // --- End Accessible Modal Utility ---
         
         const dashboard = document.getElementById('dashboard');
         const appContainer = document.getElementById('app-container');
@@ -1960,31 +1022,26 @@ body.dark-mode .exercise-card .btn-secondary {
                 });
             }
             
-            // MODIFICATION: Refactored logic to handle persisted timer state
             const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout'));
             if (inProgress) {
-                // Load session data
                 state.sessions = Array.isArray(inProgress.customSessions) ? inProgress.customSessions : JSON.parse(JSON.stringify(defaultSessions));
                 state.currentSessionIndex = inProgress.sessionIndex || 0;
                 if (state.currentSessionIndex >= state.sessions.length) {
                     state.currentSessionIndex = 0;
                 }
 
-                // Load timer state
                 if (inProgress.workoutStartTime) {
                     state.workoutStartTime = inProgress.workoutStartTime;
                     state.isWorkoutTimerPaused = inProgress.isWorkoutTimerPaused;
                     state.totalPausedDuration = inProgress.totalPausedDuration || 0;
 
                     if (!state.isWorkoutTimerPaused) {
-                         // If the timer was running when the page was closed, calculate the time elapsed since and resume it.
-                        state.pauseStartTime = inProgress.pauseStartTime; // It wouldn't exist, but good practice
+                        state.pauseStartTime = inProgress.pauseStartTime;
                         startTotalWorkoutTimer();
                     } else {
-                        // If it was paused, store the pause start time and display the correct time and button state
                         state.pauseStartTime = inProgress.pauseStartTime || Date.now();
                         updateTotalTimeDisplay();
-                        updateTimerToggleButtonUI(true); // isPaused = true
+                        updateTimerToggleButtonUI(true);
                     }
                 }
             } else {
@@ -2054,9 +1111,7 @@ body.dark-mode .exercise-card .btn-secondary {
             createNewSessionBtn: document.getElementById('createNewSessionBtn'),
             createNewSessionTypeBtn: document.getElementById('createNewSessionTypeBtn'),
             deleteCurrentSessionBtn: document.getElementById('deleteCurrentSessionBtn'),
-            // MODIFICATION START: Added reference for the new reset button
             resetCurrentSessionBtn: document.getElementById('resetCurrentSessionBtn'),
-            // MODIFICATION END
             loadOptionsModal: document.getElementById('loadOptionsModal'),
             closeLoadOptionsModal: document.getElementById('closeLoadOptionsModal'),
             loadSessionNameDisplay: document.getElementById('loadSessionName'),
@@ -2107,19 +1162,15 @@ body.dark-mode .exercise-card .btn-secondary {
             closePwaPrompt: document.getElementById('closePwaPrompt')
         };
 
-        // MODIFICATION: Refactored state for robust timer management
         let state = {
             sessions: [], 
             currentSessionIndex: 0,
-            timers: {}, // For individual exercise rest timers
-            
-            // Main Workout Timer State
-            workoutStartTime: null, // Timestamp (ms) when the session started
-            totalWorkoutTimeInterval: null, // Holds the setInterval ID for UI updates
-            isWorkoutTimerPaused: true, // Timer starts in a paused state
-            totalPausedDuration: 0, // Accumulated time in ms the timer was paused
-            pauseStartTime: 0, // Timestamp when the current pause began
-            
+            timers: {},
+            workoutStartTime: null,
+            totalWorkoutTimeInterval: null,
+            isWorkoutTimerPaused: true,
+            totalPausedDuration: 0,
+            pauseStartTime: 0,
             sessionToLoad: null,
             lastDeletedExercise: null,
             linkingState: { active: false, fromIndex: null }, 
@@ -2210,8 +1261,7 @@ body.dark-mode .exercise-card .btn-secondary {
             e.preventDefault();
             state.deferredPwaPrompt = e;
             if (localStorage.getItem('pwaPromptDismissed') !== 'true') {
-                dom.pwaInstallPrompt.classList.remove('hidden');
-                setTimeout(() => dom.pwaInstallPrompt.classList.add('show'), 10);
+                openModal(dom.pwaInstallPrompt);
             }
         });
 
@@ -2223,14 +1273,12 @@ body.dark-mode .exercise-card .btn-secondary {
                     showNotification('Lyftiv a été ajouté à votre écran d\'accueil!', 'success', 5000);
                 }
                 state.deferredPwaPrompt = null;
-                dom.pwaInstallPrompt.classList.remove('show');
-                dom.pwaInstallPrompt.addEventListener('transitionend', () => dom.pwaInstallPrompt.classList.add('hidden'), { once: true });
+                closeModal(dom.pwaInstallPrompt);
             }
         });
 
         dom.closePwaPrompt.addEventListener('click', () => {
-            dom.pwaInstallPrompt.classList.remove('show');
-            dom.pwaInstallPrompt.addEventListener('transitionend', () => dom.pwaInstallPrompt.classList.add('hidden'), { once: true });
+            closeModal(dom.pwaInstallPrompt);
             localStorage.setItem('pwaPromptDismissed', 'true');
         });
         
@@ -2241,8 +1289,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 errorDisplayElement.textContent = '';
                 return true;
             }
-            const regex = /^\d+(\.\d{1,2})?$/;
-            if (!regex.test(value) || parseFloat(value) < 0) {
+            const regex = /^\d+([.,]\d{1,2})?$/;
+            if (!regex.test(value) || parseFloat(value.replace(',', '.')) < 0) {
                 inputElement.classList.add('is-invalid');
                 errorDisplayElement.textContent = 'Veuillez entrer un nombre positif valide.';
                 return false;
@@ -2322,8 +1370,8 @@ body.dark-mode .exercise-card .btn-secondary {
                 return;
             }
 
-            const targetWeight = parseFloat(dom.targetWeightInput.value);
-            const barbellWeight = parseFloat(dom.barbellWeightInput.value);
+            const targetWeight = parseFloat(dom.targetWeightInput.value.replace(',', '.'));
+            const barbellWeight = parseFloat(dom.barbellWeightInput.value.replace(',', '.'));
             
             if (barbellWeight > targetWeight) {
                 dom.targetWeightInput.classList.add('is-invalid');
@@ -2384,7 +1432,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 return;
             }
 
-            const oneRm = parseFloat(dom.oneRmInput.value);
+            const oneRm = parseFloat(dom.oneRmInput.value.replace(',', '.'));
 
             const goals = [
                 { name: 'Hypertrophie', icon: '<i class="fas fa-child-reaching"></i>', minPercent: 0.60, maxPercent: 0.80, a_class: 'hypertrophy', tooltip: '60-80% du 1RM', reps: '6-12 Répétitions' },
@@ -2428,9 +1476,7 @@ body.dark-mode .exercise-card .btn-secondary {
             if (action === 'quick-edit') {
                 state.quickEditIndex = idx;
                 dom.quickEditExerciseName.textContent = state.sessions[state.currentSessionIndex].exercises[idx].name;
-                dom.quickEditModal.classList.remove('hidden');
-                dom.quickEditModal.classList.add('show');
-                if (!state.isMobileView) dom.quickEditWeight.focus();
+                openModal(dom.quickEditModal);
                 dom.quickEditWeight.classList.remove('is-invalid');
                 dom.quickEditWeightError.textContent = '';
                 dom.quickEditReps.classList.remove('is-invalid');
@@ -2529,12 +1575,11 @@ body.dark-mode .exercise-card .btn-secondary {
         function handleTimerActions(timerAction, idx, element) {
             const timerDisplay = element.querySelector('.timer-display');
             const startBtn = element.querySelector('[data-timer-action="start"]');
-            const stopBtn = element.querySelector('[data-timer-action="stop"]'); // This is now our Pause/Resume button
+            const stopBtn = element.querySelector('[data-timer-action="stop"]');
             const exercise = state.sessions[state.currentSessionIndex].exercises[idx];
             const restString = exercise.rest;
             const duration = parseInt(restString) * (restString.includes('min') ? 60 : 1) || 60;
 
-            // Initialize timer state if it doesn't exist
             if (!state.timers[idx]) {
                 state.timers[idx] = {
                     interval: null,
@@ -2570,7 +1615,7 @@ body.dark-mode .exercise-card .btn-secondary {
                         }
                         startBtn.classList.remove('hidden');
                         stopBtn.classList.add('hidden');
-                        state.timers[idx].remaining = state.timers[idx].duration; // Reset for next time
+                        state.timers[idx].remaining = state.timers[idx].duration;
                     } else {
                         timerState.remaining = remainingSeconds;
                         timerDisplay.textContent = formatTimerDisplay(remainingSeconds);
@@ -2584,25 +1629,25 @@ body.dark-mode .exercise-card .btn-secondary {
                 stopBtn.style.background = 'var(--btn-danger-bg)';
             };
 
-            if (timerAction === 'start' || (timerAction === 'stop' && state.timers[idx].isPaused)) { // Start or Resume
+            if (timerAction === 'start' || (timerAction === 'stop' && state.timers[idx].isPaused)) {
                 state.timers[idx].isPaused = false;
                 runTimer();
-            } else if (timerAction === 'stop' && !state.timers[idx].isPaused) { // Pause
+            } else if (timerAction === 'stop' && !state.timers[idx].isPaused) {
                 state.timers[idx].isPaused = true;
                 clearInterval(state.timers[idx].interval);
                 localStorage.removeItem(`timer-${idx}`);
                 timerDisplay.classList.remove('timer-active');
-                stopBtn.innerHTML = '<i class="fas fa-play"></i>'; // Set icon to Resume/Play
+                stopBtn.innerHTML = '<i class="fas fa-play"></i>';
                 stopBtn.style.background = 'var(--btn-success-bg)';
-            } else if (timerAction === 'reset') { // Reset
+            } else if (timerAction === 'reset') {
                 clearInterval(state.timers[idx].interval);
                 localStorage.removeItem(`timer-${idx}`);
-                state.timers[idx] = null; // Clear the state
+                state.timers[idx] = null;
                 timerDisplay.textContent = formatTimerDisplay(duration);
                 timerDisplay.classList.remove('timer-active');
                 startBtn.classList.remove('hidden');
                 stopBtn.classList.add('hidden');
-                stopBtn.innerHTML = '<i class="fas fa-pause"></i>'; // Reset icon
+                stopBtn.innerHTML = '<i class="fas fa-pause"></i>';
                 stopBtn.style.background = 'var(--btn-danger-bg)';
             }
         }
@@ -2679,7 +1724,6 @@ body.dark-mode .exercise-card .btn-secondary {
             });
             state.timers = {};
             
-            // MODIFICATION: Call the dedicated reset function without confirmation
             resetTotalWorkoutTimer(false);
             
             dom.totalKgRepEl.textContent = "0 kg/rep";
@@ -2692,7 +1736,7 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function isAppStateValid() {
-            if (!Array.isArray(state.sessions)) {
+            if (!Array.isArray(state.sessions) || state.sessions.length === 0) {
                 return false;
             }
             if (typeof state.currentSessionIndex !== 'number' || state.currentSessionIndex < 0 || state.currentSessionIndex >= state.sessions.length) {
@@ -2716,7 +1760,6 @@ body.dark-mode .exercise-card .btn-secondary {
             const currentSession = state.sessions[state.currentSessionIndex];
             const exercises = (currentSession && Array.isArray(currentSession.exercises)) ? currentSession.exercises : [];
             
-            // Correction : S'assurer que chaque exercice a un temps de repos par défaut.
             (exercises || []).forEach(ex => {
                 if (!ex.rest || String(ex.rest).trim() === "") {
                     ex.rest = "1 min";
@@ -2728,7 +1771,6 @@ body.dark-mode .exercise-card .btn-secondary {
                     return;
                 }
                 
-                // Normalize series to have at least 4 entries
                 while (ex.series.length < 4) {
                     ex.series.push({ weight: '', reps: '' });
                 }
@@ -3077,7 +2119,7 @@ body.dark-mode .exercise-card .btn-secondary {
 
             dom.progressBar.setAttribute('aria-valuenow', (totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0).toFixed(0));
 
-            const previous = parseFloat(dom.previousWeekInput.value) || 0;
+            const previous = parseFloat(dom.previousWeekInput.value.replace(',', '.')) || 0;
             const delta = newKgRep - previous;
             const startDelta = parseFloat(dom.deltaEl.textContent.replace(' kg', '').replace('+', '')) || 0;
             
@@ -3151,8 +2193,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 console.error("Erreur lors de la sauvegarde de l'état du calculateur :", e);
             }
 
-            // MODIFICATION: Save the robust timer state
-            // Calculate total paused duration correctly before saving
             let currentTotalPaused = state.totalPausedDuration;
             if (state.isWorkoutTimerPaused && state.pauseStartTime > 0) {
                 currentTotalPaused += (Date.now() - state.pauseStartTime);
@@ -3223,118 +2263,26 @@ body.dark-mode .exercise-card .btn-secondary {
                     </div>
                 `;
                 document.body.appendChild(modal);
+                openModal(modal);
 
                 const confirmYesBtn = modal.querySelector('.confirm-yes');
                 const confirmNoBtn = modal.querySelector('.confirm-no');
-                const triggeringElement = document.activeElement;
-
-                const cleanup = () => {
-                    modal.classList.remove('show');
-                    const fallbackTimeout = setTimeout(() => {
-                        if (document.body.contains(modal)) {
-                            modal.remove();
-                            if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                                triggeringElement.focus();
-                            }
-                        }
-                    }, 500);
-                    modal.addEventListener('transitionend', () => {
-                        clearTimeout(fallbackTimeout);
-                        if (document.body.contains(modal)) {
-                           modal.remove();
-                           if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                                triggeringElement.focus();
-                            }
-                        }
-                    }, { once : true });
-                };
 
                 confirmYesBtn.onclick = () => { 
-                    cleanup();
+                    closeModal(modal);
+                    modal.addEventListener('transitionend', () => modal.remove(), {once: true});
                     resolve(true); 
                 };
 
                 confirmNoBtn.onclick = () => { 
-                    cleanup();
+                    closeModal(modal);
+                    modal.addEventListener('transitionend', () => modal.remove(), {once: true});
                     resolve(false); 
                 };
-                
-                setTimeout(() => {
-                    modal.classList.add('show');
-                    confirmNoBtn.focus();
-                }, 10);
             });
         }
         
-        function autoSaveSession() {
-            // This function is kept for potential future use, but is no longer called automatically.
-            let currentSessionReps = 0;
-            let currentSessionTonnage = 0;
-
-            const exercisesData = (state.sessions[state.currentSessionIndex]?.exercises || []).flatMap((ex, idx) => {
-                const exerciseSeries = [];
-                let exerciseTonnage = 0;
-                let exerciseReps = 0;
-
-                ex.series.forEach(s => {
-                    const repsValues = String(s.reps).split('+').map(val => parseFloat(val.trim().replace(',', '.'))).filter(val => !isNaN(val) && val >= 0) || [];
-                    const weightValues = String(s.weight).split('+').map(val => parseFloat(val.trim().replace(',', '.'))).filter(val => !isNaN(val) && val >= 0) || [];
-                    
-                    const minLength = Math.min(repsValues.length, weightValues.length);
-                    
-                    if (minLength > 0) {
-                        for (let k = 0; k < minLength; k++) {
-                            exerciseSeries.push({ reps: repsValues[k], weight: weightValues[k] });
-                            exerciseTonnage += repsValues[k] * weightValues[k];
-                            exerciseReps += repsValues[k];
-                        }
-                    } else if (repsValues.length > 0) {
-                        repsValues.forEach(r => {
-                            exerciseSeries.push({ reps: r, weight: 0 });
-                            exerciseReps += r;
-                        });
-                    } else if (weightValues.length > 0) {
-                        weightValues.forEach(w => {
-                            exerciseSeries.push({ reps: 0, weight: w });
-                        });
-                    }
-                });
-
-                if (exerciseSeries.length > 0) {
-                    currentSessionTonnage += exerciseTonnage;
-                    currentSessionReps += exerciseReps;
-                    return [{
-                        name: ex.name,
-                        rest: ex.rest || "1 min",
-                        series: exerciseSeries.filter(s => s.reps > 0 || s.weight > 0),
-                        exerciseReps: exerciseReps
-                    }];
-                }
-                return [];
-            });
-
-            const workoutData = {
-                id: state.workoutStartTime, 
-                date: new Date().toISOString(),
-                sessionName: dom.sessionSelect.selectedOptions[0].text,
-                totalReps: currentSessionReps,
-                totalKgRep: currentSessionReps > 0 ? (currentSessionTonnage / currentSessionReps).toFixed(2) : 0,
-                duration: dom.totalTimeEl.textContent,
-                notes: dom.sessionNotesInput.value,
-                exercises: exercisesData
-            };
-            let history = getHistory();
-            history = history.filter(session => !(session.isAutoSave && session.id === state.workoutStartTime));
-            history.push(workoutData);
-            try {
-                localStorage.setItem('workoutHistory', JSON.stringify(history));
-            } catch (e) {
-                console.error("Erreur lors de la sauvegarde de l'historique :", e);
-            }
-            showNotification("Progression de la séance sauvegardée automatiquement.", "info", 3000);
-        }
-        
-        function finishAndSaveSession() {
+        async function finishAndSaveSession() {
             let currentSessionReps = 0;
             let currentSessionTonnage = 0;
 
@@ -3397,7 +2345,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 exercises: exercisesData
             };
             let history = getHistory();
-            history = history.filter(session => !(session.isAutoSave && session.id === state.workoutStartTime));
             history.push(workoutData);
             localStorage.setItem('workoutHistory', JSON.stringify(history));
             showNotification("Séance sauvegardée dans l'historique avec succès !", "success");
@@ -3407,7 +2354,6 @@ body.dark-mode .exercise-card .btn-secondary {
             });
             state.timers = {};
             
-            // MODIFICATION: Reset timer state fully without confirmation
             resetTotalWorkoutTimer(false);
             localStorage.removeItem('inProgressWorkout');
             createTable();
@@ -3499,7 +2445,6 @@ body.dark-mode .exercise-card .btn-secondary {
                     detailsDiv.classList.add('visible');
                     button.setAttribute('aria-expanded', 'true');
                     
-                    // AJOUT : Scroll automatique pour voir le contenu
                     detailsDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
                 }
             } 
@@ -3698,15 +2643,12 @@ body.dark-mode .exercise-card .btn-secondary {
              return `${m}:${String(s).padStart(2, '0')}`;
         }
 
-        // --- NEW/REFACTORED WORKOUT TIMER FUNCTIONS ---
-
         function updateTotalTimeDisplay() {
             if (!state.workoutStartTime) {
                 dom.totalTimeEl.textContent = "00:00:00";
                 return;
             }
 
-            // Calculate elapsed time based on timestamps, not a simple counter
             const elapsed = state.isWorkoutTimerPaused 
                 ? state.pauseStartTime - state.workoutStartTime - state.totalPausedDuration 
                 : Date.now() - state.workoutStartTime - state.totalPausedDuration;
@@ -3728,13 +2670,11 @@ body.dark-mode .exercise-card .btn-secondary {
             if (state.totalWorkoutTimeInterval) clearInterval(state.totalWorkoutTimeInterval);
 
             if (!state.workoutStartTime) {
-                // First start
                 state.workoutStartTime = Date.now();
                 state.totalPausedDuration = 0;
             }
             
             if (state.isWorkoutTimerPaused && state.pauseStartTime > 0) {
-                // Resuming from a pause
                 const currentPauseDuration = Date.now() - state.pauseStartTime;
                 state.totalPausedDuration += currentPauseDuration;
             }
@@ -3762,7 +2702,7 @@ body.dark-mode .exercise-card .btn-secondary {
         async function resetTotalWorkoutTimer(withConfirmation = true) {
             let confirmed = false;
             if (withConfirmation) {
-                if (!state.workoutStartTime) return; // Don't ask to reset if not started
+                if (!state.workoutStartTime) return;
                 confirmed = await customConfirm("Voulez-vous vraiment réinitialiser le minuteur de la séance ?");
             } else {
                 confirmed = true;
@@ -3780,7 +2720,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 dom.totalTimeEl.textContent = "00:00:00";
                 updateTimerToggleButtonUI(true); 
                 
-                // Clear only timer-related parts from persisted state
                 const inProgress = JSON.parse(localStorage.getItem('inProgressWorkout')) || {};
                 delete inProgress.workoutStartTime;
                 delete inProgress.isWorkoutTimerPaused;
@@ -3795,8 +2734,6 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function handleVisibilityChange() {
-            // MODIFICATION: No longer automatically pausing timer.
-            // This function is kept for individual rest timers.
             if (document.hidden) {
                 for (const idx in state.timers) {
                     if (state.timers[idx] && state.timers[idx].interval) {
@@ -3804,12 +2741,12 @@ body.dark-mode .exercise-card .btn-secondary {
                     }
                 }
             } else {
-                // When returning to the tab, reload the individual timers from localStorage
                 loadPersistentIndividualTimers();
             }
         }
 
         function applyTheme(theme) {
+            document.documentElement.classList.remove('dark-mode-preload');
             if (theme === 'dark') {
                 dom.body.classList.add('dark-mode');
                 dom.themeToggleBtn.innerHTML = '☀️';
@@ -3832,23 +2769,10 @@ body.dark-mode .exercise-card .btn-secondary {
         }
 
         function showNewSessionModal() {
-            dom.newSessionModal.classList.remove('hidden');
-            dom.newSessionModal.classList.add('show');
-            dom.newSessionNameInput.value = ''; 
-            if (!state.isMobileView) dom.newSessionNameInput.focus(); 
+            openModal(dom.newSessionModal);
+            dom.newSessionNameInput.value = '';
             dom.newSessionNameInput.classList.remove('is-invalid');
             dom.newSessionNameError.textContent = '';
-        }
-
-        function hideNewSessionModal() {
-            dom.newSessionModal.classList.remove('show');
-            const triggeringElement = document.activeElement;
-            dom.newSessionModal.addEventListener('transitionend', () => {
-                dom.newSessionModal.classList.add('hidden');
-                if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                    triggeringElement.focus();
-                }
-            }, { once : true });
         }
 
         async function createNewSession() {
@@ -3872,7 +2796,7 @@ body.dark-mode .exercise-card .btn-secondary {
             updateSessionSelectOptions(); 
             const newSessionIndex = state.sessions.length - 1;
             
-            hideNewSessionModal();
+            closeModal(dom.newSessionModal);
             showNotification(`Séance "${newName}" créée avec succès !`, "success");
             
             if (!dashboard.classList.contains('hidden')) {
@@ -3881,7 +2805,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 state.currentSessionIndex = newSessionIndex; 
                 dom.sessionSelect.value = state.currentSessionIndex;
                 localStorage.removeItem('inProgressWorkout');
-                resetTotalWorkoutTimer(false); // Reset timer for new session
+                resetTotalWorkoutTimer(false);
                 createTable(); 
                 updateAllTotals(); 
             }
@@ -3930,7 +2854,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     updateSessionSelectOptions();
                     dom.sessionSelect.value = state.currentSessionIndex;
                     localStorage.removeItem('inProgressWorkout');
-                    resetTotalWorkoutTimer(false); // Reset timer
+                    resetTotalWorkoutTimer(false);
                     createTable();
                     updateAllTotals();
                     showNotification(`Séance "${currentSession.name}" supprimée avec succès.`, "info");
@@ -3938,7 +2862,6 @@ body.dark-mode .exercise-card .btn-secondary {
             }
         }
 
-        // MODIFICATION START: Added function to reset the current session's data
         async function resetCurrentSession() {
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession) return;
@@ -3953,12 +2876,11 @@ body.dark-mode .exercise-card .btn-secondary {
                         });
                     }
                 });
-                createTable(); // Re-render the table with empty inputs
-                updateAllTotals(); // Recalculate and update summary data
+                createTable();
+                updateAllTotals();
                 showNotification(`Séance "${currentSession.name}" réinitialisée.`, "info");
             }
         }
-        // MODIFICATION END
 
         async function openNewSessionLogic(historicalSession) {
             const confirmed = await customConfirm("Ouvrir cette séance ? La séance en cours sera remplacée et toutes les données non sauvegardées seront perdues.");
@@ -3967,7 +2889,7 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (timer && timer.interval) clearInterval(timer.interval);
             });
             state.timers = {};
-            resetTotalWorkoutTimer(false); // Reset timer completely
+            resetTotalWorkoutTimer(false);
             localStorage.removeItem('inProgressWorkout');
             
             dom.totalKgRepEl.textContent = "0 kg/rep";
@@ -3998,16 +2920,8 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.previousWeekInput.value = historicalSession.totalKgRep || "";
             dom.sessionNotesInput.value = historicalSession.notes || ""; 
             showNotification(`Séance "${historicalSession.sessionName}" ouverte et chargée avec succès.`, "success", 3000);
-            dom.loadOptionsModal.classList.remove('show');
-            const triggeringElement = document.activeElement;
-            dom.loadOptionsModal.addEventListener('transitionend', () => {
-                dom.loadOptionsModal.classList.add('hidden');
-                if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                    triggeringElement.focus();
-                }
-            }, { once : true });
-            dom.historyModal.classList.remove('show');
-            dom.historyModal.addEventListener('transitionend', () => dom.historyModal.classList.add('hidden'), { once: true });
+            closeModal(dom.loadOptionsModal);
+            closeModal(dom.historyModal);
         }
 
         async function appendToCurrentSessionLogic(historicalSession) {
@@ -4038,40 +2952,16 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.previousWeekInput.value = historicalSession.totalKgRep || "";
             dom.sessionNotesInput.value = historicalSession.notes || ""; 
             showNotification(`${exercisesAdded} exercices ajoutés et ${exercisesUpdated} mis à jour dans la séance en cours.`, "success", 5000);
-            dom.loadOptionsModal.classList.remove('show');
-            const triggeringElement = document.activeElement;
-            dom.loadOptionsModal.addEventListener('transitionend', () => {
-                dom.loadOptionsModal.classList.add('hidden');
-                if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                    triggeringElement.focus();
-                }
-            }, { once : true });
-            dom.historyModal.classList.remove('show');
-            dom.historyModal.addEventListener('transitionend', () => dom.historyModal.classList.add('hidden'), { once: true });
+            closeModal(dom.loadOptionsModal);
+            closeModal(dom.historyModal);
         }
 
         function showLoadOptionsModal(session) {
             state.sessionToLoad = session; 
             dom.loadSessionNameDisplay.textContent = session.sessionName;
-            dom.loadOptionsModal.classList.remove('hidden');
-            dom.loadOptionsModal.classList.add('show');
-            const firstButton = dom.loadOptionsModal.querySelector('button');
-            if (firstButton) firstButton.focus();
-        }
-
-        function hideLoadOptionsModal() {
-            dom.loadOptionsModal.classList.remove('show');
-            const triggeringElement = document.activeElement;
-            dom.loadOptionsModal.addEventListener('transitionend', () => {
-                dom.loadOptionsModal.classList.add('hidden');
-                state.sessionToLoad = null; 
-                if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                    triggeringElement.focus();
-                }
-            }, { once : true });
+            openModal(dom.loadOptionsModal);
         }
            
-
         function playBeep() {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -4205,7 +3095,6 @@ body.dark-mode .exercise-card .btn-secondary {
             });
 
             dom.sessionSelect.addEventListener('change', () => {
-              // Stoppe et purge tous les timers d'exercices
               for (const key in state.timers) {
                 const t = state.timers[key];
                 if (t && t.interval) {
@@ -4214,31 +3103,17 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
               }
               state.timers = {};
-
-              // Réinitialise le minuteur global proprement (sans confirmation)
-              if (typeof resetTotalWorkoutTimer === 'function') {
-                try { resetTotalWorkoutTimer(false); } catch {}
-              }
-
-              // Oublie l’éventuelle séance en cours
+              resetTotalWorkoutTimer(false);
               localStorage.removeItem('inProgressWorkout');
-
-              // Pointe sur la nouvelle séance sélectionnée
               state.currentSessionIndex = +dom.sessionSelect.value;
-
-              // Réinitialise l’UI dérivée (si présents)
               if (dom.totalKgRepEl) dom.totalKgRepEl.textContent = "0 kg/rep";
               if (dom.deltaEl) dom.deltaEl.textContent = "0 kg";
               if (dom.previousWeekInput) dom.previousWeekInput.value = "";
               if (dom.sessionNotesInput) dom.sessionNotesInput.value = "";
-
-              // Reconstruit l’UI
-              if (typeof createTable === 'function') createTable();
-              if (typeof updateAllTotals === 'function') updateAllTotals();
-              if (typeof updateDeleteSessionButtonState === 'function') updateDeleteSessionButtonState();
-
-              // Feedback discret
-              if (typeof showNotification === 'function') showNotification("Séance changée.", "info", 2000);
+              createTable();
+              updateAllTotals();
+              updateDeleteSessionButtonState();
+              showNotification("Séance changée.", "info", 2000);
             });
             
             dom.addExerciseBtn.addEventListener('click', () => {
@@ -4273,7 +3148,6 @@ body.dark-mode .exercise-card .btn-secondary {
 
             dom.exerciseListContainer.addEventListener('input', e => { 
                 if (e.target.classList.contains('reps') || e.target.classList.contains('weight')) {
-                    // Start timer on first input
                     if (!state.workoutStartTime) {
                         startTotalWorkoutTimer();
                     }
@@ -4352,16 +3226,8 @@ body.dark-mode .exercise-card .btn-secondary {
             dom.exerciseListContainer.addEventListener('click', handleTableActions); 
             document.getElementById('finishSessionBtn').addEventListener('click', finishAndSaveSession);
             document.getElementById('viewHistoryBtn').addEventListener('click', () => {
-                const triggeringElement = document.activeElement;
                 displayHistory(); 
-                dom.historyModal.classList.remove('hidden'); 
-                dom.historyModal.classList.add('show');
-                dom.closeHistoryModal.focus(); 
-                dom.historyModal.addEventListener('transitionend', () => {
-                    if (dom.historyModal.classList.contains('hidden') && triggeringElement && typeof triggeringElement.focus === 'function') {
-                        triggeringElement.focus();
-                    }
-                }, { once : true });
+                openModal(dom.historyModal);
             });
             dom.historyModal.addEventListener('click', handleHistoryActions);
             dom.exportBtn.addEventListener('click', exportCSV); 
@@ -4417,24 +3283,14 @@ body.dark-mode .exercise-card .btn-secondary {
                 };
                 reader.readAsText(file, 'UTF-8');
             });
-
-            document.getElementById('closeHistoryModal').addEventListener('click', () => {
-                dom.historyModal.classList.remove('show');
-                const triggeringElement = document.activeElement;
-                dom.historyModal.addEventListener('transitionend', () => {
-                    dom.historyModal.classList.add('hidden');
-                    if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                        triggeringElement.focus();
-                    }
-                }, { once : true });
-            });
+            
+            dom.closeHistoryModal.addEventListener('click', () => closeModal(dom.historyModal));
             dom.themeToggleBtn.addEventListener('click', () => {
                 const newTheme = dom.body.classList.contains('dark-mode') ? 'light' : 'dark';
                 applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
             });
             
-            // MODIFICATION: Event listener for the main timer toggle button
             dom.toggleWorkoutTimerBtn.addEventListener('click', () => {
                 if (state.isWorkoutTimerPaused) {
                     startTotalWorkoutTimer();
@@ -4443,18 +3299,14 @@ body.dark-mode .exercise-card .btn-secondary {
                 }
             });
 
-            // MODIFICATION: Event listener for the new reset button
             dom.resetWorkoutTimerBtn.addEventListener('click', () => resetTotalWorkoutTimer(true));
-
             dom.createNewSessionTypeBtn.addEventListener('click', showNewSessionModal);
             dom.deleteCurrentSessionBtn.addEventListener('click', deleteCurrentSession);
-            // MODIFICATION START: Added event listener for the new reset button
             dom.resetCurrentSessionBtn.addEventListener('click', resetCurrentSession);
-            // MODIFICATION END
-            dom.closeNewSessionModal.addEventListener('click', hideNewSessionModal);
-            dom.cancelNewSessionBtn.addEventListener('click', hideNewSessionModal);
+            dom.closeNewSessionModal.addEventListener('click', () => closeModal(dom.newSessionModal));
+            dom.cancelNewSessionBtn.addEventListener('click', () => closeModal(dom.newSessionModal));
             dom.createNewSessionBtn.addEventListener('click', createNewSession);
-            dom.closeLoadOptionsModal.addEventListener('click', hideLoadOptionsModal);
+            dom.closeLoadOptionsModal.addEventListener('click', () => closeModal(dom.loadOptionsModal));
             dom.openNewSessionBtn.addEventListener('click', async () => { 
                 if (state.sessionToLoad) await openNewSessionLogic(state.sessionToLoad);
             });
@@ -4463,36 +3315,12 @@ body.dark-mode .exercise-card .btn-secondary {
             });
 
             if (dom.plateCalculatorBtn) {
-                dom.plateCalculatorBtn.addEventListener('click', () => {
-                    const triggeringElement = document.activeElement;
-                    dom.plateCalculatorModal.classList.remove('hidden');
-                    dom.plateCalculatorModal.classList.add('show');
-                    const firstInput = dom.plateCalculatorModal.querySelector('input, button');
-                    if (firstInput) firstInput.focus();
-                    dom.plateCalculatorModal.addEventListener('transitionend', () => {
-                        if (dom.plateCalculatorModal.classList.contains('hidden') && triggeringElement && typeof triggeringElement.focus === 'function') {
-                            triggeringElement.focus();
-                        }
-                    }, { once : true });
-                });
+                dom.plateCalculatorBtn.addEventListener('click', () => openModal(dom.plateCalculatorModal));
             }
 
-            dom.closePlateCalculatorModal.addEventListener('click', () => {
-                dom.plateCalculatorModal.classList.remove('show');
-                const triggeringElement = document.activeElement;
-                dom.plateCalculatorModal.addEventListener('transitionend', () => {
-                    dom.plateCalculatorModal.classList.add('hidden');
-                    if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                        triggeringElement.focus();
-                    }
-                }, { once : true });
-            });
-            if (dom.targetWeightInput) {
-                dom.targetWeightInput.addEventListener('input', calculatePlates);
-            }
-            if (dom.barbellWeightInput) {
-                dom.barbellWeightInput.addEventListener('input', calculatePlates);
-            }
+            dom.closePlateCalculatorModal.addEventListener('click', () => closeModal(dom.plateCalculatorModal));
+            if (dom.targetWeightInput) dom.targetWeightInput.addEventListener('input', calculatePlates);
+            if (dom.barbellWeightInput) dom.barbellWeightInput.addEventListener('input', calculatePlates);
             
             document.querySelectorAll('input[name="oneRmInputMode"]').forEach(radio => {
                 radio.addEventListener('change', (event) => {
@@ -4547,17 +3375,8 @@ body.dark-mode .exercise-card .btn-secondary {
                     if (firstInput) firstInput.focus();
                 });
             }
-
-            dom.closeQuickEditModal.addEventListener('click', () => {
-                dom.quickEditModal.classList.remove('show');
-                const triggeringElement = document.activeElement;
-                dom.quickEditModal.addEventListener('transitionend', () => {
-                    dom.quickEditModal.classList.add('hidden');
-                    if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                        triggeringElement.focus();
-                    }
-                }, { once : true });
-            });
+            
+            dom.closeQuickEditModal.addEventListener('click', () => closeModal(dom.quickEditModal));
             dom.applyQuickEditBtn.addEventListener('click', () => {
                 const weightValid = validateInputField(dom.quickEditWeight, dom.quickEditWeightError, true);
                 const repsValid = validateInputField(dom.quickEditReps, dom.quickEditRepsError, true);
@@ -4578,14 +3397,7 @@ body.dark-mode .exercise-card .btn-secondary {
                     
                     createTable();
                     updateAllTotals();
-                    dom.quickEditModal.classList.remove('show');
-                    const triggeringElement = document.activeElement;
-                    dom.quickEditModal.addEventListener('transitionend', () => {
-                        dom.quickEditModal.classList.add('hidden');
-                        if (triggeringElement && typeof triggeringElement.focus === 'function') {
-                            triggeringElement.focus();
-                        }
-                    }, { once : true });
+                    closeModal(dom.quickEditModal);
                     showNotification("Séries mises à jour rapidement !", "success");
                 }
             });
@@ -4594,32 +3406,6 @@ body.dark-mode .exercise-card .btn-secondary {
                 if (e.ctrlKey || e.metaKey) { 
                     if (e.key === 's') { e.preventDefault(); finishAndSaveSession(); } 
                     if (e.key === 'e') { e.preventDefault(); exportCSV(); } 
-                }
-                if (e.key === 'Escape') { 
-                    if (dom.historyModal.classList.contains('show')) {
-                        dom.historyModal.classList.remove('show');
-                        dom.historyModal.addEventListener('transitionend', () => dom.historyModal.classList.add('hidden'), { once : true });
-                    }
-                    if (dom.newSessionModal.classList.contains('show')) {
-                        dom.newSessionModal.classList.remove('show');
-                        dom.newSessionModal.addEventListener('transitionend', () => dom.newSessionModal.classList.add('hidden'), { once : true });
-                    }
-                    if (dom.loadOptionsModal.classList.contains('show')) {
-                        hideLoadOptionsModal();
-                    }
-                    if (dom.plateCalculatorModal.classList.contains('show')) {
-                        dom.plateCalculatorModal.classList.remove('show');
-                        dom.plateCalculatorModal.addEventListener('transitionend', () => dom.plateCalculatorModal.classList.add('hidden'), { once : true });
-                    }
-                    if (dom.quickEditModal.classList.contains('show')) {
-                        dom.quickEditModal.classList.remove('show');
-                        dom.quickEditModal.addEventListener('transitionend', () => dom.quickEditModal.classList.add('hidden'), { once: true });
-                    }
-                    if (dom.pwaInstallPrompt.classList.contains('show')) {
-                        dom.pwaInstallPrompt.classList.remove('show');
-                        dom.pwaInstallPrompt.addEventListener('transitionend', () => dom.pwaInstallPrompt.classList.add('hidden'), { once: true });
-                        localStorage.setItem('pwaPromptDismissed', 'true');
-                    }
                 }
             });
 
@@ -4659,14 +3445,10 @@ body.dark-mode .exercise-card .btn-secondary {
             });
             dom.bottomViewHistoryBtn.addEventListener('click', () => {
                 displayHistory(); 
-                dom.historyModal.classList.remove('hidden'); 
-                dom.historyModal.classList.add('show');
-                dom.closeHistoryModal.focus();
+                openModal(dom.historyModal);
             });
             dom.bottomPlateCalculatorBtn.addEventListener('click', () => {
-                dom.plateCalculatorModal.classList.remove('hidden');
-                dom.plateCalculatorModal.classList.add('show');
-                dom.closePlateCalculatorModal.focus();
+                openModal(dom.plateCalculatorModal);
             });
             
             document.addEventListener('visibilitychange', handleVisibilityChange);
