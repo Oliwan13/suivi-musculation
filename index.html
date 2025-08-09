@@ -198,7 +198,7 @@
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-family: 'Inter', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-size: var(--font-size-base); 
         line-height: 1.6; 
         margin: 0;
@@ -4204,33 +4204,41 @@ body.dark-mode .exercise-card .btn-secondary {
                 populateDashboard();
             });
 
-            dom.sessionSelect.addEventListener('change', async () => {
-                const lastSavedIndex = state.currentSessionIndex;
-                if (localStorage.getItem('inProgressWorkout')) {
-                    const confirmed = await customConfirm("Changer de séance annulera la séance en cours. Toutes les données non sauvegardées seront perdues. Continuer ?");
-                    if (!confirmed) {
-                        dom.sessionSelect.value = lastSavedIndex;
-                        return;
-                    }
-                    for (const timerKey in state.timers) {
-                        if (state.timers[timerKey] && state.timers[timerKey].interval) {
-                            clearInterval(state.timers[timerKey].interval);
-                            localStorage.removeItem(`timer-${timerKey}`);
-                        }
-                    }
-                    state.timers = {};
-                    
-                    resetTotalWorkoutTimer(false); // MODIFICATION: Reset timer state fully
-                    localStorage.removeItem('inProgressWorkout');
-
-                    dom.totalKgRepEl.textContent = "0 kg/rep";
-                    dom.deltaEl.textContent = "0 kg"; 
-                    dom.previousWeekInput.value = "";
-                    dom.sessionNotesInput.value = ""; 
+            dom.sessionSelect.addEventListener('change', () => {
+              // Stoppe et purge tous les timers d'exercices
+              for (const key in state.timers) {
+                const t = state.timers[key];
+                if (t && t.interval) {
+                  clearInterval(t.interval);
+                  localStorage.removeItem(`timer-${key}`);
                 }
-                state.currentSessionIndex = +dom.sessionSelect.value;
-                createTable();
-                updateDeleteSessionButtonState();
+              }
+              state.timers = {};
+
+              // Réinitialise le minuteur global proprement (sans confirmation)
+              if (typeof resetTotalWorkoutTimer === 'function') {
+                try { resetTotalWorkoutTimer(false); } catch {}
+              }
+
+              // Oublie l’éventuelle séance en cours
+              localStorage.removeItem('inProgressWorkout');
+
+              // Pointe sur la nouvelle séance sélectionnée
+              state.currentSessionIndex = +dom.sessionSelect.value;
+
+              // Réinitialise l’UI dérivée (si présents)
+              if (dom.totalKgRepEl) dom.totalKgRepEl.textContent = "0 kg/rep";
+              if (dom.deltaEl) dom.deltaEl.textContent = "0 kg";
+              if (dom.previousWeekInput) dom.previousWeekInput.value = "";
+              if (dom.sessionNotesInput) dom.sessionNotesInput.value = "";
+
+              // Reconstruit l’UI
+              if (typeof createTable === 'function') createTable();
+              if (typeof updateAllTotals === 'function') updateAllTotals();
+              if (typeof updateDeleteSessionButtonState === 'function') updateDeleteSessionButtonState();
+
+              // Feedback discret
+              if (typeof showNotification === 'function') showNotification("Séance changée.", "info", 2000);
             });
             
             dom.addExerciseBtn.addEventListener('click', () => {
