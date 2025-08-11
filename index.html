@@ -2131,80 +2131,67 @@ body.dark-mode .exercise-card .btn-secondary {
             pressTimer: null
         };
         
-        const defaultSessions = [
-          {
-            name: "Haut du corps (force)",
-            exercises: [
-              { name: "Développé couché barre", rest: "2 min", series: [] },
-              { name: "Machine élévations latérales debout", rest: "", series: [] },
-              { name: "Tractions", rest: "1.5 min", series: [] },
-              { name: "Développé incliné haltères", rest: "", series: [] },
-              { name: "Rowing T-barre appuyé", rest: "1.5 min", series: [] },
-              { name: "Pec deck", rest: "", series: [] },
-              { name: "Bayesian cable curl", rest: "1.25 min", series: [] },
-              { name: "Extension triceps à la poulie haute", rest: "", series: [] },
-              { name: "Tractions scapulaires", rest: "1 min", series: [] }
-            ]
-          },
-          {
-            name: "Bas du corps (force)",
-            exercises: [
-              { name: "Fentes bulgares", rest: "1.5 min", series: [] },
-              { name: "Hack squat", rest: "3 min", series: [] },
-              { name: "Hip thrust", rest: "2 min", series: [] },
-              { name: "Soulevé de terre roumain", rest: "2 min", series: [] },
-              { name: "Mollets debout", rest: "1 min", series: [] }
-            ]
-          },
-          {
-            name: "Haut du corps (hypertrophie)",
-            exercises: [
-              { name: "Dips", rest: "1.5 min", series: [] },
-              { name: "Tirage vertical prise large", rest: "", series: [] },
-              { name: "Développé convergent", rest: "1.25 min", series: [] },
-              { name: "Curl pupitre", rest: "1.25 min", series: [] },
-              { name: "Extension triceps overhead", rest: "", series: [] },
-              { name: "Élévations latérales à la poulie", rest: "1 min", series: [] },
-              { name: "Flexions poignets supination", rest: "1 min", series: [] },
-              { name: "Extensions de poignets pronation", rest: "", series: [] },
-              { name: "Farmer’s walk", rest: "1.5 min", series: [] },
-              { name: "Planche", rest: "", series: [] },
-              { name: "Face pull", rest: "", series: [] }
-            ]
-          },
-          {
-            name: "Bas du corps (hypertrophie)",
-            exercises: [
-              { name: "Pendulum squat", rest: "1.5 min", series: [] },
-              { name: "Hip thrust", rest: "1.5 min", series: [] },
-              { name: "Leg curl assis", rest: "1.25 min", series: [] },
-              { name: "Mollets assis", rest: "1 min", series: [] },
-              { name: "Glute ham raise", rest: "", series: [] },
-              { name: "Circuit abdos (relevé de jambe, crunches, planche)", rest: "1.5 min", series: [] }
-            ]
-          },
-          {
-            name: "Spécialisation trapèzes & mobilité",
-            exercises: [
-              { name: "Barbell shrugs", rest: "1 min", series: [] },
-              { name: "Face pull", rest: "1 min", series: [] },
-              { name: "Cable y-raise", rest: "1 min", series: [] },
-              { name: "Dead hang", rest: "1 min", series: [] }
-            ]
-          },
-          {
-            name: "Routine de mobilité",
-            exercises: [
-              { name: "Pass-throughs avec élastique", rest: "", series: ["2 x 15"] },
-              { name: "Wall slides (glissements au mur)", rest: "", series: ["2 x 12"] },
-              { name: "Cercles de tête lents", rest: "", series: ["1 x 5 dans chaque sens"] },
-              { name: "Rétraction du menton", rest: "", series: ["2 x 10"] },
-              { name: "90/90 stretch", rest: "", series: ["2 x 30s par côté"] },
-              { name: "Étirement du canapé (couch stretch)", rest: "", series: ["2 x 30s par côté"] },
-              { name: "Maintien en squat profond", rest: "", series: ["2 x 45-60s"] }
-            ]
-          }
-        ];
+        const default_sessions = [
+    {
+        "name": "Séance 1 (Jour 1) - Haut du Corps (Force & Largeur)",
+        "exercises": [
+            {"name": "Développé couché barre", "rest": "120s", "series": ["4 x 5-7"]},
+            {"name": "Machine élévations latérales debout", "rest": "90s", "series": ["4 x 10-12"]},
+            {"name": "Tractions", "rest": "90s", "series": ["4 x 6-8"]},
+            {"name": "Développé incliné haltères", "rest": "120s", "series": ["4 x 8-10"]},
+            {"name": "Rowing T-barre appuyé", "rest": "90s", "series": ["4 x 8-10"]},
+            {"name": "Pec Deck", "rest": "75s", "series": ["4 x 10-15"]},
+            {"name": "Bayesian Cable Curl", "rest": "75s", "series": ["3 x 10-12"]},
+            {"name": "Extension triceps à la poulie haute", "rest": "75s", "series": ["3 x 10-12"]},
+            {"name": "Tractions scapulaires", "rest": "60s", "series": ["2 x 10-15"]}
+        ]
+    },
+    {
+        "name": "Séance 2 (Jour 2) - Bas du Corps (Force)",
+        "exercises": [
+            {"name": "Fentes bulgares", "rest": "90s", "series": ["4 x 10-12/jambe"]},
+            {"name": "Hack squat", "rest": "180s", "series": ["4 x 5-7"]},
+            {"name": "Hip thrust", "rest": "120s", "series": ["4 x 8-10"]},
+            {"name": "Soulevé de terre roumain (RDL)", "rest": "120s", "series": ["4 x 6-8"]},
+            {"name": "Mollets debout", "rest": "120s", "series": ["4 x 8-12"]}
+        ]
+    },
+    {
+        "name": "Séance 3 (Jour 4) - Haut du Corps (Hypertrophie, Esthétique & Poigne)",
+        "exercises": [
+            {"name": "Dips", "rest": "90s", "series": ["4 x 8-12"]},
+            {"name": "Tirage vertical prise large", "rest": "90s", "series": ["4 x 10-12"]},
+            {"name": "Développé convergent", "rest": "75s", "series": ["4 x 12-15"]},
+            {"name": "Face Pull", "rest": "75s", "series": ["4 x 15-20"]},
+            {"name": "Curl pupitre", "rest": "75s", "series": ["4 x 10-12"]},
+            {"name": "Extension triceps overhead", "rest": "75s", "series": ["4 x 12-15"]},
+            {"name": "Élévations latérales à la poulie", "rest": "75s", "series": ["4 x 12-15"]},
+            {"name": "Flexions poignets supination", "rest": "60s", "series": ["3 x 15-20"]},
+            {"name": "Extensions poignets pronation", "rest": "60s", "series": ["3 x 15-20"]},
+            {"name": "Farmer's Walk", "rest": "90s", "series": ["3 x 30-40m"]}
+        ]
+    },
+    {
+        "name": "Séance 4 (Jour 5) - Bas du Corps (Hypertrophie & Focus Ischios/Fessiers)",
+        "exercises": [
+            {"name": "Pendulum Squat", "rest": "90s", "series": ["4 x 15-20"]},
+            {"name": "Hip thrust", "rest": "90s", "series": ["4 x 12-15"]},
+            {"name": "Leg curl assis", "rest": "75s", "series": ["4 x 12-15"]},
+            {"name": "Mollets assis", "rest": "60s", "series": ["4 x 15-25"]},
+            {"name": "Relevé fessier-ischio (Glute Ham Raise)", "rest": "90s", "series": ["4 x AMRAP"]},
+            {"name": "Circuit abdos", "rest": "90s", "series": ["3 x 15-20/Max"]}
+        ]
+    },
+    {
+        "name": "Séance 5 (Optionnelle) - Spécialisation Trapèzes & Mobilité",
+        "exercises": [
+            {"name": "Barbell Shrugs", "rest": "60s", "series": ["3 x 10-15"]},
+            {"name": "Face Pull", "rest": "60s", "series": ["3 x 15-20"]},
+            {"name": "Cable Y-Raise", "rest": "60s", "series": ["3 x 15-20"]},
+            {"name": "Dead Hang", "rest": "60s", "series": ["2 x 30-60s"]}
+        ]
+    }
+];
         
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
