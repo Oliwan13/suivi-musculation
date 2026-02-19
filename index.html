@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <!-- PWA : manifest inline via data URI -->
     <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Lyftiv%22%2C%22short_name%22%3A%22Lyftiv%22%2C%22description%22%3A%22Votre%20progression%2C%20notre%20science.%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23eef4fb%22%2C%22theme_color%22%3A%22%234a7fc1%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
     <!-- PWA iOS -->
@@ -14,14 +14,34 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Lyftiv – Votre progression, notre science.</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts — chargement non-bloquant -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'; this.onload=null;">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"></noscript>
 
     <style>
 /* CSS Cascade Layers - Base, Components, Utilities */
 @layer base, components, utilities;
+
+/* Fallbacks pour minimiser CLS des polices */
+@font-face {
+    font-display: swap;
+    font-family: 'Outfit Fallback';
+    src: local('Arial');
+    size-adjust: 98%;
+    ascent-override: 96%;
+    descent-override: 22%;
+}
+@font-face {
+    font-display: swap;
+    font-family: 'JetBrains Mono Fallback';
+    src: local('Courier New');
+    size-adjust: 97%;
+    ascent-override: 92%;
+    descent-override: 24%;
+}
 
 @layer base {
     :root {
@@ -107,8 +127,8 @@
         --font-size-2xl: clamp(1.75rem, 1.4rem + 1.8vw, 2.5rem);
 
         /* Font Families */
-        --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
-        --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        --font-body: 'Outfit', 'Outfit Fallback', system-ui, -apple-system, sans-serif;
+        --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', 'Fira Code', monospace;
 
         color-scheme: light dark;
 
@@ -210,7 +230,7 @@
         line-height: 1.6; 
         margin: 0;
         padding: var(--spacing-lg);
-        padding-bottom: calc(var(--nav-height) + var(--spacing-lg));
+        padding-bottom: calc(var(--nav-height) + var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
         background: linear-gradient(150deg, var(--color-background-gradient-start) 0%, var(--color-background-gradient-end) 100%);
         min-height: 100vh;
         color: var(--color-text-default);
@@ -704,7 +724,7 @@
         background-color: var(--color-surface-input);
         border-radius: var(--radius-medium);
         padding: var(--spacing-md);
-        box-shadow: 0 44px 10px var(--shadow-sm);
+        box-shadow: 0 4px 10px var(--shadow-sm);
         display: flex;
         flex-direction: column;
         gap: var(--spacing-sm);
@@ -717,14 +737,49 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 14px var(--shadow-md);
     }
+    /* ── Card header layout ── */
+    .card-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-sm);
+        min-height: 44px;
+    }
+    .card-header-row .btn-ghost {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-base);
+        color: var(--color-danger-default);
+        padding: 0;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+    .card-header-row .btn-ghost:hover {
+        background: hsla(0, 70%, 95%, 0.5);
+        border-color: var(--color-danger-default);
+        color: var(--color-danger-default);
+    }
+    .card-header-row .btn-ghost svg {
+        width: 18px;
+        height: 18px;
+        display: block;
+        flex-shrink: 0;
+    }
     .exercise-card h4 {
         font-size: var(--font-size-xl);
         font-weight: 700;
         color: var(--color-text-header);
         margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .exercise-card .series-group {
         display: flex;
@@ -740,6 +795,7 @@
         align-items: center;
         font-size: 0.95rem;
         color: var(--color-text-default);
+        min-height: 52px;
     }
     .exercise-card .series-row strong {
         font-weight: 600;
@@ -752,9 +808,12 @@
     }
     .exercise-card .series-input-group input {
         width: 65px;
+        min-width: 65px;
+        height: 44px;
         padding: var(--spacing-xs);
         font-size: 0.9rem;
         text-align: center;
+        box-sizing: border-box;
     }
     .serie-input-delete {
         background: none;
@@ -805,6 +864,7 @@
     }
     .exercise-card .card-actions {
         display: flex;
+        flex-wrap: nowrap;
         justify-content: space-around;
         gap: var(--spacing-sm);
         margin-top: var(--spacing-md);
@@ -1013,14 +1073,7 @@
         transform: translateY(0) scale(0.97);
         box-shadow: var(--btn-shadow-active);
     }
-    .btn:disabled, .btn.is-disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-        background: var(--color-border-default);
-        box-shadow: none;
-        transform: none;
-        color: var(--color-text-subheader);
-    }
+    .btn:disabled, .btn
 
     .btn-primary { background: var(--btn-primary-bg); }
     .btn-secondary { background: var(--btn-secondary-bg); }
@@ -1066,6 +1119,10 @@
         transition: transform 0.3s ease, opacity 0.3s ease;
         box-shadow: 0 8px 20px var(--shadow-md);
         will-change: transform, opacity;
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        border-radius: var(--radius-large);
     }
     .notification.show { 
         transform: translateX(0);
@@ -1518,19 +1575,22 @@
         position: fixed;
         bottom: 0;
         left: 0;
+        right: 0;
         width: 100%;
-        background: var(--color-surface-default);
+        background: hsla(0, 0%, 100%, 0.92);
         box-shadow: 0 -1px 0 var(--color-border-default), 0 -8px 24px var(--shadow-md);
         display: flex;
         justify-content: space-around;
         align-items: stretch;
+        flex-wrap: nowrap;
         padding: 0;
-        z-index: 999;
-        height: var(--nav-height);
         padding-bottom: env(safe-area-inset-bottom, 0px);
+        z-index: 999;
+        min-height: var(--nav-height);
+        height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        background: hsla(0, 0%, 100%, 0.92);
+        box-sizing: border-box;
     }
     body.dark-mode .bottom-navigation {
         background: hsla(225, 22%, 14%, 0.94);
@@ -1571,10 +1631,7 @@
         transform: none;
         box-shadow: none;
     }
-    .bottom-navigation .btn-active {
-        color: var(--color-primary-default);
-        background: none;
-    }
+    .bottom-navigation 
     .bottom-navigation .btn-active::before {
         width: 24px;
     }
@@ -1718,11 +1775,7 @@
 } /* End @layer components */
 
 @layer utilities {
-    .flex-center {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    
 
     .sr-only {
         position: absolute;
@@ -1736,12 +1789,7 @@
         border-width: 0;
     }
 
-    .icon-primary { color: var(--color-primary-default); }
-    .icon-success { color: var(--color-success-default); }
-    .icon-warning { color: var(--color-warning-default); }
-    .icon-danger { color: var(--color-danger-default); }
-    .icon-info { color: var(--color-info-default); }
-} /* End @layer utilities */
+                    } /* End @layer utilities */
 
 .exercise-card .btn-outline {
     font-weight: 600;
@@ -1760,29 +1808,41 @@ body.dark-mode .exercise-card .btn-secondary {
 /* --- Indicateur de sauvegarde automatique --- */
 #autoSaveIndicator {
     position: fixed;
-    bottom: calc(var(--spacing-lg) + 70px); /* au-dessus de la bottom nav */
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: hsla(140, 50%, 20%, 0.92);
-    color: hsl(140, 60%, 85%);
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-button);
-    font-size: var(--font-size-sm);
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 10px);
+    left: var(--spacing-md);
+    transform: translateY(4px);
+    background: hsla(140, 50%, 30%, 0.85);
+    color: hsl(140, 60%, 90%);
+    padding: 4px 10px 4px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
     font-weight: 600;
+    letter-spacing: 0.01em;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1500;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 998;
     white-space: nowrap;
-    box-shadow: 0 4px 12px hsla(0,0%,0%,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px hsla(0,0%,0%,0.15);
+}
+#autoSaveIndicator::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: hsl(140, 60%, 65%);
+    flex-shrink: 0;
 }
 #autoSaveIndicator.visible {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    opacity: 0.8;
+    transform: translateY(0);
 }
 body.dark-mode #autoSaveIndicator {
-    background: hsla(140, 40%, 15%, 0.95);
-    color: hsl(140, 60%, 75%);
+    background: hsla(140, 35%, 18%, 0.9);
+    color: hsl(140, 55%, 75%);
 }
 
 /* ============================================================
@@ -1791,22 +1851,10 @@ body.dark-mode #autoSaveIndicator {
 
 /* --- Graphiques de progression --- */
 
-.chart-canvas-wrapper { position: relative; height: 300px; margin-bottom: var(--spacing-lg); }
-canvas.chart-canvas { width: 100% !important; height: 100% !important; }
-.chart-stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--spacing-md); margin-bottom: var(--spacing-lg);
-}
 
 .chart-stat-card 
 .chart-stat-card 
-.chart-exercise-select {
-    width: 100%; padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-base); border: 1px solid var(--color-border-default);
-    background: var(--color-surface-input); color: var(--color-text-default);
-    font-size: var(--font-size-sm); margin-bottom: var(--spacing-md);
-}
-.chart-empty { text-align: center; color: var(--color-text-subheader); padding: var(--spacing-xxl); }
+
 
 /* --- Score de progression --- */
 
@@ -1825,18 +1873,11 @@ body.dark-mode
 }
 .deload-banner.visible { display: flex; }
 body.dark-mode .deload-banner { background: hsl(40,25%,22%); border-color: hsl(40,30%,35%); color: hsl(40,60%,75%); }
-.deload-banner .deload-icon { font-size: 1.5rem; flex-shrink: 0; }
+
 .deload-banner .deload-text strong { display: block; font-size: var(--font-size-base); margin-bottom: 2px; }
 .deload-banner .deload-text span { color: var(--color-text-subheader); }
 body.dark-mode .deload-banner .deload-text span { color: hsl(40,50%,65%); }
-.deload-btn {
-    margin-left: auto; flex-shrink: 0;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-button); border: none; cursor: pointer;
-    background: hsl(40,70%,55%); color: white; font-weight: 700;
-    font-size: var(--font-size-sm);
-}
-.deload-btn:hover { background: hsl(40,70%,45%); }
+
 
 /* --- Compléments alimentaires --- */
 /* Disclaimer dark mode */
@@ -1865,6 +1906,7 @@ body.dark-mode #dashSupplSection .suppl-disclaimer {
 
 .dash-tab-btn {
     flex: 1;
+    font-family: var(--font-body);
     min-width: 140px;
     padding: 10px var(--spacing-md);
     border: none;
@@ -2040,9 +2082,8 @@ body.dark-mode .tdee-stat-card.tdee-main {
 .suppl-card {
     background: var(--color-surface-muted); border-radius: var(--radius-base);
     border: 1px solid var(--color-border-default); padding: var(--spacing-md);
-    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    transition: none;
 }
-.suppl-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px var(--shadow-md); }
 .suppl-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); }
 .suppl-name { font-weight: 700; color: var(--color-text-header); }
 .suppl-rating { font-size: var(--font-size-sm); font-weight: 700; }
@@ -2057,8 +2098,7 @@ body.dark-mode .rating-C { color: hsl(40,70%,65%); } body.dark-mode .rating-D { 
     background: var(--color-surface-default); border: 1px solid var(--color-border-default);
     font-size: 0.78rem;
 }
-.suppl-detail { display: none; margin-top: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-default); font-size: var(--font-size-sm); color: var(--color-text-subheader); }
-.suppl-detail.open { display: block; }
+.suppl-detail { display: block; margin-top: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-default); font-size: var(--font-size-sm); color: var(--color-text-subheader); }
 .suppl-alert {
     display: flex; align-items: center; gap: var(--spacing-sm);
     background: hsl(0,60%,95%); border: 1px solid hsl(0,50%,80%);
@@ -2067,8 +2107,84 @@ body.dark-mode .rating-C { color: hsl(40,70%,65%); } body.dark-mode .rating-D { 
 }
 body.dark-mode .suppl-alert { background: hsl(0,30%,22%); border-color: hsl(0,30%,35%); color: hsl(0,50%,70%); }
 
-/* --- Bottom nav ajout bouton graphiques --- */
-.bottom-navigation { display: flex; flex-wrap: wrap; }
+
+/* ── Navigation Nutrition ──────────────────────────────── */
+.nutrition-menu {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-lg);
+    background: var(--color-surface-muted);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-border-default);
+}
+@media (max-width: 480px) {
+    .nutrition-menu {
+        gap: 4px;
+        padding: 4px;
+    }
+}
+.nutri-menu-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: var(--spacing-sm) var(--spacing-xs);
+    border-radius: var(--radius-base);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-text-subheader);
+    font-family: var(--font-body);
+    transition: background 0.18s ease, color 0.18s ease;
+    text-align: center;
+    min-height: 64px;
+    touch-action: manipulation;
+    line-height: 1;
+}
+.nutri-menu-btn:hover {
+    background: var(--color-surface-default);
+    color: var(--color-text-default);
+}
+.nutri-menu-btn.active {
+    background: var(--color-surface-default);
+    color: var(--color-primary-default);
+    box-shadow: 0 2px 8px var(--shadow-sm);
+}
+body.dark-mode .nutri-menu-btn.active {
+    background: hsla(220, 30%, 22%, 0.9);
+}
+.nutri-menu-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+    display: block;
+}
+.nutri-menu-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+}
+.nutri-menu-label small {
+    display: block;
+    font-weight: 500;
+    opacity: 0.75;
+    font-size: 0.58rem;
+}
+
+/* Sections Nutrition */
+.nutri-section-wrap {
+    animation: nutriFadeIn 0.22s ease forwards;
+}
+.nutri-section-wrap.nutri-section-hidden {
+    display: none;
+}
+@keyframes nutriFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
 /* Dashboard chart tabs */
 .dash-chart-tab {
@@ -2208,18 +2324,6 @@ input[type="number"] {
     color: var(--color-text-subheader);
 }
 
-/* Better notification */
-.notification {
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: var(--font-size-sm);
-    border-radius: var(--radius-large);
-}
-
-/* Improved deload banner */
-.deload-banner {
-    border-radius: var(--radius-large);
-}
 
 /* Better table on desktop */
 .exercise-list-container .desktop-table th {
@@ -2274,11 +2378,6 @@ input[type="number"] {
     letter-spacing: 0.04em;
     min-height: 44px;
 }
-/* dash-tab-btn font override */
-.dash-tab-btn {
-    font-family: var(--font-body);
-}
-.dash-tab-btn::-webkit-scrollbar { display: none; }
 
 /* Smooth card hover on touch devices */
 @media (hover: none) {
@@ -2399,20 +2498,419 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
     border-left-color: hsl(198,60%,45%) !important;
 }
 
+
+    /* ═══════════════════════════════════════════════════════════
+       LANDING PAGE
+    ════════════════════════════════════════════════════════════ */
+    .landing-container {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        background: linear-gradient(150deg, var(--color-background-gradient-start) 0%, var(--color-background-gradient-end) 100%);
+        z-index: 2100;
+        overflow-y: auto;
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .landing-container.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    .landing-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 860px;
+        width: 100%;
+        padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-xxxl);
+        gap: var(--spacing-xxl);
+    }
+    /* Hero */
+    .landing-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--spacing-md);
+        padding-top: var(--spacing-xl);
+    }
+    .landing-logo {
+        width: clamp(64px, 8vw, 90px);
+        height: clamp(64px, 8vw, 90px);
+        filter: drop-shadow(0 8px 24px hsla(220, 60%, 55%, 0.25));
+    }
+    .landing-title {
+        font-size: clamp(2.8rem, 2rem + 4vw, 4.5rem);
+        font-weight: 900;
+        color: var(--color-text-header);
+        letter-spacing: -0.05em;
+        line-height: 1;
+        margin: 0;
+    }
+    .landing-slogan {
+        font-size: clamp(1rem, 0.8rem + 1vw, 1.2rem);
+        color: var(--color-primary-default);
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        margin: 0;
+    }
+    .landing-tagline {
+        font-size: var(--font-size-base);
+        color: var(--color-text-subheader);
+        max-width: 480px;
+        line-height: 1.6;
+        margin: 0;
+    }
+    .landing-badges {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacing-xs);
+        margin: var(--spacing-xs) 0;
+    }
+    .landing-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 32px;
+        background: var(--color-primary-default);
+        color: white;
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: var(--font-body);
+        border: none;
+        border-radius: var(--radius-button);
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 4px 20px hsla(220, 70%, 50%, 0.35);
+        margin-top: var(--spacing-sm);
+    }
+    .landing-cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px hsla(220, 70%, 50%, 0.45);
+    }
+    /* Features */
+    .landing-section-title {
+        font-size: var(--font-size-xl);
+        font-weight: 800;
+        color: var(--color-text-header);
+        text-align: center;
+        margin: 0 0 var(--spacing-lg);
+    }
+    .landing-features {
+        width: 100%;
+    }
+    .landing-feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--spacing-md);
+    }
+    .landing-feature-card {
+        background: var(--color-surface-default);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-large);
+        padding: var(--spacing-lg);
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        box-shadow: 0 2px 8px var(--shadow-xs);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .landing-feature-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px var(--shadow-sm);
+    }
+    .lfc-icon {
+        font-size: 1.8rem;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .landing-feature-card strong {
+        font-size: var(--font-size-base);
+        color: var(--color-text-header);
+        font-weight: 700;
+    }
+    .landing-feature-card p {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-subheader);
+        line-height: 1.5;
+        margin: 0;
+    }
+    /* Guide on landing */
+    .landing-guide {
+        width: 100%;
+        text-align: left;
+    }
+    /* Dark mode feature cards */
+    body.dark-mode .landing-feature-card {
+        background: var(--color-surface-default);
+    }
+
+
+    /* Dashboard topbar (remplacement du header logo) */
+    .dashboard-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: var(--spacing-sm) 0 var(--spacing-md);
+        margin-bottom: var(--spacing-xs);
+        border-bottom: 1px solid var(--color-border-default);
+    }
+    .dashboard-topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dashboard-topbar-name {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--color-text-header);
+        letter-spacing: -0.03em;
+    }
+    .dashboard-topbar-home {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-base);
+        border: 1px solid var(--color-border-default);
+        background: var(--color-surface-muted);
+        color: var(--color-text-subheader);
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background 0.15s, color 0.15s;
+    }
+    .dashboard-topbar-home:hover {
+        background: var(--color-surface-default);
+        color: var(--color-primary-default);
+    }
+
+
+    .landing-topbar-actions {
+        position: absolute;
+        top: var(--spacing-md);
+        right: var(--spacing-md);
+        display: flex;
+        gap: 6px;
+        z-index: 10;
+    }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL PROGRESSION PROCHAINE SÉANCE
+    ════════════════════════════════════════════════════════════ */
+    #nextSessionModal .modal-content {
+        max-width: 640px;
+        max-height: 88vh;
+        overflow-y: auto;
+        padding: var(--spacing-lg);
+    }
+    .nsp-header {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+    }
+    .nsp-header h2 {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--color-text-header);
+        margin-bottom: 4px;
+    }
+    .nsp-header p {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-subheader);
+    }
+    .nsp-session-name {
+        color: var(--color-primary-default);
+        font-weight: 700;
+    }
+    /* Zone badge */
+    .nsp-zone-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+    .nsp-zone-force      { background: hsl(0,60%,93%);   color: hsl(0,55%,38%); }
+    .nsp-zone-hypertrophie { background: hsl(220,70%,93%); color: hsl(220,60%,38%); }
+    .nsp-zone-endurance  { background: hsl(140,55%,92%); color: hsl(140,50%,30%); }
+    body.dark-mode .nsp-zone-force       { background: hsl(0,30%,22%);   color: hsl(0,55%,65%); }
+    body.dark-mode .nsp-zone-hypertrophie{ background: hsl(220,30%,22%); color: hsl(220,60%,70%); }
+    body.dark-mode .nsp-zone-endurance   { background: hsl(140,25%,22%); color: hsl(140,50%,60%); }
+    /* Cards exercice */
+    .nsp-exercise-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+    }
+    .nsp-exercise-card {
+        background: var(--color-surface-muted);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-base);
+        padding: var(--spacing-md);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--spacing-xs) var(--spacing-md);
+        align-items: start;
+    }
+    .nsp-ex-name {
+        font-weight: 700;
+        color: var(--color-text-header);
+        font-size: var(--font-size-base);
+        grid-column: 1 / -1;
+    }
+    .nsp-ex-meta {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-subheader);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+    }
+    .nsp-ex-charge {
+        text-align: right;
+    }
+    .nsp-ex-charge-value {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--color-primary-default);
+        line-height: 1;
+    }
+    .nsp-ex-charge-label {
+        font-size: 0.72rem;
+        color: var(--color-text-subheader);
+        font-weight: 600;
+    }
+    .nsp-ex-delta {
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 12px;
+    }
+    .nsp-delta-up   { background: hsl(140,50%,92%); color: hsl(140,45%,30%); }
+    .nsp-delta-same { background: var(--color-surface-default); color: var(--color-text-subheader); }
+    .nsp-delta-nodata { background: var(--color-surface-default); color: var(--color-text-subheader); font-style:italic; }
+    body.dark-mode .nsp-delta-up { background: hsl(140,25%,22%); color: hsl(140,50%,60%); }
+    /* Disclaimer */
+    .nsp-disclaimer {
+        font-size: 0.72rem;
+        color: var(--color-text-subheader);
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--color-surface-muted);
+        border-radius: var(--radius-base);
+        border: 1px solid var(--color-border-default);
+        line-height: 1.5;
+    }
+    /* Footer actions */
+    .nsp-actions {
+        display: flex;
+        gap: var(--spacing-md);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .nsp-confirm-btn {
+        background: var(--color-success-default);
+        color: white;
+        font-weight: 700;
+        padding: 12px 28px;
+        border-radius: var(--radius-button);
+        border: none;
+        cursor: pointer;
+        font-family: var(--font-body);
+        font-size: var(--font-size-base);
+        touch-action: manipulation;
+        transition: transform 0.15s, box-shadow 0.15s;
+        box-shadow: 0 3px 12px hsla(140,50%,35%,0.3);
+    }
+    .nsp-confirm-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px hsla(140,50%,35%,0.4); }
+    .nsp-cancel-btn {
+        background: var(--color-surface-muted);
+        color: var(--color-text-default);
+        font-weight: 600;
+        padding: 12px 22px;
+        border-radius: var(--radius-button);
+        border: 1px solid var(--color-border-default);
+        cursor: pointer;
+        font-family: var(--font-body);
+        font-size: var(--font-size-base);
+        touch-action: manipulation;
+    }
+
+
+    /* ── Boutons icône universels (accueil, thème, menu) ────────────── */
+    .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: var(--radius-base);
+        border: 1px solid var(--color-border-default);
+        background: var(--color-surface-muted);
+        color: var(--color-text-subheader);
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        flex-shrink: 0;
+    }
+    .icon-btn:hover {
+        background: var(--color-surface-default);
+        color: var(--color-primary-default);
+        border-color: var(--color-primary-default);
+    }
+    .icon-btn svg {
+        display: block;
+        width: 18px;
+        height: 18px;
+        pointer-events: none;
+    }
+    body.dark-mode .icon-btn {
+        background: var(--color-surface-muted);
+        color: var(--color-text-subheader);
+    }
+    body.dark-mode .icon-btn:hover {
+        background: var(--color-surface-default);
+        color: var(--color-primary-light, var(--color-primary-default));
+    }
+
     </style>
 </head>
 <body>
-    <div id="dashboard" class="dashboard-container">
-        <div class="dashboard-content">
-            <header class="dashboard-header">
-                <svg class="lyftiv-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PAGE D'ACCUEIL LYFTIV
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="landing" class="landing-container">
+        <div class="landing-topbar-actions">
+            <button id="landingThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+        </div>
+        <div class="landing-content">
+
+            <!-- Hero -->
+            <header class="landing-hero">
+                <svg class="landing-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="lyftivLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="landingLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="hsl(200, 80%, 85%)" />
                             <stop offset="100%" stop-color="hsl(260, 60%, 85%)" />
                         </linearGradient>
                     </defs>
-                    <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#lyftivLogoGradient)"/>
+                    <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#landingLogoGrad)"/>
                     <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220, 60%, 55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
                     <circle cx="25" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
                     <circle cx="25" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
@@ -2422,17 +2920,133 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                     <circle cx="75" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
                     <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
                 </svg>
-                <div>
-                    <span class="app-name">Lyftiv</span>
-                    <p class="dashboard-slogan">Votre progression, notre science.</p>
+                <h1 class="landing-title">Lyftiv</h1>
+                <p class="landing-slogan">Votre progression, notre science.</p>
+                <p class="landing-tagline">L'application de musculation pensée par un pharmacien.<br>Des données réelles, des résultats mesurables.</p>
+                <div class="landing-badges">
+                    <span class="dashboard-badge badge-pharma">⚗️ Pharmaceutical-Grade</span>
+                    <span class="dashboard-badge badge-science">👨‍⚕️ Fondé par un pharmacien</span>
+                    <span class="dashboard-badge badge-free">🔓 Gratuit · Premium à venir</span>
                 </div>
+                <button id="landingStartBtn" class="landing-cta-btn">
+                    Commencer l'entraînement →
+                </button>
             </header>
 
-            <div class="dashboard-badges" aria-label="Certifications et expertise">
-                <span class="dashboard-badge badge-pharma">⚗️ Pharmaceutical-Grade Fitness</span>
-                <span class="dashboard-badge badge-science">👨‍⚕️ Fondé par un pharmacien expert</span>
-                <span class="dashboard-badge badge-free">🔓 Gratuit &mdash; Premium à venir</span>
+            <!-- Feature grid -->
+            <section class="landing-features" aria-label="Fonctionnalités">
+                <h2 class="landing-section-title">Tout ce dont vous avez besoin</h2>
+                <div class="landing-feature-grid">
+                    <div class="landing-feature-card">
+                        <span class="lfc-icon">📊</span>
+                        <strong>Progression scientifique</strong>
+                        <p>1RM, Tonnage, Kg/Rép — chaque séance transformée en données mesurables.</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <span class="lfc-icon">🔄</span>
+                        <strong>Deload intelligent</strong>
+                        <p>Détection automatique de stagnation et application du deload en un clic.</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <span class="lfc-icon">🔥</span>
+                        <strong>TDEE & Macros</strong>
+                        <p>Calculez vos besoins caloriques exacts selon votre objectif (prise, sèche, recompo).</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <span class="lfc-icon">⏱️</span>
+                        <strong>Jeûne intermittent</strong>
+                        <p>Timer circulaire 16/8, 18/6, 20/4, 24h avec suivi en temps réel.</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <span class="lfc-icon">💊</span>
+                        <strong>Compléments scientifiques</strong>
+                        <p>Base de données validée par méta-analyses. Dosages, timing, contre-indications.</p>
+                    </div>
+                    <div class="landing-feature-card">
+                        <span class="lfc-icon">📏</span>
+                        <strong>Composition corporelle</strong>
+                        <p>Masse grasse (méthode U.S. Navy), masse maigre, objectifs ACE.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide accordéon -->
+            <section class="app-guide landing-guide" aria-labelledby="landing-guide-title">
+                <h2 id="landing-guide-title" class="landing-section-title">Maîtrisez Lyftiv</h2>
+                <div class="app-guide-accordion">
+                    <details>
+                        <summary><strong>📊 Objectivez votre progression</strong></summary>
+                        <div>
+                            <p><strong>1RM (Répétition Maximale) :</strong> Estimation de votre charge maximale. La base de tout calcul scientifique de progression.</p>
+                            <p><strong>Tonnage & Kg/Rép :</strong> Transformez chaque séance en données tangibles — votre moteur de motivation quotidien.</p>
+                            <p><strong>Calcul d'Objectifs :</strong> Entrez votre 1RM, obtenez les charges exactes pour l'hypertrophie, la force ou l'endurance.</p>
+                        </div>
+                    </details>
+                    <details>
+                        <summary><strong>🛡️ Sécurité &amp; Crédibilité Scientifique</strong></summary>
+                        <div>
+                            <p>⚗️ <strong>Pharmaceutical-Grade :</strong> Chaque fonctionnalité est pensée avec la rigueur d'un protocole médical. Pas de broscience — des données validées.</p>
+                            <p>💊 <strong>Compléments alimentaires :</strong> Base de données de suppléments avec fiches scientifiques, dosages et avertissements — déjà disponible dans l'app.</p>
+                        </div>
+                    </details>
+                    <details>
+                        <summary><strong>🔓 Fonctions disponibles (Gratuit)</strong></summary>
+                        <div>
+                            <p>🧮 <strong>Calculateur de Plaques :</strong> Poids cible → plaques exactes à poser sur la barre.</p>
+                            <p>🎯 <strong>Chronomètre &amp; Minuteur de repos :</strong> Temps de repos automatique après chaque exercice.</p>
+                            <p>🔗 <strong>Superset :</strong> Liez deux exercices pour les enchaîner sans repos.</p>
+                            <p>🕐 <strong>Historique local :</strong> Retrouvez toutes vos séances passées.</p>
+                            <p>⚙️ <strong>Personnalisation de séance :</strong> Créez et adaptez vos programmes manuellement.</p>
+                            <p>🔄 <strong>Analyse de récupération &amp; Deload :</strong> Détection automatique de stagnation et application du deload en un clic depuis le widget Entraînement.</p>
+                            <p>📈 <strong>Graphiques de progression :</strong> Visualisez votre évolution sur chaque exercice (1RM, tonnage, kg/rép).</p>
+                            <p>💊 <strong>Compléments alimentaires :</strong> Base de données scientifique avec fiches détaillées, dosages et contre-indications.</p>
+                            <p>🥗 <strong>Calculateur TDEE &amp; Macros :</strong> Calculez vos besoins caloriques et macronutriments selon votre objectif.</p>
+                            <p>📊 <strong>Calcul masse grasse (méthode US Navy) :</strong> Estimez votre composition corporelle.</p>
+                        </div>
+                    </details>
+                    <details>
+                        <summary><strong>👑 Fonctions Premium (à venir)</strong></summary>
+                        <div>
+                            <p>🤖 <strong>Générateur IA de programme :</strong> Programme sur-mesure basé sur vos machines disponibles et vos objectifs, créé automatiquement.</p>
+                            <p>☁️ <strong>Sync Cloud &amp; Historique multi-appareils :</strong> Retrouvez vos données partout, avec sauvegarde sécurisée.</p>
+                            <p>🏆 <strong>Gamification &amp; Ligues :</strong> Classements, défis communautaires et accès Discord Premium.</p>
+                            <p>🔄 <strong>Cycles de Force &amp; Périodisation avancée :</strong> Planification automatique sur 8–16 semaines.</p>
+                            <p>👔 <strong>Lyftiv Pro — Coachs (39€/mois) :</strong> Dashboard centralisé pour suivre jusqu'à 50 élèves, envoyer des programmes personnalisés et recevoir des alertes de stagnation.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- Second CTA -->
+            <div style="text-align:center;margin-top:var(--spacing-xl);padding-bottom:var(--spacing-xxl);">
+                <button class="landing-cta-btn" onclick="document.getElementById('landingStartBtn').click()">
+                    Accéder à l'application →
+                </button>
             </div>
+
+        </div>
+    </div>
+
+
+    <div id="dashboard" class="dashboard-container hidden">
+        <div class="dashboard-content">
+            <header class="dashboard-topbar">
+                <div class="dashboard-topbar-brand">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;flex-shrink:0;">
+                        <defs><linearGradient id="dtbLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="hsl(200,80%,85%)"/><stop offset="100%" stop-color="hsl(260,60%,85%)"/></linearGradient></defs>
+                        <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#dtbLogoGrad)"/>
+                        <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220,60%,55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                        <circle cx="25" cy="50" r="10" stroke="hsl(220,60%,55%)" stroke-width="2" fill="none"/>
+                        <circle cx="75" cy="50" r="10" stroke="hsl(220,60%,55%)" stroke-width="2" fill="none"/>
+                        <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
+                    </svg>
+                    <span class="dashboard-topbar-name">Lyftiv</span>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <button id="dashThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+                    <button id="dashHomeBtn" class="icon-btn" title="Accueil" aria-label="Retour à l'accueil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+                </div>
+            </header>
 
             <!-- ── ONGLETS DASHBOARD ──────────────────────────── -->
             <div class="dash-tab-nav" role="tablist" aria-label="Sections Lyftiv">
@@ -2459,51 +3073,6 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 </div>
             </section>
     
-            <section class="app-guide" aria-labelledby="app-guide-title">
-                <h2 id="app-guide-title">Maîtrisez Lyftiv</h2>
-                <div class="app-guide-accordion">
-                    <details>
-                        <summary><strong>📊 Objectivez votre progression</strong></summary>
-                        <div>
-                            <p><strong>1RM (Répétition Maximale) :</strong> Estimation de votre charge maximale. La base de tout calcul scientifique de progression.</p>
-                            <p><strong>Tonnage & Kg/Rép :</strong> Transformez chaque séance en données tangibles — votre moteur de motivation quotidien.</p>
-                            <p><strong>Calcul d'Objectifs :</strong> Entrez votre 1RM, obtenez les charges exactes pour l'hypertrophie, la force ou l'endurance.</p>
-                        </div>
-                    </details>
-                    <details>
-                        <summary><strong>🛡️ Sécurité &amp; Crédibilité Scientifique</strong></summary>
-                        <div>
-                            <p>⚗️ <strong>Pharmaceutical-Grade :</strong> Chaque fonctionnalité est pensée avec la rigueur d'un protocole médical. Pas de broscience — des données validées.</p>
-                            <p>💊 <strong>Compléments alimentaires :</strong> Base de données de suppléments avec fiches scientifiques, dosages et avertissements — déjà disponible dans l'app.</p>
-                        </div>
-                    </details>
-                    <details>
-                        <summary><strong>🔓 Fonctions disponibles (Gratuit)</strong></summary>
-                        <div>
-                            <p>🧮 <strong>Calculateur de Plaques :</strong> Poids cible → plaques exactes à poser sur la barre.</p>
-                            <p>🎯 <strong>Chronomètre &amp; Minuteur de repos :</strong> Temps de repos automatique après chaque exercice.</p>
-                            <p>🔗 <strong>Superset :</strong> Liez deux exercices pour les enchaîner sans repos.</p>
-                            <p>🕐 <strong>Historique local :</strong> Retrouvez toutes vos séances passées.</p>
-                            <p>⚙️ <strong>Personnalisation de séance :</strong> Créez et adaptez vos programmes manuellement.</p>
-                            <p>🔄 <strong>Analyse de récupération &amp; Deload :</strong> Détection automatique de stagnation et application du deload en un clic.</p>
-                            <p>📈 <strong>Graphiques de progression :</strong> Visualisez votre évolution sur chaque exercice (1RM, tonnage, kg/rép).</p>
-                            <p>💊 <strong>Compléments alimentaires :</strong> Base de données scientifique avec fiches détaillées, dosages et contre-indications.</p>
-                            <p>🥗 <strong>Calculateur TDEE &amp; Macros :</strong> Calculez vos besoins caloriques et macronutriments selon votre objectif.</p>
-                            <p>📊 <strong>Calcul masse grasse (méthode US Navy) :</strong> Estimez votre composition corporelle.</p>
-                        </div>
-                    </details>
-                    <details>
-                        <summary><strong>👑 Fonctions Premium (à venir)</strong></summary>
-                        <div>
-                            <p>🤖 <strong>Générateur IA de programme :</strong> Programme sur-mesure basé sur vos machines disponibles et vos objectifs, créé automatiquement.</p>
-                            <p>☁️ <strong>Sync Cloud &amp; Historique multi-appareils :</strong> Retrouvez vos données partout, avec sauvegarde sécurisée.</p>
-                            <p>🏆 <strong>Gamification &amp; Ligues :</strong> Classements, défis communautaires et accès Discord Premium.</p>
-                            <p>🔄 <strong>Cycles de Force &amp; Périodisation avancée :</strong> Planification automatique sur 8–16 semaines.</p>
-                            <p>👔 <strong>Lyftiv Pro — Coachs (39€/mois) :</strong> Dashboard centralisé pour suivre jusqu'à 50 élèves, envoyer des programmes personnalisés et recevoir des alertes de stagnation.</p>
-                        </div>
-                    </details>
-                </div>
-            </section>
 
             <!-- ── DELOAD ─────────────────────────────────────── -->
             <section id="dashDeloadSection" style="margin-bottom:var(--spacing-xl)">
@@ -2541,8 +3110,33 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             <!-- ── PANNEAU NUTRITION ──────────────────────────── -->
             <div id="panelNutrition" class="dash-tab-panel hidden" role="tabpanel" aria-labelledby="tabNutrition">
 
-                <!-- ── JEÛNE INTERMITTENT ─────────────────────── -->
-                <section id="fastingSection" style="margin-bottom:var(--spacing-xl);">
+    <!-- ── MENU NUTRITION ─────────────────────────────────────── -->
+    <nav id="nutritionMenu" class="nutrition-menu" aria-label="Menu Nutrition">
+        <button class="nutri-menu-btn active" data-nutri="fastingSection" aria-pressed="true">
+            <span class="nutri-menu-icon">⏱️</span>
+            <span class="nutri-menu-label">Jeûne<br><small>Intermittent</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="tdeeSection" aria-pressed="false">
+            <span class="nutri-menu-icon">🔥</span>
+            <span class="nutri-menu-label">TDEE<br><small>Métabolisme</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="bfSection" aria-pressed="false">
+            <span class="nutri-menu-icon">📏</span>
+            <span class="nutri-menu-label">Masse<br><small>Grasse</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="supplSection" aria-pressed="false">
+            <span class="nutri-menu-icon">💊</span>
+            <span class="nutri-menu-label">Compléments<br><small>Alimentaires</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="principesSection" aria-pressed="false">
+            <span class="nutri-menu-icon">🥦</span>
+            <span class="nutri-menu-label">Principes<br><small>Fondamentaux</small></span>
+        </button>
+    </nav>
+
+    <!-- ── SECTIONS CONTENU ───────────────────────────────────── -->
+    <div class="nutri-section-wrap" id="fastingSection-wrap">
+        <section id="fastingSection" style="margin-bottom:var(--spacing-xl);">
                     <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">⏱️ Jeûne intermittent</h2>
 
                     <div id="fastingWidget" style="background:var(--color-surface-default);border:1.5px solid var(--color-border-default);border-radius:var(--radius-large);overflow:hidden;box-shadow:0 4px 16px var(--shadow-sm);">
@@ -2685,9 +3279,9 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                         </div>
                     </div>
                 </section>
-
-
-                <section style="margin-bottom:var(--spacing-xl);">
+    </div>
+    <div class="nutri-section-wrap nutri-section-hidden" id="tdeeSection-wrap">
+        <section style="margin-bottom:var(--spacing-xl);">
                     <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🔥 Calculateur de métabolisme (TDEE)</h2>
                     <p style="font-size:var(--font-size-sm);color:var(--color-text-subheader);margin-bottom:var(--spacing-lg);">Basé sur les formules Mifflin-St Jeor et Katch-McArdle. Entrez vos données pour connaître votre dépense calorique journalière totale et vos macros.</p>
 
@@ -2823,21 +3417,21 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                         </div>
                     </div>
                 </section>
-
-                <!-- Calculateur % Graisse Corporelle -->
-                <section style="margin-bottom:var(--spacing-xl);">
+    </div>
+    <div class="nutri-section-wrap nutri-section-hidden" id="bfSection-wrap">
+        <section style="margin-bottom:var(--spacing-xl);">
                     <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">📏 Calculateur de masse grasse</h2>
-                    <p style="font-size:var(--font-size-sm);color:var(--color-text-subheader);margin-bottom:var(--spacing-lg);">Méthode U.S. Navy (système métrique) — prendre les mesures au niveau du nombril (taille), sous le larynx (cou), et au plus large des hanches (femmes).</p>
+                    <p style="font-size:var(--font-size-sm);color:var(--color-text-subheader);margin-bottom:var(--spacing-lg);">Méthode U.S. Navy — entrez vos mensurations pour estimer votre composition corporelle.</p>
 
                     <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
 
-                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
 
                             <div>
                                 <label style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Sexe</label>
                                 <div style="display:flex;gap:var(--spacing-sm);">
-                                    <label class="tdee-radio-label"><input type="radio" name="bf_gender" id="bf_male" value="male" checked onchange="toggleHipField()"> Homme</label>
-                                    <label class="tdee-radio-label"><input type="radio" name="bf_gender" id="bf_female" value="female" onchange="toggleHipField()"> Femme</label>
+                                    <label class="tdee-radio-label"><input type="radio" name="bf_gender" id="bf_male" value="male" checked onchange="toggleHipField(this)"> Homme</label>
+                                    <label class="tdee-radio-label"><input type="radio" name="bf_gender" id="bf_female" value="female" onchange="toggleHipField(this)"> Femme</label>
                                 </div>
                             </div>
 
@@ -2868,8 +3462,8 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                                 <small style="color:var(--color-text-subheader);font-size:0.72rem;">Au niveau du nombril, sans rentrer le ventre</small>
                             </div>
 
-                            <div id="bf_hip_field">
-                                <label for="bf_hip" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Tour de hanches (cm) <span style="font-weight:400;opacity:0.7;">Femmes uniquement</span></label>
+                            <div id="bf_hip_field" style="display:none;">
+                                <label for="bf_hip" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Tour de hanches (cm)</label>
                                 <input type="number" id="bf_hip" min="50" max="200" placeholder="ex: 98" class="tdee-input">
                                 <small style="color:var(--color-text-subheader);font-size:0.72rem;">Au plus large des hanches</small>
                             </div>
@@ -2941,8 +3535,9 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                         </div>
                     </div>
                 </section>
-
-            <section id="dashSupplSection" style="margin-bottom:var(--spacing-xl)">
+    </div>
+    <div class="nutri-section-wrap nutri-section-hidden" id="supplSection-wrap">
+        <section id="dashSupplSection" style="margin-bottom:var(--spacing-xl)">
                 <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">💊 Compléments alimentaires</h2>
 
                 <!-- Disclaimer fondamental -->
@@ -2966,10 +3561,11 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 <p style="color:var(--color-text-subheader);font-size:var(--font-size-sm);margin-bottom:var(--spacing-md);">Base scientifique validée · Références : études cliniques & méta-analyses</p>
                 <input type="text" id="dashSupplSearch" placeholder="🔍 Rechercher un complément..." aria-label="Rechercher"
                     style="width:100%;padding:8px 14px;border:1px solid var(--color-border-default);border-radius:var(--radius-base);font-size:var(--font-size-sm);background:var(--color-surface-input);color:var(--color-text-default);margin-bottom:var(--spacing-md);box-sizing:border-box;">
-                <div id="dashSupplGrid" class="suppl-grid" style="max-height:480px;overflow-y:auto;"></div>
+                <div id="dashSupplGrid" class="suppl-grid" ></div>
             </section>
-
-                <!-- Principes nutrition -->
+    </div>
+    <div class="nutri-section-wrap nutri-section-hidden" id="principesSection-wrap">
+        <!-- Principes nutrition -->
                 <section style="margin-bottom:var(--spacing-xl);">
                     <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🥦 Principes fondamentaux</h2>
                     <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
@@ -3019,8 +3615,9 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                         </div>
                     </div>
                 </section>
+    </div>
 
-            </div><!-- /panelNutrition -->
+</div><!-- /panelNutrition -->
             <footer class="dashboard-footer">
                 <p>⚗️ Conçu par <strong>Olivio JAONINA</strong>, pharmacien &amp; ingénieur numérique · <em>Lyftiv – Votre progression, notre science.</em></p>
             </footer>
@@ -3031,10 +3628,9 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
     <div id="app-container" class="hidden">
         <main class="main-container">
             <div class="theme-switcher">
-                <button id="homeBtn" class="btn" aria-label="Retourner à l'accueil" title="Accueil">
-                    🏠
-                </button>
-                <button id="themeToggleBtn" class="btn" aria-label="Changer de thème"></button>
+                <button id="homeBtn" class="icon-btn" aria-label="Retourner à l'accueil" title="Accueil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+                <button id="dashMenuBtn" class="icon-btn" aria-label="Menu Entraînement" title="Menu Entraînement"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M6 5v14M18 5v14M4 7h4M16 7h4M4 17h4M16 17h4M6 12h12"/></svg></button>
+                <button id="themeToggleBtn" class="icon-btn" aria-label="Changer de thème" title="Mode sombre"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
             </div>
             <h2>
                 <svg class="lyftiv-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -3129,6 +3725,9 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 <button class="btn btn-success" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">Terminer & sauvegarder</button>
                 <button class="btn btn-primary" id="viewHistoryBtn" aria-label="Voir l'historique">Historique</button>
                 <button class="btn btn-primary" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">Calculateurs</button>
+                <button class="btn btn-secondary" id="nextSessionBtn" aria-label="Calculer la prochaine séance" title="Calcule les charges recommandées pour ta prochaine séance">
+                    📈 Prochaine séance
+                </button>
             </section>
     
             <section class="action-buttons" style="margin-top: var(--spacing-md);" aria-labelledby="dataManagementTitle">
@@ -3143,7 +3742,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
     <div id="notification-container" aria-live="polite" aria-atomic="true"></div>
 
     <div id="autoSaveIndicator" aria-live="polite" aria-label="Sauvegarde automatique">
-        ✅ Brouillon sauvegardé
+        Sauvegardé
     </div>
     
     <div id="pwaInstallPrompt" class="hidden" role="dialog" aria-modal="true" aria-labelledby="pwaInstallTitle">
@@ -3152,6 +3751,26 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
         <button id="closePwaPrompt" class="close-btn" aria-label="Fermer le message d'installation">&times;</button>
     </div>
 
+
+    <!-- ── MODAL PROCHAINE SÉANCE ─────────────────────────────── -->
+    <div id="nextSessionModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="nextSessionModalTitle">
+        <div class="modal-content">
+            <button id="closeNextSessionModal" class="modal-close-btn" aria-label="Fermer">&times;</button>
+            <div class="nsp-header">
+                <h2 id="nextSessionModalTitle">📈 Prochaine séance — <span id="nspSessionName" class="nsp-session-name"></span></h2>
+                <p>Charges recommandées basées sur tes séries actuelles et l'historique</p>
+            </div>
+            <div id="nspExerciseList" class="nsp-exercise-list"></div>
+            <p class="nsp-disclaimer">
+                ⚗️ <strong>Méthode :</strong> 1RM estimé par moyenne de 5 formules (Epley, Brzycki, Mayhew, Lander, Lombardi) ·
+                Zone détectée selon reps moyennes · Progression +2.5 kg si fourchette haute atteinte · Arrondi au 0.25 kg le plus proche.
+            </p>
+            <div class="nsp-actions">
+                <button id="nspConfirmBtn" class="nsp-confirm-btn">✅ Pré-remplir les poids</button>
+                <button id="nspCancelBtn" class="nsp-cancel-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
     <div id="historyModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
       <div class="modal-content">
           <button id="closeHistoryModal" class="modal-close-btn" aria-label="Fermer le modal historique">&times;</button>
@@ -3334,17 +3953,46 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             createTable();
             updateDeleteSessionButtonState();
 
+            landing.classList.add('hidden');
             dashboard.classList.add('hidden');
             appContainer.classList.remove('hidden');
             sessionStorage.setItem('dashboardShown', 'true');
+            sessionStorage.setItem('landingPassed', 'true');
         }
         
+        // Références landing
+        const landing = document.getElementById('landing');
+
+        function showLanding() {
+            landing.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+            appContainer.classList.add('hidden');
+            sessionStorage.removeItem('dashboardShown');
+        }
+
+        function showDashboard() {
+            landing.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+            populateDashboard();
+        }
+
+        // Affichage initial
         if (sessionStorage.getItem('dashboardShown')) {
+            // Revient de la séance → dashboard direct
+            landing.classList.add('hidden');
             dashboard.classList.add('hidden');
             appContainer.classList.remove('hidden');
-        } else {
-            appContainer.classList.add('hidden');
+        } else if (sessionStorage.getItem('landingPassed')) {
+            // Déjà vu la landing → dashboard
+            landing.classList.add('hidden');
             dashboard.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+        } else {
+            // Première visite → landing
+            landing.classList.remove('hidden');
+            dashboard.classList.add('hidden');
+            appContainer.classList.add('hidden');
         }
 
         function init() {
@@ -4212,7 +4860,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                                 <button class="timer-btn" data-timer-action="reset" aria-label="Réinitialiser le minuteur pour ${safeName}">↺</button>
                             </div>
                         </td>
-                        <td role="cell"><button class="btn-ghost" data-action="remove" aria-label="Supprimer l'exercice ${safeName}">🗑</button></td>`;
+                        <td role="cell"><button class="btn-ghost" data-action="remove" aria-label="Supprimer l'exercice ${safeName}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></td>`;
 
                     desktopFragment.appendChild(tr); // pas de reflow à chaque itération
 
@@ -4266,7 +4914,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                     card.innerHTML = `
                         <div class="card-header-row">
                             <h4>${safeName}</h4>
-                            <button class="btn-ghost" data-action="remove" aria-label="Supprimer l'exercice ${safeName}">🗑</button>
+                            <button class="btn-ghost" data-action="remove" aria-label="Supprimer l'exercice ${safeName}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
                         </div>
                         <div class="series-group">
                             ${seriesHtml}
@@ -4506,7 +5154,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             requestAnimationFrame(updateDeltaAnimation);
 
             dom.progressFill.style.width = `${totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0}%`;
-            saveCurrentState();
+            saveCurrentState(true);
             populateOneRMDropdown(exercisesWith1RM);
         }
 
@@ -4525,7 +5173,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             }
         }
 
-        function saveCurrentState() {
+        function saveCurrentState(silent = false) {
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession) return;
             currentSession.exercises.forEach((ex, idx) => {
@@ -4571,7 +5219,8 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             };
             try {
                 localStorage.setItem('inProgressWorkout', JSON.stringify(data));
-                showSaveIndicator();
+                // N'afficher l'indicateur que si ce n'est pas une sauvegarde silencieuse
+                if (!silent) showSaveIndicator();
             } catch (e) {
                 console.error("Erreur lors de la sauvegarde de la séance en cours :", e);
             }
@@ -4584,7 +5233,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             if (!indicator) return;
             clearTimeout(saveIndicatorTimer);
             indicator.classList.add('visible');
-            saveIndicatorTimer = setTimeout(() => indicator.classList.remove('visible'), 2000);
+            saveIndicatorTimer = setTimeout(() => indicator.classList.remove('visible'), 1500);
         }
 
         function loadCurrentState() {
@@ -4802,15 +5451,20 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 const _sName = escapeHTML(session.sessionName);
                 const _sKg   = escapeHTML(String(session.totalKgRep));
                 const _sDur  = session.duration ? escapeHTML(String(session.duration)) : '';
+                item.style.cursor = 'pointer';
+                item.title = 'Cliquer pour voir les détails';
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('[data-history-action]')) showHistoryDetails(session.id);
+                });
                 item.innerHTML = `
-                    <div>
+                    <div style="flex:1;min-width:0;">
                         ${new Date(session.date).toLocaleDateString('fr-FR')} - 
                         <strong>${_sName}</strong> (${_sKg} kg/rep) ${_sDur ? ` - ⏱️ ${_sDur}` : ''}
                     </div>
                     <div style="display: flex; gap: var(--spacing-xs);">
                         <button class="btn btn-ghost" data-history-action="details" data-history-id="${escapeHTML(String(session.id))}" title="Voir les détails de ${_sName}">👁</button>
                         <button class="btn btn-ghost" data-history-action="load" data-history-id="${escapeHTML(String(session.id))}" title="Utiliser cette séance comme modèle">⬇</button>
-                        <button class="btn btn-ghost" data-history-action="delete" data-history-id="${escapeHTML(String(session.id))}" title="Supprimer ${_sName} de l'historique">🗑</button>
+                        <button class="btn btn-ghost" data-history-action="delete" data-history-id="${escapeHTML(String(session.id))}" title="Supprimer ${_sName} de l'historique"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
                     </div>
                     <div class="history-details" id="details-${escapeHTML(String(session.id))}" role="region" aria-live="polite"></div>`;
                 dom.historyList.appendChild(item);
@@ -4819,12 +5473,11 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
         
         function showHistoryDetails(id) {
             const detailsDiv = document.getElementById(`details-${id}`);
-            const button = detailsDiv.previousElementSibling.querySelector('[data-history-action="details"]');
-            
+            if (!detailsDiv) return;
+
             if (detailsDiv.classList.contains('visible')) {
                 detailsDiv.classList.remove('visible');
                 detailsDiv.innerHTML = '';
-                button.setAttribute('aria-expanded', 'false');
             } else {
                 const session = getHistory().find(s => s.id == id);
                 if (session) {
@@ -4866,12 +5519,9 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                     detailsHtml += '</ul>';
                     detailsDiv.innerHTML = detailsHtml;
                     detailsDiv.classList.add('visible');
-                    button.setAttribute('aria-expanded', 'true');
-                    
-                    // AJOUT : Scroll automatique pour voir le contenu
                     detailsDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
                 }
-            } 
+            }
         }
         
         const escapeCsv = (str) => {
@@ -5121,7 +5771,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
 
             state.totalWorkoutTimeInterval = setInterval(updateTotalTimeDisplay, 1000);
             updateTotalTimeDisplay(); 
-            saveCurrentState();
+            saveCurrentState(true);
         }
 
         function pauseTotalWorkoutTimer() {
@@ -5131,7 +5781,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 state.pauseStartTime = Date.now();
                 updateTimerToggleButtonUI(true);
                 updateTotalTimeDisplay(); 
-                saveCurrentState();
+                saveCurrentState(true);
             }
         }
         
@@ -5185,15 +5835,20 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
         }
 
         function applyTheme(theme) {
-            if (theme === 'dark') {
-                dom.body.classList.add('dark-mode');
-                dom.themeToggleBtn.innerHTML = '☀️';
-                dom.themeToggleBtn.setAttribute('title', 'Passer au thème clair');
-            } else {
-                dom.body.classList.remove('dark-mode');
-                dom.themeToggleBtn.innerHTML = '🌒';
-                dom.themeToggleBtn.setAttribute('title', 'Passer au thème sombre');
-            }
+            const isDark = theme === 'dark';
+            dom.body.classList.toggle('dark-mode', isDark);
+            // isDark → on affiche le soleil (pour revenir au clair), sinon la lune
+            const themeIcon  = isDark ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            const themeTitle = isDark ? 'Passer au thème clair' : 'Passer au thème sombre';
+            // Mettre à jour TOUS les boutons thème sur toutes les pages
+            ['themeToggleBtn', 'dashThemeBtn', 'landingThemeBtn'].forEach(id => {
+                const btn = id === 'themeToggleBtn' ? dom.themeToggleBtn : document.getElementById(id);
+                if (btn) {
+                    btn.innerHTML = themeIcon;
+                    btn.setAttribute('title', themeTitle);
+                    btn.setAttribute('aria-label', themeTitle);
+                }
+            });
         }
 
         function updateSessionSelectOptions() {
@@ -5584,15 +6239,72 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 });
             });
 
+            // ── Navigation menu Nutrition ────────────────────────────
+            document.querySelectorAll('.nutri-menu-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.nutri + '-wrap';
+                    // Update button states
+                    document.querySelectorAll('.nutri-menu-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-pressed', 'true');
+                    // Show/hide sections
+                    document.querySelectorAll('.nutri-section-wrap').forEach(s => {
+                        s.classList.add('nutri-section-hidden');
+                    });
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.classList.remove('nutri-section-hidden');
+                        // Scroll to top of nutrition panel smoothly
+                        document.getElementById('nutritionMenu').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            });
+
             // ── Calculateur TDEE ────────────────────────────────────
             document.getElementById('tdee_calc_btn').addEventListener('click', calculateTDEE);
 
             dom.homeBtn.addEventListener('click', () => {
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('app-container').classList.add('hidden');
-                sessionStorage.removeItem('dashboardShown'); 
+                showLanding();
+            });
+
+            // Bouton séances → menu entraînement (dashboard, onglet Training)
+            document.getElementById('dashMenuBtn').addEventListener('click', () => {
+                landing.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+                // Activer l'onglet Entraînement
+                document.querySelectorAll('.dash-tab-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.tab === 'panelTraining');
+                    b.setAttribute('aria-selected', b.dataset.tab === 'panelTraining' ? 'true' : 'false');
+                });
+                document.querySelectorAll('.dash-tab-panel').forEach(p => {
+                    p.classList.toggle('hidden', p.id !== 'panelTraining');
+                });
                 populateDashboard();
             });
+
+            // Bouton landing → dashboard
+            document.getElementById('landingStartBtn').addEventListener('click', () => {
+                sessionStorage.setItem('landingPassed', 'true');
+                showDashboard();
+            });
+
+            // Bouton topbar dashboard → landing
+            document.getElementById('dashHomeBtn').addEventListener('click', () => {
+                showLanding();
+            });
+
+            // Boutons mode nuit universels
+            function toggleTheme() {
+                const newTheme = dom.body.classList.contains('dark-mode') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+            document.getElementById('dashThemeBtn').addEventListener('click', toggleTheme);
+            document.getElementById('landingThemeBtn').addEventListener('click', toggleTheme);
 
             dom.sessionSelect.addEventListener('change', () => {
               // Stoppe et purge tous les timers d'exercices
@@ -5634,7 +6346,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             dom.addExerciseBtn.addEventListener('click', () => {
                 const name = dom.customExerciseInput.value.trim();
                 if (name) {
-                    saveCurrentState();
+                    saveCurrentState(true);
                     const scrollY = window.scrollY;
                     if (!state.sessions[state.currentSessionIndex].exercises) {
                         state.sessions[state.currentSessionIndex].exercises = [];
@@ -5655,7 +6367,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                     handleNumericInput(e);
                     const exIndex = +e.target.dataset.ex;
                     const serieIndex = +e.target.dataset.serie;
-                    saveCurrentState(); 
+                    saveCurrentState(true); 
                     handleSeriesUpdate(exIndex, serieIndex);
                 }
             }, true);
@@ -5834,11 +6546,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                     }
                 }, { once : true });
             });
-            dom.themeToggleBtn.addEventListener('click', () => {
-                const newTheme = dom.body.classList.contains('dark-mode') ? 'light' : 'dark';
-                applyTheme(newTheme);
-                localStorage.setItem('theme', newTheme);
-            });
+            dom.themeToggleBtn.addEventListener('click', toggleTheme);
             
             dom.toggleWorkoutTimerBtn.addEventListener('click', () => {
                 if (state.isWorkoutTimerPaused) {
@@ -6102,41 +6810,41 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
             // 1. Fermeture d'onglet / navigation (desktop)
             window.addEventListener('beforeunload', () => {
                 updateStateFromTable();
-                saveCurrentState();
+                saveCurrentState(true); // silencieux
             });
 
             // 2. Mise en arrière-plan sur mobile (iOS/Android — pagehide est plus fiable que beforeunload sur mobile)
             window.addEventListener('pagehide', () => {
                 updateStateFromTable();
-                saveCurrentState();
+                saveCurrentState(true); // silencieux
             });
 
             // 3. Passage en arrière-plan (app PWA minimisée, écran verrouillé)
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') {
                     updateStateFromTable();
-                    saveCurrentState();
+                    saveCurrentState(true); // silencieux
                 }
             });
 
-            // 4. Sauvegarde périodique toutes les 30 secondes
+            // 4. Sauvegarde périodique toutes les 30 secondes (uniquement si séance active)
             setInterval(() => {
-                if (state.isInitialized) {
+                if (state.isInitialized && state.workoutStartTime) {
                     updateStateFromTable();
-                    saveCurrentState();
+                    saveCurrentState(true);
                 }
             }, 30000);
 
-            // 5. Sauvegarde à chaque saisie dans les inputs (debounce 1s)
+            // 5. Sauvegarde à chaque saisie dans les inputs (debounce 1s) — silencieux
             let saveDebounceTimer = null;
             document.getElementById('exerciseListContainer').addEventListener('input', () => {
                 clearTimeout(saveDebounceTimer);
                 saveDebounceTimer = setTimeout(() => {
                     if (state.isInitialized) {
                         updateStateFromTable();
-                        saveCurrentState();
+                        saveCurrentState(true);
                     }
-                }, 1000);
+                }, 1500);
             }, true);
         }
 
@@ -6497,7 +7205,7 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 return;
             }
             grid.innerHTML = filtered.map(s => `
-                <div class="suppl-card" onclick="toggleSupplDetail(${SUPPLEMENT_DB.indexOf(s)})">
+                <div class="suppl-card">
                     <div class="suppl-card-header">
                         <div class="suppl-name">${s.emoji} ${s.name}</div>
                         <div class="suppl-rating rating-${s.rating}">Grade ${s.rating}</div>
@@ -6508,24 +7216,27 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                         <span class="suppl-dose-badge">⏰ ${s.timing}</span>
                     </div>
                     ${s.alert ? `<div class="suppl-alert">⚠️ <span>${s.alert}</span></div>` : ''}
-                    <div class="suppl-detail" id="suppl-detail-${SUPPLEMENT_DB.indexOf(s)}">
+                    <div class="suppl-detail open">
                         <p><strong>Détail scientifique :</strong> ${s.detail}</p>
                         <p style="margin-top:6px;font-size:0.78rem;opacity:0.7">📚 ${s.sources}</p>
                     </div>
-                    <div style="text-align:right;font-size:var(--font-size-sm);margin-top:var(--spacing-xs);color:var(--color-primary-default)">▼ Voir détails</div>
                 </div>
             `).join('');
         }
 
-        function toggleSupplDetail(index) {
-            const detail = document.getElementById(`suppl-detail-${index}`);
-            if (detail) detail.classList.toggle('open');
-        }
 
         /* ============================================================
            CALCULATEUR TDEE + MACROS
            Formules : Mifflin-St Jeor (défaut) | Katch-McArdle (si %BF)
         ============================================================ */
+        
+        function toggleHipField(radio) {
+            const isFemale = radio ? radio.value === 'female'
+                : document.querySelector('input[name="bf_gender"]:checked')?.value === 'female';
+            const hipField = document.getElementById('bf_hip_field');
+            if (hipField) hipField.style.display = isFemale ? '' : 'none';
+        }
+
         function calculateTDEE() {
             const gender = document.querySelector('input[name="tdee_gender"]:checked')?.value || 'male';
             const age    = parseFloat(document.getElementById('tdee_age').value);
@@ -6664,6 +7375,333 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
                 resDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 50);
         }
+
+
+        /* ============================================================
+           CALCULATEUR PROCHAINE SÉANCE
+           Algo :
+           1. Pour chaque exercice → lire séries (poids + reps)
+           2. Calculer 1RM moyen pondéré (moyenne de plusieurs séries)
+           3. Détecter la zone selon reps moy. par série
+           4. Calculer la charge cible (% 1RM selon zone)
+           5. Appliquer progression si fourchette haute atteinte
+           6. Comparer avec historique du même nom de séance
+           7. Afficher dans le modal, proposer de pré-remplir
+        ============================================================ */
+
+        // Zones d'entraînement
+        const TRAINING_ZONES = [
+            {
+                key: 'force',
+                name: 'Force',
+                icon: '🔴',
+                repsMin: 1, repsMax: 5,
+                pctMin: 0.82, pctMax: 0.92,
+                targetPct: 0.87,          // milieu de fourchette
+                progressionKg: 2.5,
+                repsLabel: '1–5 reps',
+                cssClass: 'nsp-zone-force'
+            },
+            {
+                key: 'hypertrophie',
+                name: 'Hypertrophie',
+                icon: '🔵',
+                repsMin: 6, repsMax: 12,
+                pctMin: 0.67, pctMax: 0.80,
+                targetPct: 0.735,
+                progressionKg: 2.5,
+                repsLabel: '6–12 reps',
+                cssClass: 'nsp-zone-hypertrophie'
+            },
+            {
+                key: 'endurance',
+                name: 'Endurance',
+                icon: '🟢',
+                repsMin: 13, repsMax: 999,
+                pctMin: 0.50, pctMax: 0.65,
+                targetPct: 0.575,
+                progressionKg: 1.25,
+                repsLabel: '13+ reps',
+                cssClass: 'nsp-zone-endurance'
+            }
+        ];
+
+        function detectZone(avgReps) {
+            for (const z of TRAINING_ZONES) {
+                if (avgReps >= z.repsMin && avgReps <= z.repsMax) return z;
+            }
+            return TRAINING_ZONES[1]; // hypertrophie par défaut
+        }
+
+        function roundToQuarter(kg) {
+            // Arrondi au 0.5 kg le plus proche (cohérent avec le pré-remplissage)
+            return Math.round(kg * 2) / 2;
+        }
+
+        function computeNextSessionData() {
+            updateStateFromTable();
+            const session = state.sessions[state.currentSessionIndex];
+            if (!session) return null;
+
+            const sessionName = dom.sessionSelect.selectedOptions[0]?.text || session.name;
+            const results = [];
+
+            session.exercises.forEach((ex) => {
+
+                // ── Étape 1 : collecter toutes les séries brutes valides ─────────
+                const rawSeries = [];
+                ex.series.forEach(s => {
+                    const wRaw = String(s.weight || '').split('+')
+                        .map(v => parseFloat(v.trim().replace(',', '.')))
+                        .filter(v => !isNaN(v) && v > 0);
+                    const rRaw = String(s.reps || '').split('+')
+                        .map(v => parseFloat(v.trim().replace(',', '.')))
+                        .filter(v => !isNaN(v) && v > 0);
+                    const len = Math.min(wRaw.length, rRaw.length);
+                    for (let k = 0; k < len; k++) {
+                        rawSeries.push({ weight: wRaw[k], reps: rRaw[k] });
+                    }
+                });
+
+                if (rawSeries.length === 0) return;
+
+                // ── Étape 2 : identifier la ZONE MAJORITAIRE (robuste aux outliers) ─
+                //
+                // Principe :
+                //  a) Classer chaque série dans une zone selon ses reps brutes
+                //  b) Compter les votes par zone
+                //  c) La zone gagnante est celle avec le plus de séries
+                //  d) MAIS : on ignore les séries dont le poids est trop incohérent
+                //     avec les séries de la zone gagnante (outliers de charge)
+                //     → critère : poids < 50% du poids médian de la zone → écarté
+                //     (typique d'une série d'échauffement très légère avec bcp de reps)
+                //
+                // Cette approche traite deux cas courants :
+                //  • 4×80kg×8r + 1×30kg×20r  → hypertrophie gagne 4 vs 1 (endurance)
+                //  • 1×120kg×2r + 4×80kg×8r  → hypertrophie gagne 4 vs 1 (force)
+
+                // Votes bruts par zone
+                const zoneCounts = {};
+                TRAINING_ZONES.forEach(z => { zoneCounts[z.key] = []; });
+                rawSeries.forEach(s => {
+                    const z = detectZone(s.reps);
+                    zoneCounts[z.key].push(s);
+                });
+
+                // Zone gagnante au vote brut
+                let dominantZoneKey = TRAINING_ZONES[1].key; // hypertrophie par défaut
+                let maxVotes = 0;
+                TRAINING_ZONES.forEach(z => {
+                    if (zoneCounts[z.key].length > maxVotes) {
+                        maxVotes = zoneCounts[z.key].length;
+                        dominantZoneKey = z.key;
+                    }
+                });
+                const zone = TRAINING_ZONES.find(z => z.key === dominantZoneKey);
+
+                // ── Étape 3 : filtrer les séries "de travail" de la zone dominante ─
+                // On garde les séries classées dans la zone ET dont le poids est
+                // cohérent (≥ 60% du poids médian des séries de cette zone).
+                // Cela élimine les séries d'échauffement trop légères.
+
+                const zoneSeries = zoneCounts[dominantZoneKey];
+
+                let workSeries = zoneSeries;
+                if (zoneSeries.length >= 2) {
+                    const sorted = [...zoneSeries].sort((a, b) => a.weight - b.weight);
+                    const mid = Math.floor(sorted.length / 2);
+                    const medianWeight = sorted.length % 2 === 1
+                        ? sorted[mid].weight
+                        : (sorted[mid - 1].weight + sorted[mid].weight) / 2;
+                    const threshold = medianWeight * 0.60;
+                    workSeries = zoneSeries.filter(s => s.weight >= threshold);
+                    // Filet de sécurité : garder au moins 1 série
+                    if (workSeries.length === 0) workSeries = zoneSeries;
+                }
+
+                // ── Étape 4 : calculer le 1RM sur les séries de travail uniquement ─
+                // Pondéré inversement par les reps : les séries lourdes/peu de reps
+                // estiment le 1RM de façon plus précise → poids = 1/reps
+                let sumW = 0, sumWts = 0;
+                workSeries.forEach(s => {
+                    const est = calculate1RM(s.weight, s.reps);
+                    if (est > 0) {
+                        const weight = 1 / s.reps;   // inverse des reps = plus de poids aux séries lourdes
+                        sumW   += est * weight;
+                        sumWts += weight;
+                    }
+                });
+                const oneRM = sumWts > 0 ? sumW / sumWts : 0;
+                if (oneRM <= 0) return;
+
+                // ── Étape 5 : charge actuelle et logique de progression ───────────
+                const avgWeightWork = workSeries.reduce((s, x) => s + x.weight, 0) / workSeries.length;
+                const avgRepsWork   = workSeries.reduce((s, x) => s + x.reps,   0) / workSeries.length;
+
+                const repsCeiling = zone.repsMax < 100 ? zone.repsMax : 20;
+                const allHitCeiling = workSeries.every(s => s.reps >= repsCeiling - 1);
+
+                let recommendedWeight = allHitCeiling
+                    ? avgWeightWork + zone.progressionKg
+                    : oneRM * zone.targetPct;
+
+                recommendedWeight = roundToQuarter(recommendedWeight);
+                const delta = roundToQuarter(recommendedWeight - avgWeightWork);
+
+                // Séries écartées (outliers) pour transparence dans le modal
+                const outlierCount = rawSeries.length - workSeries.length;
+
+                results.push({
+                    name: ex.name,
+                    oneRM: Math.round(oneRM * 10) / 10,
+                    avgReps: Math.round(avgRepsWork * 10) / 10,
+                    zone,
+                    avgWeightCurrent: roundToQuarter(avgWeightWork),
+                    recommendedWeight,
+                    delta,
+                    allHitCeiling,
+                    seriesCount: workSeries.length,
+                    outlierCount,
+                    totalSeriesCount: rawSeries.length
+                });
+            });
+
+            // Calculer le totalKgRep depuis les séries de travail analysées
+            // (même données que celles utilisées pour le calcul des charges)
+            let totalTonnage = 0, totalReps = 0;
+            results.forEach(r => {
+                // avgWeightCurrent × avgReps × seriesCount = tonnage approx des séries de travail
+                totalTonnage += r.avgWeightCurrent * r.avgReps * r.seriesCount;
+                totalReps    += r.avgReps * r.seriesCount;
+            });
+            const currentKgRep = totalReps > 0
+                ? parseFloat((totalTonnage / totalReps).toFixed(2))
+                : null;
+
+            return { sessionName, results, lastKgRep: currentKgRep };
+        }
+
+        function renderNextSessionModal(data) {
+            if (!data || data.results.length === 0) {
+                showNotification("Remplis d'abord au moins une série avec poids et répétitions.", "info");
+                return;
+            }
+
+            document.getElementById('nspSessionName').textContent = data.sessionName;
+
+            const list = document.getElementById('nspExerciseList');
+            list.innerHTML = data.results.map(r => {
+                const deltaClass = r.delta > 0 ? 'nsp-delta-up' : 'nsp-delta-same';
+                const deltaText = r.delta > 0
+                    ? `+${r.delta.toFixed(2).replace(/\.?0+$/, '')} kg 📈`
+                    : r.delta === 0 ? '= maintien' : `${r.delta.toFixed(2).replace(/\.?0+$/, '')} kg`;
+
+                const progressionReason = r.allHitCeiling
+                    ? `Plafond atteint (${r.zone.repsMax < 100 ? r.zone.repsMax : '15+'}r) → +${r.zone.progressionKg} kg`
+                    : `Cible : ${(r.zone.targetPct * 100).toFixed(0)}% du 1RM estimé`;
+
+                const outlierNote = r.outlierCount > 0
+                    ? `<span style="font-size:0.70rem;color:var(--color-text-subheader);font-style:italic;">⚠️ ${r.outlierCount} série(s) écartée(s) — hors zone ou charge incohérente</span>`
+                    : '';
+
+                return `
+                    <div class="nsp-exercise-card" data-ex-name="${r.name.replace(/"/g,'&quot;')}" data-recommended="${r.recommendedWeight}">
+                        <div class="nsp-ex-name">${r.name}</div>
+                        <div class="nsp-ex-meta">
+                            <span class="nsp-zone-badge ${r.zone.cssClass}">${r.zone.icon} ${r.zone.name} · ${r.zone.repsLabel}</span>
+                            <span style="color:var(--color-text-subheader);font-size:0.72rem;">1RM estimé : <strong>${r.oneRM} kg</strong></span>
+                            <span style="color:var(--color-text-subheader);font-size:0.72rem;">${r.seriesCount} série(s) de travail · ${r.avgReps} reps moy.</span>
+                            <span style="font-size:0.72rem;color:var(--color-text-subheader);">${progressionReason}</span>
+                            ${outlierNote}
+                        </div>
+                        <div class="nsp-ex-charge">
+                            <div class="nsp-ex-charge-value">${r.recommendedWeight % 1 === 0 ? r.recommendedWeight.toFixed(0) : r.recommendedWeight.toFixed(2).replace(/0+$/, '')} kg</div>
+                            <div class="nsp-ex-charge-label">charge recommandée</div>
+                            <div class="nsp-ex-delta ${deltaClass}" style="margin-top:4px;">${deltaText}</div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            // Stocker les données pour le pré-remplissage
+            document.getElementById('nextSessionModal')._nspData = data;
+
+            const _nspModal = document.getElementById('nextSessionModal'); _nspModal.classList.remove('hidden'); _nspModal.classList.add('show');
+        }
+
+        function prefillNextSession(data) {
+            const session = state.sessions[state.currentSessionIndex];
+            if (!session) return;
+
+            // Arrondir au 0.5 kg le plus proche
+            function roundToHalf(kg) {
+                return Math.round(kg * 2) / 2;
+            }
+
+            data.results.forEach(r => {
+                const exIdx = session.exercises.findIndex(e => e.name === r.name);
+                if (exIdx === -1) return;
+
+                const ex = session.exercises[exIdx];
+                const weightStr = String(roundToHalf(r.recommendedWeight)).replace(/\.0$/, '');
+
+                ex.series.forEach((s, sIdx) => {
+                    if (sIdx === 0) {
+                        // Série 1 : remplir le poids recommandé, vider les reps
+                        s.weight = weightStr;
+                        s.reps   = '';
+                    } else {
+                        // Autres séries : tout vider
+                        s.weight = '';
+                        s.reps   = '';
+                    }
+                });
+            });
+
+            // Reconstruire le tableau complet depuis l'état mis à jour
+            createTable();
+
+            // Remplir "Semaine précédente" avec le kg/rep de la séance analysée
+            // (APRÈS createTable pour ne pas être écrasé)
+            if (data.lastKgRep !== null) {
+                dom.previousWeekInput.value = data.lastKgRep.toFixed(2);
+                dom.previousWeekInput.dispatchEvent(new Event('input'));
+            }
+
+            saveCurrentState(true);
+
+            document.getElementById('nextSessionModal').classList.remove('show');
+            document.getElementById('nextSessionModal').addEventListener('transitionend', () => {
+                document.getElementById('nextSessionModal').classList.add('hidden');
+            }, { once: true });
+
+            showNotification(`✅ ${data.results.length} exercice(s) pré-rempli(s) — poids série 1 uniquement, reste vidé.`, 'success', 5000);
+        }
+
+        // Listener bouton principal
+        document.getElementById('nextSessionBtn').addEventListener('click', () => {
+            updateStateFromTable();
+            const data = computeNextSessionData();
+            renderNextSessionModal(data);
+        });
+
+        // Confirmer → pré-remplir
+        document.getElementById('nspConfirmBtn').addEventListener('click', () => {
+            const modal = document.getElementById('nextSessionModal');
+            const data = modal._nspData;
+            if (data) prefillNextSession(data);
+        });
+
+        // Fermer
+        document.getElementById('closeNextSessionModal').addEventListener('click', () => {
+            document.getElementById('nextSessionModal').classList.remove('show'); document.getElementById('nextSessionModal').addEventListener('transitionend', () => document.getElementById('nextSessionModal').classList.add('hidden'), { once: true });
+        });
+        document.getElementById('nspCancelBtn').addEventListener('click', () => {
+            document.getElementById('nextSessionModal').classList.remove('show'); document.getElementById('nextSessionModal').addEventListener('transitionend', () => document.getElementById('nextSessionModal').classList.add('hidden'), { once: true });
+        });
+        document.getElementById('nextSessionModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('nextSessionModal'))
+                document.getElementById('nextSessionModal').classList.remove('show'); document.getElementById('nextSessionModal').addEventListener('transitionend', () => document.getElementById('nextSessionModal').classList.add('hidden'), { once: true });
+        });
 
         init();
     });
@@ -6979,60 +8017,10 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
         navigator.serviceWorker.register('./sw.js', { scope: './' })
             .then(reg => {
                 console.log('[Lyftiv SW] Enregistré:', reg.scope);
-                // Forcer la mise à jour si un nouveau SW est disponible
                 reg.update();
             })
             .catch(err => console.warn('[Lyftiv SW] Échec:', err));
     }
-
-    // Manifest + apple-touch-icon dynamiques (icône SVG inline, pas de fichier externe)
-    (function() {
-        const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-            <defs>
-                <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="hsl(200,80%,75%)"/>
-                    <stop offset="100%" stop-color="hsl(260,60%,75%)"/>
-                </linearGradient>
-            </defs>
-            <rect width="100" height="100" rx="20" fill="url(#g)"/>
-            <path d="M15 50 C15 35 30 30 50 30 C70 30 85 35 85 50 C85 65 70 70 50 70 C30 70 15 65 15 50Z M25 50 L75 50 M25 35 L25 65 M75 35 L75 65" stroke="hsl(220,60%,40%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-            <circle cx="25" cy="50" r="14" stroke="hsl(220,60%,40%)" stroke-width="2" fill="none"/>
-            <circle cx="25" cy="50" r="9" stroke="hsl(220,60%,40%)" stroke-width="2" fill="none"/>
-            <circle cx="75" cy="50" r="14" stroke="hsl(220,60%,40%)" stroke-width="2" fill="none"/>
-            <circle cx="75" cy="50" r="9" stroke="hsl(220,60%,40%)" stroke-width="2" fill="none"/>
-            <rect x="35" y="48.5" width="30" height="3" rx="1.5" fill="white"/>
-        </svg>`;
-
-        const svgBlob = new Blob([svgIcon], { type: 'image/svg+xml' });
-        const iconUrl = URL.createObjectURL(svgBlob);
-
-        // apple-touch-icon pour iOS
-        const appleIcon = document.createElement('link');
-        appleIcon.rel = 'apple-touch-icon';
-        appleIcon.href = iconUrl;
-        document.head.appendChild(appleIcon);
-
-        // Manifest dynamique complet
-        const manifest = {
-            name: 'Lyftiv',
-            short_name: 'Lyftiv',
-            description: 'Votre progression, notre science.',
-            start_url: './',
-            display: 'standalone',
-            background_color: '#eef4fb',
-            theme_color: '#4a7fc1',
-            orientation: 'portrait-primary',
-            lang: 'fr',
-            icons: [
-                { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-                { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
-            ]
-        };
-        const mBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-        const mUrl = URL.createObjectURL(mBlob);
-        const existing = document.querySelector('link[rel="manifest"]');
-        if (existing) existing.href = mUrl;
-    })();
     </script>
 </body>
 </html>
