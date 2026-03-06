@@ -141,6 +141,22 @@
 
         /* Nav height token */
         --nav-height: 68px;
+
+        /* ── Z-index scale ─────────────────────────────────── */
+        --z-base:            10;
+        --z-sticky:          50;
+        --z-indicator:       80;
+        --z-dropdown:       200;
+        --z-tooltip:        300;
+        --z-dashboard:      400;
+        --z-landing:        500;
+        --z-notif-banner:   600;
+        --z-modal:          700;
+        --z-modal-content:  701;
+        --z-session-summary:800;
+        --z-emom:           850;
+        --z-notification:   900;
+        --z-badge-toast:    950;
     }
 
     body.dark-mode {
@@ -550,10 +566,10 @@
        Pilote l'UI entière via CSS pur, sans JS de rendu supplémentaire.
        ══════════════════════════════════════════════════════════════════════ */
 
-    /* ── Mode EXECUTE : focus workout, nav discrète ── */
+    /* ── Mode EXECUTE : bottom-nav visible et utilisable ── */
     body[data-mode="execute"] .bottom-navigation {
-        opacity: 0.25;
-        pointer-events: none;
+        opacity: 1;
+        pointer-events: auto;
         transition: opacity 0.3s ease;
     }
     body[data-mode="execute"] .exercise-card:focus-within {
@@ -674,10 +690,11 @@
     /* Bouton discret PLAN toujours visible en mode execute */
     #planTriggerBtn {
         position: fixed;
-        bottom: calc(var(--nav-height, 68px) + var(--spacing-md));
-        right: var(--spacing-md);
-        z-index: 800;
-        width: 44px; height: 44px;
+        bottom: calc(var(--nav-height, 68px) + 12px);
+        left: var(--spacing-md);
+        right: auto;
+        z-index: var(--z-session-summary);
+        width: 40px; height: 40px;
         border-radius: 50%;
         background: var(--color-surface-default);
         border: 1px solid var(--color-border-default);
@@ -993,7 +1010,6 @@
         gap: var(--spacing-sm);
         width: 100%;
         max-width: 420px;
-        padding-bottom: calc(var(--global-nav-height, 68px) + env(safe-area-inset-bottom, 0px) + 16px);
     }
     .review-btn-cta {
         background: var(--btn-primary-bg);
@@ -1012,22 +1028,17 @@
     .review-btn-cta:hover { box-shadow: var(--btn-shadow-hover); }
     .review-btn-cta:active { transform: scale(0.97); }
     .review-btn-ghost {
-        background: var(--color-surface-muted);
-        border: 1.5px solid var(--color-border-default);
+        background: none;
+        border: 1px solid var(--color-border-default);
         border-radius: var(--radius-button);
-        height: 48px;
+        height: 44px;
         font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--color-text-default);
+        color: var(--color-text-subheader);
         font-family: var(--font-body);
         cursor: pointer;
-        transition: border-color 0.18s, background 0.18s, color 0.18s;
+        transition: border-color 0.18s, color 0.18s;
     }
-    .review-btn-ghost:hover {
-        border-color: var(--color-primary-default);
-        background: var(--color-surface-default);
-        color: var(--color-text-header);
-    }
+    .review-btn-ghost:hover { border-color: var(--color-primary-default); color: var(--color-text-default); }
 
     
     @media (prefers-reduced-motion: reduce) {
@@ -1795,9 +1806,9 @@
     }
     .exercise-card .card-actions {
         display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-around;
-        gap: var(--spacing-sm);
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: var(--spacing-xs);
         margin-top: var(--spacing-md);
         align-items: center;
     }
@@ -1852,9 +1863,12 @@
     }
     .timer-container {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
         gap: var(--spacing-xs);
+        flex-wrap: nowrap;
+        flex: 0 0 auto;
+        margin-top: 2px;
     }
     .timer-btn {
         padding: var(--spacing-sm) var(--spacing-md);
@@ -3935,6 +3949,8 @@ body.dark-mode #fastingSection [style*="hsl(198,70%,95%)"] {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        vertical-align: middle;       /* sécurise baseline emoji vs SVG */
+        line-height: 1;               /* évite le décalage vertical des emojis */
         width: 36px;
         height: 36px;
         padding: 0;
@@ -4750,34 +4766,33 @@ body.dark-mode .plan-action-btn:active {
    Toujours scopé #planPanel → aucun impact sur le reste de l'app.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── planPanel : light mode (utilise les tokens de couleur) ──────── */
 #planPanel {
-    background: var(--color-surface-default);
-    border-left: 1px solid var(--color-border-default);
-    box-shadow: -10px 0 40px var(--shadow-xl);
-    color: var(--color-text-default);
+    background: hsl(240, 8%, 11%) !important;
+    border-left: 1px solid hsl(240, 6%, 20%) !important;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6) !important;
+    color: hsl(0, 0%, 98%) !important;
 }
 
 #planPanel .plan-title {
-    color: var(--color-text-header);
+    color: hsl(0, 0%, 98%);
     font-weight: 800;
 }
 
 #planPanel #planCloseBtn,
 #planPanel .icon-btn {
-    background: var(--color-surface-muted);
-    border-color: var(--color-border-default);
-    color: var(--color-text-subheader);
+    background: hsl(240, 8%, 18%);
+    border-color: hsl(240, 6%, 25%);
+    color: hsl(220, 10%, 75%);
 }
 #planPanel #planCloseBtn:hover,
 #planPanel .icon-btn:hover {
-    background: var(--color-surface-default);
-    color: var(--color-text-header);
+    background: hsl(240, 8%, 23%);
+    color: hsl(0, 0%, 98%);
 }
 
 #planPanel .plan-section-label {
-    color: var(--color-text-subheader) !important;
-    border-bottom-color: var(--color-border-default) !important;
+    color: hsl(240, 6%, 50%) !important;
+    border-bottom-color: hsl(240, 6%, 20%) !important;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-size: 0.72rem;
@@ -4785,103 +4800,48 @@ body.dark-mode .plan-action-btn:active {
 }
 
 #planPanel .plan-session-btn {
-    background: var(--color-surface-input) !important;
-    border-color: var(--color-border-default) !important;
-    color: var(--color-text-default) !important;
+    background: hsl(240, 8%, 14%) !important;
+    border-color: hsl(240, 6%, 22%) !important;
+    color: hsl(220, 10%, 80%) !important;
 }
 #planPanel .plan-session-btn:hover {
-    border-color: var(--color-accent-primary) !important;
-    background: var(--color-surface-muted) !important;
+    border-color: hsl(152, 72%, 52%) !important;
+    background: hsl(240, 8%, 18%) !important;
 }
 #planPanel .plan-session-btn.active {
-    border-color: var(--color-accent-primary) !important;
-    background: var(--color-accent-glow) !important;
-    color: var(--color-text-header) !important;
+    border-color: hsl(152, 72%, 52%) !important;
+    background: hsl(240, 8%, 18%) !important;
+    color: hsl(0, 0%, 98%) !important;
     font-weight: 700;
 }
 
 #planPanel .plan-action-btn {
-    background: var(--color-surface-input) !important;
-    border-color: var(--color-border-default) !important;
-    color: var(--color-text-default) !important;
+    background: hsl(240, 8%, 16%) !important;
+    border-color: hsl(240, 6%, 22%) !important;
+    color: hsl(0, 0%, 98%) !important;
 }
 #planPanel .plan-action-btn:hover {
-    background: var(--color-surface-muted) !important;
-    border-color: var(--color-primary-default) !important;
+    background: hsl(240, 8%, 21%) !important;
+    border-color: hsl(240, 6%, 30%) !important;
 }
 #planPanel .plan-action-btn:active {
-    border-color: var(--color-primary-default) !important;
-    background: hsla(220, 60%, 55%, 0.08) !important;
+    border-color: hsl(220, 80%, 65%) !important;
+    background: hsla(220, 80%, 65%, 0.12) !important;
 }
 
 #planPanel .plan-inner {
     background: transparent;
 }
 
-/* planDisciplineWidget — héritage couleur depuis les tokens */
+/* Contenus dynamiques injectés par JS dans planDisciplineWidget */
 #planDisciplineWidget,
 #planDisciplineWidget * {
-    color: var(--color-text-default);
+    color: hsl(0, 0%, 98%);
 }
 #planDisciplineWidget strong,
 #planDisciplineWidget b {
-    color: var(--color-text-header);
+    color: hsl(0, 0%, 100%);
 }
-
-/* ── planPanel dark mode : override avec couleurs profondes ──────── */
-body.dark-mode #planPanel {
-    background: hsl(240, 8%, 11%) !important;
-    border-left: 1px solid hsl(240, 6%, 20%) !important;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6) !important;
-    color: hsl(0, 0%, 98%) !important;
-}
-body.dark-mode #planPanel .plan-title { color: hsl(0, 0%, 98%); }
-body.dark-mode #planPanel #planCloseBtn,
-body.dark-mode #planPanel .icon-btn {
-    background: hsl(240, 8%, 18%);
-    border-color: hsl(240, 6%, 25%);
-    color: hsl(220, 10%, 75%);
-}
-body.dark-mode #planPanel #planCloseBtn:hover,
-body.dark-mode #planPanel .icon-btn:hover {
-    background: hsl(240, 8%, 23%);
-    color: hsl(0, 0%, 98%);
-}
-body.dark-mode #planPanel .plan-section-label {
-    color: hsl(240, 6%, 50%) !important;
-    border-bottom-color: hsl(240, 6%, 20%) !important;
-}
-body.dark-mode #planPanel .plan-session-btn {
-    background: hsl(240, 8%, 14%) !important;
-    border-color: hsl(240, 6%, 22%) !important;
-    color: hsl(220, 10%, 80%) !important;
-}
-body.dark-mode #planPanel .plan-session-btn:hover {
-    border-color: hsl(152, 72%, 52%) !important;
-    background: hsl(240, 8%, 18%) !important;
-}
-body.dark-mode #planPanel .plan-session-btn.active {
-    border-color: hsl(152, 72%, 52%) !important;
-    background: hsl(240, 8%, 18%) !important;
-    color: hsl(0, 0%, 98%) !important;
-}
-body.dark-mode #planPanel .plan-action-btn {
-    background: hsl(240, 8%, 16%) !important;
-    border-color: hsl(240, 6%, 22%) !important;
-    color: hsl(0, 0%, 98%) !important;
-}
-body.dark-mode #planPanel .plan-action-btn:hover {
-    background: hsl(240, 8%, 21%) !important;
-    border-color: hsl(240, 6%, 30%) !important;
-}
-body.dark-mode #planPanel .plan-action-btn:active {
-    border-color: hsl(220, 80%, 65%) !important;
-    background: hsla(220, 80%, 65%, 0.12) !important;
-}
-body.dark-mode #planDisciplineWidget,
-body.dark-mode #planDisciplineWidget * { color: hsl(0, 0%, 98%); }
-body.dark-mode #planDisciplineWidget strong,
-body.dark-mode #planDisciplineWidget b { color: hsl(0, 0%, 100%); }
 
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -5756,30 +5716,29 @@ body.dark-mode .session-card {
     transition: width 0.4s ease;
 }
 
-/* ── PLAN PANEL — light mode avec tokens CSS ─────────────────────── */
+/* ── PLAN PANEL ──────────────────────────────────────────────────── */
 #planPanel {
-    background: var(--color-surface-default) !important;
-    border-left: 1px solid var(--color-border-default) !important;
-    color: var(--color-text-default) !important;
+    background: hsl(240, 7%, 11%) !important;
+    border-left: 1px solid hsl(240, 6%, 20%) !important;
 }
 #planPanel .plan-title {
-    color: var(--color-text-header);
+    color: hsl(0, 0%, 97%);
     font-weight: 800;
 }
 #planPanel .plan-section-label {
-    color: var(--color-text-subheader);
+    color: hsl(220, 8%, 50%);
     font-size: 0.68rem;
     font-weight: 900;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    border-bottom: 1px solid var(--color-border-default);
+    border-bottom: 1px solid hsl(240, 6%, 20%);
     padding-bottom: 8px;
     margin-bottom: 12px;
 }
 #planPanel .plan-session-btn {
-    background: var(--color-surface-input) !important;
-    border: 1px solid var(--color-border-default) !important;
-    color: var(--color-text-default) !important;
+    background: hsl(240, 7%, 15%) !important;
+    border: 1px solid hsl(240, 6%, 22%) !important;
+    color: hsl(220, 10%, 80%) !important;
     border-radius: 12px;
     padding: 10px 14px;
     font-size: 0.88rem;
@@ -5787,43 +5746,29 @@ body.dark-mode .session-card {
 #planPanel .plan-session-btn:hover,
 #planPanel .plan-session-btn.active {
     border-color: var(--color-accent-primary) !important;
-    background: var(--color-accent-glow) !important;
-    color: var(--color-text-header) !important;
+    color: hsl(0, 0%, 98%) !important;
 }
 #planPanel .plan-action-btn {
-    background: var(--color-surface-input) !important;
-    border: 1px solid var(--color-border-default) !important;
-    color: var(--color-text-default) !important;
+    background: hsl(240, 7%, 16%) !important;
+    border: 1px solid hsl(240, 6%, 22%) !important;
+    color: hsl(0, 0%, 97%) !important;
     border-radius: 12px;
     padding: 13px 16px;
     font-size: 0.9rem;
     font-weight: 500;
 }
-#planPanel .plan-action-btn:hover {
-    background: var(--color-surface-muted) !important;
-    border-color: var(--color-primary-default) !important;
-}
+#planPanel .plan-action-btn:hover { background: hsl(240, 7%, 20%) !important; }
 #planPanel .plan-action-btn:active {
-    border-color: var(--color-primary-default) !important;
-    background: hsla(220, 60%, 55%, 0.08) !important;
+    border-color: hsl(210, 80%, 62%) !important;
+    background: hsla(210, 80%, 62%, 0.1) !important;
 }
 #planDisciplineWidget {
-    background: var(--color-surface-muted) !important;
-    border: 1px solid var(--color-border-default) !important;
+    background: hsl(240, 7%, 8%) !important;
+    border: 1px solid hsl(240, 6%, 20%) !important;
     border-radius: 16px;
     padding: 16px;
-    color: var(--color-text-default);
+    color: hsl(0, 0%, 97%);
 }
-/* Dark mode scopé */
-body.dark-mode #planPanel { background: hsl(240,7%,11%) !important; border-left-color: hsl(240,6%,20%) !important; color: hsl(0,0%,98%) !important; }
-body.dark-mode #planPanel .plan-title { color: hsl(0,0%,97%); }
-body.dark-mode #planPanel .plan-section-label { color: hsl(220,8%,50%); border-bottom-color: hsl(240,6%,20%); }
-body.dark-mode #planPanel .plan-session-btn { background: hsl(240,7%,15%) !important; border-color: hsl(240,6%,22%) !important; color: hsl(220,10%,80%) !important; }
-body.dark-mode #planPanel .plan-session-btn:hover,
-body.dark-mode #planPanel .plan-session-btn.active { color: hsl(0,0%,98%) !important; }
-body.dark-mode #planPanel .plan-action-btn { background: hsl(240,7%,16%) !important; border-color: hsl(240,6%,22%) !important; color: hsl(0,0%,97%) !important; }
-body.dark-mode #planPanel .plan-action-btn:hover { background: hsl(240,7%,20%) !important; }
-body.dark-mode #planDisciplineWidget { background: hsl(240,7%,8%) !important; border-color: hsl(240,6%,20%) !important; color: hsl(0,0%,97%); }
 
 /* ── RESPONSIVE — MOBILE FIRST ──────────────────────────────────── */
 
@@ -6532,27 +6477,106 @@ body.dark-mode .landing-pill {
 }
 
 
-/* ── Review overlay — boutons lisibles dans les deux modes ─────── */
-body.dark-mode .review-btn-ghost {
-    background: hsl(240, 7%, 18%);
-    border-color: hsl(240, 6%, 28%);
-    color: hsl(220, 10%, 82%);
-}
-body.dark-mode .review-btn-ghost:hover {
-    background: hsl(240, 7%, 22%);
-    border-color: hsl(152, 68%, 52%);
-    color: hsl(0, 0%, 98%);
-}
-/* Review titre et sous-titres — contraste en light mode */
-#reviewOverlay .review-session-name,
-#reviewOverlay .review-score-label,
-#reviewOverlay .review-league-name {
-    color: var(--color-text-header);
-}
-#reviewOverlay .review-checklist li {
-    color: var(--color-text-default);
+/* ══ EXERCISE CARD ACTIONS — layout mobile compact ══════════════ */
+@media (max-width: 480px) {
+    .exercise-card .card-actions {
+        gap: 4px;
+    }
+    .exercise-card .card-actions .btn {
+        flex: 0 1 auto;
+        padding: 6px 10px !important;
+        font-size: 0.8rem !important;
+        min-width: 0;
+    }
+    .timer-container {
+        flex-direction: row !important;
+        margin-left: 0;
+        gap: 4px;
+    }
+    .timer-btn {
+        min-width: 38px !important;
+        min-height: 38px !important;
+        padding: 6px 8px !important;
+        font-size: 1rem !important;
+    }
+    .timer-display.ex-timer {
+        font-size: 1rem;
+        min-width: 40px;
+        text-align: center;
+    }
 }
 
+/* ══ BOTTOM NAV — 6 boutons compacts sur mobile ══════════════════ */
+@media (max-width: 430px) {
+    .bottom-navigation .btn {
+        padding: 6px 2px !important;
+        font-size: 0.62rem !important;
+        gap: 2px !important;
+        min-width: 0;
+    }
+    .bottom-navigation .nav-icon {
+        font-size: 1.15rem !important;
+    }
+    .bottom-navigation .nav-icon svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+}
+
+
+/* ── SUPERSET WRAPPER — design bloc unifié ───────────────────── */
+.superset-wrapper {
+    border: 2px solid var(--color-info-default, hsl(210,80%,58%));
+    border-radius: var(--radius-base, 12px);
+    margin-bottom: 20px;
+    background: var(--color-surface-default);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.superset-header {
+    background: var(--color-info-default, hsl(210,80%,58%));
+    color: white;
+    padding: 6px 12px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+body.dark-mode .superset-header {
+    background: hsl(210,65%,48%);
+}
+.superset-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--color-border-default);
+}
+.superset-body > .exercise-card {
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+
+/* ── Prévention zoom iOS : font-size min 16px sur inputs en focus ── */
+@media (max-width: 768px) {
+    input[type="number"]:focus,
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus {
+        font-size: max(16px, 1rem) !important;
+    }
+    .weight:focus,
+    .reps:focus,
+    .wod-w-input:focus,
+    .wod-r-input:focus {
+        font-size: max(16px, 1rem) !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -6562,7 +6586,7 @@ body.dark-mode .review-btn-ghost:hover {
     ════════════════════════════════════════════════════════════════ -->
     <div id="landing" class="landing-container">
         <div class="landing-topbar-actions">
-            <button id="landingThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+            <button id="landingThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème" style="font-size:1.1rem;">🌓</button>
         </div>
         <div class="landing-content">
 
@@ -6624,7 +6648,7 @@ body.dark-mode .review-btn-ghost:hover {
                     <span class="dashboard-topbar-name">Lyftiv</span>
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;">
-                    <button id="dashThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+                    <button id="dashThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème" style="font-size:1.1rem;">🌓</button>
                     <button id="dashHomeBtn" class="icon-btn" title="Accueil" aria-label="Retour à l'accueil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
                 </div>
             </header>
@@ -6635,21 +6659,21 @@ body.dark-mode .review-btn-ghost:hover {
                     <span class="tab-icon">🏋️</span>
                     <span class="tab-label">
                         <span class="tab-title">Entraînement</span>
-                        <span class="tab-subtitle">Séances · Progression · Deload</span>
+
                     </span>
                 </button>
                 <button class="dash-tab-btn" id="tabNutrition" data-tab="panelNutrition" role="tab" aria-selected="false" aria-controls="panelNutrition">
                     <span class="tab-icon">🥗</span>
                     <span class="tab-label">
                         <span class="tab-title">Nutrition</span>
-                        <span class="tab-subtitle">TDEE · Macros · Compléments</span>
+
                     </span>
                 </button>
                 <button class="dash-tab-btn" id="tabProfile" data-tab="panelProfile" role="tab" aria-selected="false" aria-controls="panelProfile">
                     <span class="tab-icon">👤</span>
                     <span class="tab-label">
                         <span class="tab-title">Profil</span>
-                        <span class="tab-subtitle">Objectifs · Données · Thème</span>
+
                     </span>
                 </button>
             </div>
@@ -6783,7 +6807,7 @@ body.dark-mode .review-btn-ghost:hover {
             <span class="nutri-menu-label">Compléments<br><small>Alimentaires</small></span>
         </button>
         <button class="nutri-menu-btn" data-nutri="principesSection" aria-pressed="false">
-            <span class="nutri-menu-icon">🥦</span>
+            <span class="nutri-menu-icon">🥗</span>
             <span class="nutri-menu-label">Principes<br><small>Nutrition</small></span>
         </button>
     </nav>
@@ -7206,7 +7230,7 @@ body.dark-mode .review-btn-ghost:hover {
                     font-size:var(--font-size-sm);
                     color:var(--color-text-default);
                 ">
-                    <span style="font-size:1.6rem;flex-shrink:0;line-height:1;">🥦</span>
+                    <span style="font-size:1.6rem;flex-shrink:0;line-height:1;">🥗</span>
                     <div>
                         <strong style="display:block;margin-bottom:4px;font-size:var(--font-size-base);color:var(--color-text-header);">Une alimentation saine et un sommeil de qualité resteront toujours supérieurs aux compléments.</strong>
                         <span style="color:var(--color-text-subheader);line-height:1.5;">Les compléments alimentaires ne compensent pas une mauvaise hygiène de vie — ils ne font qu'optimiser une base déjà solide. Dormez 7–9h, mangez des aliments vrais, gérez votre stress : c'est là que se jouent 90% de vos résultats.</span>
@@ -7221,11 +7245,11 @@ body.dark-mode .review-btn-ghost:hover {
 <div class="nutri-section-wrap nutri-section-hidden" id="principesSection-wrap">
         <!-- Principes nutrition -->
                 <section style="margin-bottom:var(--spacing-xl);">
-                    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🥦 Principes fondamentaux</h2>
+                    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🥗 Principes fondamentaux</h2>
                     <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
                         <!-- Disclaimer -->
                         <div style="display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,hsl(220,40%,96%),hsl(200,40%,97%));border:1px solid hsl(220,30%,82%);border-left:4px solid hsl(220,60%,55%);border-radius:var(--radius-base);padding:var(--spacing-md) var(--spacing-lg);margin-bottom:var(--spacing-lg);font-size:var(--font-size-sm);">
-                            <span style="font-size:1.6rem;flex-shrink:0;">🥦</span>
+                            <span style="font-size:1.6rem;flex-shrink:0;">🥗</span>
                             <div>
                                 <strong style="display:block;margin-bottom:4px;font-size:var(--font-size-base);">Une alimentation saine et un sommeil de qualité resteront toujours supérieurs aux compléments.</strong>
                                 <span style="color:var(--color-text-subheader);">Dormez 7–9h, mangez des aliments vrais, gérez votre stress : c'est là que se jouent 90% de vos résultats.</span>
@@ -7305,14 +7329,14 @@ body.dark-mode .review-btn-ghost:hover {
 
             <!-- Mes informations -->
             <section class="profile-card">
-                <div class="profile-card-title">📋 Mes informations</div>
+                <div class="profile-card-title">📋 Identité</div>
 
                 <div class="profile-field" style="margin-bottom:var(--spacing-sm);">
                     <label for="profileName">Prénom ou pseudo</label>
                     <input type="text" id="profileName" placeholder="ex : Alex" maxlength="30" autocomplete="given-name">
                 </div>
 
-                <div class="profile-card-title" style="margin-top:var(--spacing-md);">⚖️ Données corporelles</div>
+                <div class="profile-card-title" style="margin-top:var(--spacing-md);">⚖️ Mensurations</div>
                 <div class="profile-field-row">
                     <div class="profile-field">
                         <label for="profileGender">Sexe</label>
@@ -7337,7 +7361,7 @@ body.dark-mode .review-btn-ghost:hover {
                     </div>
                 </div>
 
-                <div class="profile-card-title" style="margin-top:var(--spacing-md);">🎯 Mon objectif</div>
+                <div class="profile-card-title" style="margin-top:var(--spacing-md);">🎯 Objectif</div>
                 <div class="profile-goal-grid" id="profileGoalGrid">
                     <button class="profile-goal-btn" data-goal="prise" type="button">💪 Prise de masse</button>
                     <button class="profile-goal-btn" data-goal="seche" type="button">🔥 Sèche</button>
@@ -7379,7 +7403,7 @@ body.dark-mode .review-btn-ghost:hover {
 
             <!-- Données & Confidentialité -->
             <section class="profile-card">
-                <div class="profile-card-title">🗂 Données locales</div>
+                <div class="profile-card-title">🗂 Stockage</div>
                 <p style="font-size:0.82rem;color:var(--color-text-subheader);line-height:1.6;margin:0 0 var(--spacing-md);">
                     Toutes vos données sont stockées localement sur cet appareil. Aucun serveur, aucun compte requis.
                 </p>
@@ -7406,8 +7430,8 @@ body.dark-mode .review-btn-ghost:hover {
         <main class="main-container">
             <div class="theme-switcher">
                 <button id="homeBtn" class="icon-btn" aria-label="Retourner à l'accueil" title="Accueil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
-                <button id="dashMenuBtn" class="icon-btn" aria-label="Menu Entraînement" title="Menu Entraînement"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M6 5v14M18 5v14M4 7h4M16 7h4M4 17h4M16 17h4M6 12h12"/></svg></button>
-                <button id="themeToggleBtn" class="icon-btn" aria-label="Changer de thème" title="Mode sombre"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+                <button id="dashMenuBtn" class="icon-btn" aria-label="Menu Entraînement" title="Menu Entraînement" style="font-size:1.2rem;">☰</button>
+                <button id="themeToggleBtn" class="icon-btn" aria-label="Changer de thème" title="Mode sombre" style="font-size:1.1rem;">🌓</button>
                 <span id="appModeIndicator" aria-live="polite" aria-label="Mode actuel">● PLAN</span>
             </div>
             <h2>
@@ -7464,7 +7488,7 @@ body.dark-mode .review-btn-ghost:hover {
                 <h2 id="summarySectionTitle" class="sr-only">Résumé de la séance</h2>
                 <div class="summary-card">
                     <span class="card-icon" aria-hidden="true">🎯</span>
-                    <h3>Total kg/rép</h3> <div class="value" id="totalKgRep" aria-live="polite">0 kg/rep</div> </div>
+                    <h3>Total kg/rép</h3> <div class="value" id="totalKgRep">0 kg/rep</div><span id="totalKgRepA11y" class="sr-only" aria-live="polite" aria-atomic="true"></span> </div>
                 <div class="summary-card">
                     <span class="card-icon" aria-hidden="true">📅</span>
                     <h3>Semaine précédente</h3>
@@ -7473,7 +7497,7 @@ body.dark-mode .review-btn-ghost:hover {
                 <div class="summary-card">
                     <span class="card-icon" aria-hidden="true">📈</span>
                     <h3>Progression</h3>
-                    <div class="value" id="delta" aria-live="polite">0 kg</div>
+                    <div class="value" id="delta">0 kg</div><span id="deltaA11y" class="sr-only" aria-live="polite" aria-atomic="true"></span>
                 </div>
                 <div class="summary-card">
                     <span class="card-icon" aria-hidden="true">⏱️</span>
@@ -7506,6 +7530,9 @@ body.dark-mode .review-btn-ghost:hover {
                 <button class="btn btn-secondary" id="nextSessionBtn" aria-label="Calculer la prochaine séance" title="Calcule les charges recommandées pour ta prochaine séance">
                     📈 Prochaine séance
                 </button>
+                <button class="btn btn-outline" id="globalEmomBtn" style="border-color:hsl(210,80%,58%);color:hsl(210,80%,58%);">⏱ Mode EMOM</button>
+                <button class="btn btn-outline" id="globalAmrapBtn" style="border-color:hsl(145,62%,48%);color:hsl(145,62%,48%);">🔁 Mode AMRAP</button>
+                <button class="btn btn-outline" id="globalCircuitBtn" style="border-color:hsl(240,60%,60%);color:hsl(240,60%,60%);">🔗 Créer un Circuit</button>
             </section>
     
             <section class="action-buttons" style="margin-top: var(--spacing-md);" aria-labelledby="dataManagementTitle">
@@ -7671,7 +7698,15 @@ body.dark-mode .review-btn-ghost:hover {
             <span>Historique</span>
         </button>
         <button class="btn" id="bottomPlateCalculatorBtn" aria-label="Calculateurs">
-            <span class="nav-icon">&#129582;</span>
+            <span class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4" y="2" width="16" height="20" rx="2"/>
+                    <line x1="8" y1="6" x2="16" y2="6"/>
+                    <line x1="8" y1="10" x2="16" y2="10"/>
+                    <line x1="8" y1="14" x2="12" y2="14"/>
+                    <line x1="8" y1="18" x2="10" y2="18"/>
+                </svg>
+            </span>
             <span>Calculs</span>
         </button>
         <button class="btn" id="bottomRestTimerBtn" aria-label="Timer de repos" title="D&#233;marrer le timer de repos">
@@ -8342,11 +8377,11 @@ body.dark-mode .review-btn-ghost:hover {
 
                 // Ligue dynamique
                 const league =
-                    score >= 90 ? { name: 'TITAN',    color: document.body.classList.contains('dark-mode') ? 'hsl(280,72%,72%)' : 'hsl(280,60%,50%)', icon: '\u26a1' } :
-                    score >= 75 ? { name: '\u00c9LITE',     color: document.body.classList.contains('dark-mode') ? 'hsl(152,65%,58%)' : 'hsl(152,60%,36%)', icon: '\U0001f3c6' } :
-                    score >= 60 ? { name: 'PERFORMER', color: document.body.classList.contains('dark-mode') ? 'hsl(210,80%,68%)' : 'hsl(210,75%,44%)', icon: '\U0001f4c8' } :
-                    score >= 40 ? { name: 'SILVER',    color: document.body.classList.contains('dark-mode') ? 'hsl(214,20%,72%)' : 'hsl(214,30%,40%)', icon: '\u2699\ufe0f' } :
-                                  { name: 'BRONZE',    color: document.body.classList.contains('dark-mode') ? 'hsl(24,60%,58%)' : 'hsl(24,55%,36%)', icon: '\U0001f529' };
+                    score >= 90 ? { name: 'TITAN',     color: 'hsl(280,72%,62%)', icon: '⚡' } :
+                    score >= 75 ? { name: 'ÉLITE',      color: 'hsl(152,65%,48%)', icon: '🏆' } :
+                    score >= 60 ? { name: 'PERFORMER',  color: 'hsl(210,80%,58%)', icon: '📈' } :
+                    score >= 40 ? { name: 'SILVER',     color: 'hsl(35,80%,54%)',  icon: '⚙️'  } :
+                                  { name: 'BRONZE',     color: 'hsl(24,60%,48%)',  icon: '🔩' };
 
                 return { score, stimulus, recovery, consistency, league };
             }
@@ -9018,53 +9053,67 @@ body.dark-mode .review-btn-ghost:hover {
                 dom.quickEditRepsError.textContent = '';
             } else if (action === 'link-superset') {
                 const scrollY = window.scrollY;
-                const exercises = state.sessions[state.currentSessionIndex].exercises;
-                const clickedExercise = exercises[idx];
+                const session = state.sessions[state.currentSessionIndex];
+                const exercises = session.exercises;
+                const clickedEx = exercises[idx];
 
-                if (clickedExercise.supersetGroup) {
-                    let partnerIndex = -1;
-                    if (clickedExercise.supersetWith !== null && clickedExercise.supersetWith !== undefined) {
-                        partnerIndex = clickedExercise.supersetWith;
+                if (state.linkingState && state.linkingState.active) {
+                    const fromIdx = state.linkingState.fromIndex;
+
+                    if (fromIdx === idx) {
+                        state.linkingState = { active: false, fromIndex: null };
+                        showNotification("Liaison annulée.", "info");
+                        createTable();
+                        window.scrollTo(0, scrollY);
                     } else {
-                        const partner = exercises.find(e => e.supersetWith === idx);
-                        if (partner) {
-                            partnerIndex = exercises.indexOf(partner);
-                            partner.supersetWith = null;
+                        const fromEx = exercises[fromIdx];
+                        // Réutilise le groupId existant ou génère un nouveau
+                        const groupId = fromEx.groupId || clickedEx.groupId || ('g-' + Date.now());
+                        fromEx.groupId = groupId;
+                        clickedEx.groupId = groupId;
+
+                        // Auto-rapprochement : déplace l'exo cliqué juste après le premier
+                        if (Math.abs(fromIdx - idx) > 1) {
+                            const [movedEx] = exercises.splice(idx, 1);
+                            const insertAt = idx > fromIdx ? fromIdx + 1 : fromIdx;
+                            exercises.splice(insertAt, 0, movedEx);
                         }
+
+                        state.linkingState = { active: false, fromIndex: null };
+                        showNotification("✅ Superset / Circuit créé !", "success");
+                        saveCurrentState(true);
+                        createTable();
+                        window.scrollTo(0, scrollY);
                     }
-                    clickedExercise.supersetWith = null;
-                    clickedExercise.supersetGroup = false;
-                    if (partnerIndex !== -1) {
-                        Store.removeSupersetLink(idx);
-                    }
-                    showNotification("Superset délié.", "info");
-                    state.linkingState = { active: false, fromIndex: null };
-                    createTable();
-                    window.scrollTo(0, scrollY);
                 } else {
-                    if (!state.linkingState.active) {
-                        state.linkingState.active = true;
-                        state.linkingState.fromIndex = idx;
+                    if (clickedEx.groupId) {
+                        // Délier cet exercice du groupe
+                        const currentGroupId = clickedEx.groupId;
+                        delete clickedEx.groupId;
+                        // Détruire le groupe si moins de 2 membres restants
+                        const remaining = exercises.filter(e => e.groupId === currentGroupId);
+                        if (remaining.length === 1) delete remaining[0].groupId;
+                        showNotification("Exercice retiré du groupe.", "info");
+                        saveCurrentState(true);
+                        createTable();
+                        window.scrollTo(0, scrollY);
+                    } else {
+                        state.linkingState = { active: true, fromIndex: idx };
                         button.classList.add('linking');
-                        showNotification(`Sélectionnez un autre exercice à lier avec "${clickedExercise.name}".`, "info");
+                        showNotification(`Sélectionnez l'exercice à lier avec "${clickedEx.name}"...`, "info");
                     }
-                    else {
-                        const fromIndex = state.linkingState.fromIndex;
-                        if (fromIndex !== idx) {
-                            Store.setSupersetLink(fromIndex, idx);
-                            showNotification("Exercices liés en superset!", "success");
+                    const fromIndex = state.linkingState?.fromIndex;
+                    if (false) { // ancienne branche — conservée pour compat
+                        const fromIndex2 = state.linkingState.fromIndex;
+                        if (fromIndex2 !== idx) {
+                            showNotification("Exercices liés!", "success");
                         }
                         state.linkingState = { active: false, fromIndex: null };
                         createTable();
                         window.scrollTo(0, scrollY);
                     }
                 }
-            } else if (action === 'start-emom') {
-                const ex = state.sessions[state.currentSessionIndex].exercises[idx];
-                showEmomModal(ex.name);
-            } else if (action === 'start-amrap') {
-                const ex = state.sessions[state.currentSessionIndex].exercises[idx];
-                showAmrapModal(ex.name);
+
             } else if (timerAction) {
                 handleTimerActions(timerAction, idx, rowOrCard);
             } else if (action === 'remove') {
@@ -9208,39 +9257,34 @@ body.dark-mode .review-btn-ghost:hover {
             }
         }
         
+        // updateStateFromTable — lecture DOM complète (utilisée uniquement à la sauvegarde globale)
         function updateStateFromTable() {
             if (!state.isInitialized) return;
-            
             const currentSession = state.sessions[state.currentSessionIndex];
-            if (!currentSession || !currentSession.exercises) return;
-
+            if (!currentSession?.exercises) return;
             currentSession.exercises.forEach((ex, idx) => {
-                if (!Array.isArray(ex.series)) {
-                    ex.series = [];
-                }
-                
-                const currentInputs = Array.from(document.querySelectorAll(`[data-ex='${idx}'][data-serie]`));
-                const newSeriesData = [];
-                
+                if (!Array.isArray(ex.series)) ex.series = [];
                 const seriesMap = new Map();
-                currentInputs.forEach(input => {
-                    const serieIndex = parseInt(input.dataset.serie, 10);
-                    if (!seriesMap.has(serieIndex)) {
-                        seriesMap.set(serieIndex, {});
-                    }
-                    if (input.classList.contains('weight')) {
-                        seriesMap.get(serieIndex).weight = input.value;
-                    } else if (input.classList.contains('reps')) {
-                        seriesMap.get(serieIndex).reps = input.value;
-                    }
+                document.querySelectorAll(`[data-ex='${idx}'][data-serie]`).forEach(input => {
+                    const si = parseInt(input.dataset.serie, 10);
+                    if (!seriesMap.has(si)) seriesMap.set(si, {});
+                    if (input.classList.contains('weight')) seriesMap.get(si).weight = input.value;
+                    else if (input.classList.contains('reps')) seriesMap.get(si).reps = input.value;
                 });
-
-                Array.from(seriesMap.keys()).sort((a, b) => a - b).forEach(serieIndex => {
-                    newSeriesData.push(seriesMap.get(serieIndex));
-                });
-
-                ex.series = newSeriesData;
+                ex.series = Array.from(seriesMap.keys()).sort((a, b) => a - b).map(si => seriesMap.get(si));
             });
+        }
+
+        // updateSingleSerie — mise à jour chirurgicale d'1 seul champ (poids ou reps)
+        // Appelée à chaque frappe clavier : 0 querySelectorAll global, 0 layout thrashing
+        function updateSingleSerie(exIndex, serieIndex, field, value) {
+            if (!state.isInitialized) return;
+            const session = state.sessions[state.currentSessionIndex];
+            if (!session?.exercises?.[exIndex]) return;
+            const ex = session.exercises[exIndex];
+            if (!Array.isArray(ex.series)) ex.series = [];
+            if (!ex.series[serieIndex]) ex.series[serieIndex] = {};
+            ex.series[serieIndex][field] = value;
         }
 
         function resetAppStateToDefault() {
@@ -9278,16 +9322,132 @@ body.dark-mode .review-btn-ghost:hover {
             return true;
         }
         
+
+
+        /* ── openCircuitModal — ouvre la modale de sélection circuit ── */
+        function openCircuitModal() {
+            const session = state.sessions[state.currentSessionIndex];
+            const list = document.getElementById('circuitExerciseList');
+            if (!list) return;
+            list.innerHTML = '';
+            if (!session?.exercises?.length) {
+                list.innerHTML = '<p style="color:var(--color-danger-default);">Ajoutez d\'abord des exercices à votre séance.</p>';
+            } else {
+                session.exercises.forEach((ex, idx) => {
+                    const isGrouped = ex.groupId ? ' (déjà en circuit)' : '';
+                    list.innerHTML += `<label style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-base);cursor:pointer;">
+                        <input type="checkbox" value="${idx}" class="circuit-ex-cb" style="width:22px;height:22px;accent-color:hsl(240,60%,60%);" ${ex.groupId ? 'checked' : ''}>
+                        <span style="font-weight:700;color:var(--color-text-header);">${escapeHTML(ex.name)}<span style="font-weight:400;font-size:0.8rem;color:var(--color-text-subheader);"> ${isGrouped}</span></span>
+                    </label>`;
+                });
+            }
+            const modal = document.getElementById('globalCircuitModal');
+            ModalManager.open(modal, modal.querySelector('button'));
+        }
+
+        /* ── buildCircuit — regroupe N exercices sélectionnés ─── */
+        function buildCircuit(selectedIndexes) {
+            const session = state.sessions[state.currentSessionIndex];
+            if (!selectedIndexes || selectedIndexes.length < 2) {
+                showNotification("Cochez au moins 2 exercices.", "error");
+                return;
+            }
+            const newGroupId = 'circuit-' + Date.now();
+
+            // Donner le même groupId à chaque exercice sélectionné
+            selectedIndexes.forEach(idx => {
+                session.exercises[idx].groupId = newGroupId;
+            });
+
+            // Extraire les exercices dans l'ordre sélectionné
+            const groupedExercises = selectedIndexes.sort((a, b) => a - b).map(idx => session.exercises[idx]);
+
+            // Retirer de leur position (en partant de la fin pour éviter les décalages)
+            [...selectedIndexes].sort((a, b) => b - a).forEach(idx => {
+                session.exercises.splice(idx, 1);
+            });
+
+            // Réinsérer groupés à la position du premier sélectionné
+            const insertAt = Math.min(...selectedIndexes);
+            session.exercises.splice(insertAt, 0, ...groupedExercises);
+
+            saveCurrentState(true);
+            createTable();
+            showNotification(`🔗 Circuit créé (${groupedExercises.length} exercices) !`, "success");
+        }
+
+        /* ── formatSupersetsUI — post-processing visuel superset ── */
+        function formatSupersetsUI() {
+            const session = state.sessions[state.currentSessionIndex];
+            if (!session?.exercises) return;
+            const container = document.getElementById('exerciseListContainer') ||
+                              document.querySelector('.mobile-cards') ||
+                              document.getElementById('exerciseList');
+            if (!container) return;
+
+            const cards = Array.from(container.querySelectorAll('.exercise-card'));
+            if (!cards.length) return;
+
+            let currentGroupId = null;
+            let wrapper = null;
+            let mainCounter = 1;
+            let letterCode = 65; // 'A'
+
+            cards.forEach((card, idx) => {
+                const ex = session.exercises[idx];
+                if (!ex) return;
+                const titleEl = card.querySelector('.ex-name, h3, h4');
+
+                if (ex.groupId) {
+                    if (ex.groupId !== currentGroupId) {
+                        wrapper = document.createElement('div');
+                        wrapper.className = 'superset-wrapper';
+                        wrapper.innerHTML = '<div class="superset-header">🔗 Circuit / Superset</div><div class="superset-body"></div>';
+                        card.parentNode.insertBefore(wrapper, card);
+                        currentGroupId = ex.groupId;
+                        letterCode = 65;
+                    }
+                    wrapper.querySelector('.superset-body').appendChild(card);
+                    if (titleEl) titleEl.textContent = `${mainCounter}${String.fromCharCode(letterCode)} – ${ex.name}`;
+                    letterCode++;
+
+                    // Masquer timer repos si pas le dernier du groupe
+                    const isLast = (idx === session.exercises.length - 1) || (session.exercises[idx + 1]?.groupId !== ex.groupId);
+                    const restBtn = card.querySelector('[data-timer-action="start"]');
+                    const timerContainer = card.querySelector('.timer-container');
+                    if (!isLast) {
+                        if (restBtn) restBtn.style.display = 'none';
+                        if (timerContainer) timerContainer.style.opacity = '0.3';
+                    }
+                    if (isLast) mainCounter++;
+
+                    // Bouton lier → délier
+                    const linkBtn = card.querySelector('[data-action="link-superset"]');
+                    if (linkBtn) {
+                        linkBtn.innerHTML = '✂️';
+                        linkBtn.setAttribute('aria-label', 'Délier du superset');
+                        linkBtn.style.color = 'var(--color-danger-default)';
+                    }
+                } else {
+                    currentGroupId = null;
+                    if (titleEl) titleEl.textContent = `${mainCounter} – ${ex.name}`;
+                    mainCounter++;
+                }
+            });
+        }
+
         function createTable() {
             if (!state.isInitialized) return;
 
-            // Nettoyer les timers individuels AVANT de détruire le DOM
-            // pour éviter que des setInterval tournent en arrière-plan sur des nœuds détachés.
+            // Snapshot des timers actifs AVANT de détruire le DOM
+            // → permet de les ré-attacher après reconstruction sans les tuer
+            const _activeTimerSnapshot = {};
             Object.entries(state.timers).forEach(([idx, t]) => {
-                if (t && t.interval) {
-                    clearInterval(t.interval);
-                    t.interval = null;
+                if (t && t.interval && t.duration != null) {
+                    const remaining = t.duration - (t.secondsElapsed || 0);
+                    if (remaining > 0) _activeTimerSnapshot[idx] = { remaining, duration: t.duration };
                 }
+                if (t && t.interval) { clearInterval(t.interval); t.interval = null; }
             });
 
             dom.exerciseListContainer.innerHTML = "";
@@ -9353,9 +9513,6 @@ body.dark-mode .review-btn-ghost:hover {
 
                     // aria-labels sur les boutons d'action
                     tr.querySelector('[data-action="quick-edit"]').setAttribute('aria-label', `Édition rapide pour ${safeName}`);
-                    tr.querySelector('[data-action="link-superset"]').setAttribute('aria-label', `Lier ${safeName} pour superset`);
-                    tr.querySelector('[data-action="start-emom"]').setAttribute('aria-label', `Mode EMOM pour ${safeName}`);
-                    tr.querySelector('[data-action="start-amrap"]').setAttribute('aria-label', `Mode AMRAP pour ${safeName}`);
                     tr.querySelector('[data-action="add-series"]').setAttribute('aria-label', `Ajouter une série à ${safeName}`);
                     tr.querySelector('[data-action="remove"]').setAttribute('aria-label', `Supprimer l'exercice ${safeName}`);
                     tr.querySelectorAll('[data-timer-action="start"]').forEach(b => b.setAttribute('aria-label', `Démarrer le minuteur pour ${safeName}`));
@@ -9429,9 +9586,7 @@ body.dark-mode .review-btn-ghost:hover {
                     // aria-labels
                     card.querySelector('[data-action="remove"]').setAttribute('aria-label', `Supprimer l'exercice ${safeName}`);
                     card.querySelector('[data-action="quick-edit"]').setAttribute('aria-label', `Édition rapide pour ${safeName}`);
-                    card.querySelector('[data-action="link-superset"]').setAttribute('aria-label', `Lier ${safeName} pour superset`);
-                    card.querySelector('[data-action="start-emom"]').setAttribute('aria-label', `Mode EMOM pour ${safeName}`);
-                    card.querySelector('[data-action="start-amrap"]').setAttribute('aria-label', `Mode AMRAP pour ${safeName}`);
+
                     card.querySelectorAll('[data-timer-action="start"]').forEach(b => b.setAttribute('aria-label', `Démarrer le minuteur pour ${safeName}`));
                     card.querySelectorAll('[data-timer-action="stop"]').forEach(b => b.setAttribute('aria-label', `Arrêter le minuteur pour ${safeName}`));
                     card.querySelectorAll('[data-timer-action="reset"]').forEach(b => b.setAttribute('aria-label', `Réinitialiser le minuteur pour ${safeName}`));
@@ -9467,7 +9622,21 @@ body.dark-mode .review-btn-ghost:hover {
                         card.addEventListener('animationend', () => card.classList.remove('exercise-card-new'), { once: true });
                         state._lastAddedExercise = null;
                     }
-                    mobileFrag.appendChild(card);
+                    // Groupement superset DANS le DocumentFragment (zéro layout thrashing)
+                    if (ex.groupId) {
+                        let wrapper = Array.from(mobileFrag.querySelectorAll('.superset-wrapper'))
+                            .find(w => w.dataset.group === ex.groupId);
+                        if (!wrapper) {
+                            wrapper = document.createElement('div');
+                            wrapper.className = 'superset-wrapper';
+                            wrapper.dataset.group = ex.groupId;
+                            wrapper.innerHTML = '<div class="superset-header">🔗 Circuit / Superset</div><div class="superset-body"></div>';
+                            mobileFrag.appendChild(wrapper);
+                        }
+                        wrapper.querySelector('.superset-body').appendChild(card);
+                    } else {
+                        mobileFrag.appendChild(card);
+                    }
                 });
 
                 container.appendChild(mobileFrag);
@@ -9477,6 +9646,41 @@ body.dark-mode .review-btn-ghost:hover {
             loadCurrentState();
             updateAllTotals();
             updateDeleteSessionButtonState();
+        
+            formatSupersetsUI();
+
+            // Restauration des timers actifs après reconstruction DOM
+            Object.entries(_activeTimerSnapshot).forEach(([idxStr, snap]) => {
+                const idx = parseInt(idxStr);
+                const el = document.querySelector(`[data-exercise-index="${idx}"]`);
+                if (!el) return;
+                const timerDisplay = el.querySelector('.timer-display');
+                const startBtn    = el.querySelector('[data-timer-action="start"]');
+                const stopBtn     = el.querySelector('[data-timer-action="stop"]');
+                if (!timerDisplay) return;
+                timerDisplay.classList.add('timer-active');
+                if (startBtn) startBtn.style.display = 'none';
+                if (stopBtn)  stopBtn.style.display  = 'inline-flex';
+                state.timers[idx] = {
+                    secondsElapsed: snap.duration - snap.remaining,
+                    duration: snap.duration,
+                    interval: setInterval(() => {
+                        if (!state.timers[idx]) return;
+                        state.timers[idx].secondsElapsed++;
+                        const rem = state.timers[idx].duration - state.timers[idx].secondsElapsed;
+                        if (rem <= 0) {
+                            timerDisplay.textContent = formatTimerDisplay(0);
+                            timerDisplay.classList.remove('timer-active');
+                            clearInterval(state.timers[idx].interval);
+                            delete state.timers[idx];
+                            StorageAPI.remove(`timer-${idx}`);
+                        } else {
+                            timerDisplay.textContent = formatTimerDisplay(rem);
+                        }
+                    }, 1000)
+                };
+                timerDisplay.textContent = formatTimerDisplay(snap.remaining);
+            });
         }
 
         // calculate1RM — délégué à PhysioCompute.oneRM (conservé pour compatibilité avec les appels existants)
@@ -9487,17 +9691,18 @@ body.dark-mode .review-btn-ghost:hover {
         function animateNumberChange(element, startValue, endValue, duration, suffix = '') {
             const range = endValue - startValue;
             const startTime = performance.now();
-
             function update() {
                 const elapsed = performance.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 const currentValue = startValue + range * progress;
                 element.textContent = `${currentValue.toFixed(0)}${suffix}`;
-
                 if (progress < 1) {
                     requestAnimationFrame(update);
                 } else {
                     element.textContent = `${endValue.toFixed(0)}${suffix}`;
+                    // Notifier les lecteurs d'écran uniquement à la fin (évite le spam)
+                    const a11y = document.getElementById(element.id + 'A11y');
+                    if (a11y) a11y.textContent = `${endValue.toFixed(0)}${suffix}`;
                 }
             }
             requestAnimationFrame(update);
@@ -9726,23 +9931,27 @@ body.dark-mode .review-btn-ghost:hover {
             }
         };
 
-        function saveCurrentState(silent = false) {
+        function saveCurrentState(silent = false, skipDomSync = false) {
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession) return;
-            currentSession.exercises.forEach((ex, idx) => {
-                ex.series = Array.from(document.querySelectorAll(`[data-ex='${idx}'][data-serie]`)).reduce((acc, input) => {
-                    const serieIndex = parseInt(input.dataset.serie, 10);
-                    if (!acc[serieIndex]) {
-                        acc[serieIndex] = {};
-                    }
-                    if (input.classList.contains('weight')) {
-                        acc[serieIndex].weight = input.value;
-                    } else if (input.classList.contains('reps')) {
-                        acc[serieIndex].reps = input.value;
-                    }
-                    return acc;
-                }, []).filter(s => s.weight !== undefined || s.reps !== undefined);
-            });
+            // skipDomSync=true : on sauvegarde l'état mémoire tel quel, sans lire le DOM
+            // Utilisé par WodEngine pour éviter l'écrasement des séries EMOM/AMRAP
+            if (!skipDomSync) {
+                currentSession.exercises.forEach((ex, idx) => {
+                    ex.series = Array.from(document.querySelectorAll(`[data-ex='${idx}'][data-serie]`)).reduce((acc, input) => {
+                        const serieIndex = parseInt(input.dataset.serie, 10);
+                        if (!acc[serieIndex]) {
+                            acc[serieIndex] = {};
+                        }
+                        if (input.classList.contains('weight')) {
+                            acc[serieIndex].weight = input.value;
+                        } else if (input.classList.contains('reps')) {
+                            acc[serieIndex].reps = input.value;
+                        }
+                        return acc;
+                    }, []).filter(s => s.weight !== undefined || s.reps !== undefined);
+                });
+            }
             const calculatorState = {
                 targetWeight: dom.targetWeightInput.value,
                 barbellWeight: dom.barbellWeightInput.value,
@@ -10136,7 +10345,7 @@ body.dark-mode .review-btn-ghost:hover {
                     <div style="display: flex; gap: var(--spacing-xs);">
                         <button class="btn btn-ghost" data-history-action="details" data-history-id="${escapeHTML(String(session.id))}" title="Voir les détails de ${_sName}">👁</button>
                         <button class="btn btn-ghost" data-history-action="load" data-history-id="${escapeHTML(String(session.id))}" title="Utiliser cette séance comme modèle">⬇</button>
-                        <button class="btn btn-ghost" data-history-action="delete" data-history-id="${escapeHTML(String(session.id))}" title="Supprimer ${_sName} de l'historique"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+                        <button class="btn btn-ghost" data-history-action="delete" data-history-id="${escapeHTML(String(session.id))}" title="Supprimer ${_sName} de l'historique">🗑️</button>
                     </div>
                     <div class="history-details" id="details-${escapeHTML(String(session.id))}" role="region" aria-live="polite"></div>`;
                 dom.historyList.appendChild(item);
@@ -10380,7 +10589,6 @@ body.dark-mode .review-btn-ghost:hover {
                 notification.addEventListener('transitionend', () => notification.remove(), { once : true });
             }, duration);
         }
-        window.showNotification = showNotification; // Export global pour scripts séparés
 
         function showUndoableNotification(message, onUndoCallback, duration = 7000) {
             const notification = document.createElement('div');
@@ -10542,7 +10750,7 @@ body.dark-mode .review-btn-ghost:hover {
             const isDark = theme === 'dark';
             dom.body.classList.toggle('dark-mode', isDark);
             // isDark → on affiche le soleil (pour revenir au clair), sinon la lune
-            const themeIcon  = isDark ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            const themeIcon  = isDark ? '☀️' : '🌙';
             const themeTitle = isDark ? 'Passer au thème clair' : 'Passer au thème sombre';
             // Mettre à jour TOUS les boutons thème sur toutes les pages
             ['themeToggleBtn', 'dashThemeBtn', 'landingThemeBtn'].forEach(id => {
@@ -10950,7 +11158,16 @@ body.dark-mode .review-btn-ghost:hover {
                 }
 
                 if (isReps && val > 0) {
-                    startRestTimer();
+                    // ── Barrière superset : pas de timer de repos entre les exercices liés ──
+                    const currentEx = state.sessions[state.currentSessionIndex].exercises[exIndex];
+                    const exercises = state.sessions[state.currentSessionIndex].exercises;
+                    let shouldStartTimer = true;
+                    if (currentEx?.groupId) {
+                        const isLastOfGroup = (exIndex === exercises.length - 1) ||
+                                              (exercises[exIndex + 1]?.groupId !== currentEx.groupId);
+                        if (!isLastOfGroup) shouldStartTimer = false; // Enchaîner sans repos
+                    }
+                    if (shouldStartTimer) startRestTimer();
 
                     // ── 4. Progress Memory Effect ─────────────────────────────
                     // Comparaison avec la même série de la dernière séance du même exercice
@@ -11099,6 +11316,7 @@ body.dark-mode .review-btn-ghost:hover {
         };
 
         function setupEventListeners() {
+            WodEngine.init();
             document.querySelectorAll('input[inputmode="decimal"]').forEach(input => {
                 input.addEventListener('input', e => {
                     e.target.value = e.target.value.replace(/,/g, '.');
@@ -11711,15 +11929,19 @@ body.dark-mode .review-btn-ghost:hover {
                 }
             }, 30000);
 
-            // 5. Sauvegarde à chaque saisie dans les inputs (debounce 1s) — silencieux
+            // 5. Mise à jour ciblée à chaque frappe + debounce sauvegarde
             let saveDebounceTimer = null;
-            document.getElementById('exerciseListContainer').addEventListener('input', () => {
+            document.getElementById('exerciseListContainer').addEventListener('input', (e) => {
+                const input = e.target;
+                // Mise à jour chirurgicale : ne touche que la série modifiée
+                if (input.dataset.ex !== undefined && input.dataset.serie !== undefined) {
+                    const field = input.classList.contains('weight') ? 'weight' : 'reps';
+                    updateSingleSerie(parseInt(input.dataset.ex), parseInt(input.dataset.serie), field, input.value);
+                }
+                // Debounce : sauvegarde localStorage (pas de querySelectorAll ici)
                 clearTimeout(saveDebounceTimer);
                 saveDebounceTimer = setTimeout(() => {
-                    if (state.isInitialized) {
-                        updateStateFromTable();
-                        saveCurrentState(true);
-                    }
+                    if (state.isInitialized) saveCurrentState(true, true); // skipDomSync: state déjà à jour
                 }, 1500);
             }, true);
         }
@@ -12403,211 +12625,188 @@ body.dark-mode .review-btn-ghost:hover {
         }
 
         /* ============================================================
-           EMOM — Every Minute On the Minute
+           MOTEUR WOD GLOBAL (EMOM / AMRAP) — rAF zéro freeze 🚀
         ============================================================ */
-        let emomState = { interval: null, secondsLeft: 60, round: 1, totalRounds: 10, duration: 60, active: false };
+        const WodEngine = {
+            mode: '',
+            active: false,
+            rafId: null,
+            endTime: 0,
+            roundDuration: 60,
+            roundEndTime: 0,
+            roundsCompleted: 0,
+            selectedExIds: [],
 
-        function showEmomModal(exerciseName) {
-            // Fermer s'il y en a déjà un
-            const existing = document.getElementById('emomOverlay');
-            if (existing) existing.remove();
-            if (emomState.interval) { clearInterval(emomState.interval); emomState.active = false; }
+            init() {
+                document.getElementById('globalEmomBtn')?.addEventListener('click', () => this.openSetup('EMOM'));
+                document.getElementById('globalAmrapBtn')?.addEventListener('click', () => this.openSetup('AMRAP'));
+                document.getElementById('closeWodModalBtn')?.addEventListener('click', () => this.stop());
+                document.getElementById('startWodBtn')?.addEventListener('click', () => this.start());
+                document.getElementById('logWodRoundBtn')?.addEventListener('click', () => this.logRound());
+                // Circuit modal
+                document.getElementById('globalCircuitBtn')?.addEventListener('click', () => openCircuitModal());
+                document.getElementById('closeCircuitModalBtn')?.addEventListener('click', () => ModalManager.close(document.getElementById('globalCircuitModal')));
+                document.getElementById('confirmCircuitBtn')?.addEventListener('click', () => {
+                    const checked = Array.from(document.querySelectorAll('.circuit-ex-cb:checked')).map(cb => parseInt(cb.value));
+                    buildCircuit(checked);
+                    ModalManager.close(document.getElementById('globalCircuitModal'));
+                });
+            },
 
-            const overlay = document.createElement('div');
-            overlay.id = 'emomOverlay';
-            overlay.className = 'emom-overlay';
-            overlay.innerHTML = `
-                <div class="emom-modal" role="dialog" aria-label="Mode EMOM">
-                    <div class="emom-title">⏱ EMOM</div>
-                    <div class="emom-subtitle">${exerciseName}</div>
-                    <div style="margin-bottom:var(--spacing-md);display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;">
-                        <label style="font-size:0.82rem;color:var(--color-text-subheader);">Durée/round :</label>
-                        <select id="emomDurSel" style="padding:4px 8px;border-radius:8px;border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);font-size:0.85rem;">
-                            <option value="30">30s</option>
-                            <option value="45">45s</option>
-                            <option value="60" selected>1 min</option>
-                            <option value="90">90s</option>
-                            <option value="120">2 min</option>
-                        </select>
-                        <label style="font-size:0.82rem;color:var(--color-text-subheader);">Rounds :</label>
-                        <select id="emomRoundsSel" style="padding:4px 8px;border-radius:8px;border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);font-size:0.85rem;">
-                            ${[5,6,8,10,12,15,20].map(n=>`<option value="${n}" ${n===10?'selected':''}>${n}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="emom-timer-ring">
-                        <svg width="140" height="140">
-                            <circle cx="70" cy="70" r="62" fill="none" stroke="var(--color-border-default)" stroke-width="8"/>
-                            <circle id="emomArc" cx="70" cy="70" r="62" fill="none" stroke="hsl(220,60%,50%)" stroke-width="8"
-                                stroke-dasharray="389.6" stroke-dashoffset="0" stroke-linecap="round"/>
-                        </svg>
-                        <div class="emom-timer-text" id="emomTimerText">1:00</div>
-                    </div>
-                    <div class="emom-round-badge">🔁 Round <span id="emomRoundDisplay">0</span> / <span id="emomTotalDisplay">10</span></div>
-                    <div class="emom-actions">
-                        <button class="btn btn-success emom-btn" id="emomStartBtn" data-emom-action="start">▶ Démarrer</button>
-                        <button class="btn btn-outline emom-btn" data-emom-action="stop">⏹ Stop</button>
-                        <button class="btn btn-outline emom-btn" data-emom-action="close">✕ Fermer</button>
-                    </div>
-                </div>`;
-            document.body.appendChild(overlay);
-        }
+            openSetup(mode) {
+                this.mode = mode;
+                document.getElementById('wodModalTitle').textContent = `Configuration ${mode}`;
+                const exList = document.getElementById('wodExerciseSelection');
+                exList.innerHTML = '';
+                const currentSession = state.sessions[state.currentSessionIndex];
+                if (!currentSession?.exercises?.length) {
+                    exList.innerHTML = '<p style="color:var(--color-danger-default);">Ajoutez d\'abord des exercices.</p>';
+                    document.getElementById('startWodBtn').disabled = true;
+                } else {
+                    document.getElementById('startWodBtn').disabled = false;
+                    currentSession.exercises.forEach((ex, idx) => {
+                        exList.innerHTML += `<label style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-base);cursor:pointer;">
+                            <input type="checkbox" value="${idx}" class="wod-ex-cb" style="width:22px;height:22px;accent-color:var(--color-primary-default);">
+                            <span style="font-weight:700;font-size:1rem;color:var(--color-text-header);">${escapeHTML(ex.name)}</span>
+                        </label>`;
+                    });
+                }
+                if (mode === 'EMOM') {
+                    document.getElementById('wodSetupTimeLabel').textContent = "Durée d'un round (sec) :";
+                    document.getElementById('wodSetupTimeInput').value = 60;
+                    document.getElementById('wodSetupRoundsLabel').style.display = 'flex';
+                } else {
+                    document.getElementById('wodSetupTimeLabel').textContent = 'Durée totale (min) :';
+                    document.getElementById('wodSetupTimeInput').value = 10;
+                    document.getElementById('wodSetupRoundsLabel').style.display = 'none';
+                }
+                document.getElementById('wodSetupPhase').classList.remove('hidden');
+                document.getElementById('wodExecutionPhase').classList.add('hidden');
+                const modal = document.getElementById('globalWodModal');
+                ModalManager.open(modal, modal.querySelector('button'));
+            },
 
-        function startEmom() {
-            if (emomState.interval) clearInterval(emomState.interval);
-            const dur = parseInt(document.getElementById('emomDurSel').value) || 60;
-            const rounds = parseInt(document.getElementById('emomRoundsSel').value) || 10;
-            emomState = { interval: null, secondsLeft: dur, round: 1, totalRounds: rounds, duration: dur, active: true };
-            document.getElementById('emomRoundDisplay').textContent = 1;
-            document.getElementById('emomTotalDisplay').textContent = rounds;
-            document.getElementById('emomStartBtn').textContent = '⏱ En cours...';
-            document.getElementById('emomStartBtn').disabled = true;
-            emomState.interval = setInterval(tickEmom, 1000);
-            tickEmomDisplay();
-        };
+            start() {
+                const checkboxes = document.querySelectorAll('.wod-ex-cb:checked');
+                if (!checkboxes.length) { showNotification("Cochez au moins un exercice.", "error"); return; }
+                this.selectedExIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+                const timeInput = parseInt(document.getElementById('wodSetupTimeInput').value) || (this.mode === 'EMOM' ? 60 : 10);
+                this.roundsCompleted = 0;
+                const now = Date.now();
+                if (this.mode === 'EMOM') {
+                    const totalRounds = parseInt(document.getElementById('wodSetupRoundsInput').value) || 10;
+                    this.roundDuration = timeInput;
+                    this.endTime = now + (this.roundDuration * totalRounds * 1000);
+                    this.roundEndTime = now + (this.roundDuration * 1000);
+                } else {
+                    this.endTime = now + (timeInput * 60 * 1000);
+                }
+                this.buildExecutionUI();
+                document.getElementById('wodSetupPhase').classList.add('hidden');
+                document.getElementById('wodExecutionPhase').classList.remove('hidden');
+                this.active = true;
+                this.tick();
+            },
 
-        function tickEmom() {
-            emomState.secondsLeft--;
-            if (emomState.secondsLeft <= 0) {
-                if (emomState.round >= emomState.totalRounds) {
-                    clearInterval(emomState.interval);
-                    emomState.active = false;
-                    beep(880, 0.8, 0.3);
-                    showNotification(`🎉 EMOM terminé — ${emomState.totalRounds} rounds !`, 'success', 5000);
-                    const el = document.getElementById('emomTimerText'); if(el) el.textContent = 'DONE!';
-                    const btn = document.getElementById('emomStartBtn'); if(btn) { btn.textContent='▶ Recommencer'; btn.disabled=false; }
+            buildExecutionUI() {
+                const session = state.sessions[state.currentSessionIndex];
+                const container = document.getElementById('wodActiveExercises');
+                container.innerHTML = '';
+                this.selectedExIds.forEach(idx => {
+                    const ex = session.exercises[idx];
+                    container.innerHTML += `<div style="background:var(--color-surface-default);border:1.5px solid var(--color-border-default);border-radius:var(--radius-base);padding:16px;">
+                        <div style="font-weight:800;color:var(--color-text-header);margin-bottom:12px;font-size:1.05rem;">${escapeHTML(ex.name)}</div>
+                        <div style="display:flex;gap:12px;">
+                            <input type="number" class="wod-w-input" data-idx="${idx}" placeholder="Poids (kg)" inputmode="decimal"
+                                style="flex:1;text-align:center;font-weight:800;font-size:1.2rem;height:52px;border-radius:12px;border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-header);">
+                            <input type="number" class="wod-r-input" data-idx="${idx}" placeholder="Reps" inputmode="decimal"
+                                style="flex:1;text-align:center;font-weight:800;font-size:1.2rem;height:52px;border-radius:12px;border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-header);">
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('wodRoundDisplay').textContent = 'Round 1';
+            },
+
+            tick() {
+                if (!this.active) return;
+                const now = Date.now();
+                let remaining = this.endTime - now;
+                if (remaining <= 0) {
+                    this.updateClock(0);
+                    beep(880, 0.8, 0.3); setTimeout(() => beep(880, 0.8, 0.3), 300);
+                    if (navigator.vibrate) navigator.vibrate([200,100,200]);
+                    showNotification('⏱️ Travail terminé ! Bon boulot.', 'success', 5000);
+                    this.stop();
                     return;
                 }
-                emomState.round++;
-                emomState.secondsLeft = emomState.duration;
-                document.getElementById('emomRoundDisplay').textContent = emomState.round;
-                beep(660, 0.3, 0.25);
-                if (navigator.vibrate) navigator.vibrate(150);
-            } else if (emomState.secondsLeft <= 5) {
-                beep(440, 0.15, 0.12);
+                if (this.mode === 'EMOM') {
+                    let roundRemaining = this.roundEndTime - now;
+                    if (roundRemaining <= 0) {
+                        beep(660, 0.3, 0.25);
+                        if (navigator.vibrate) navigator.vibrate(150);
+                        this.roundEndTime += (this.roundDuration * 1000);
+                        roundRemaining = this.roundEndTime - now;
+                        showNotification('🔥 Nouveau Round !', 'info', 1500);
+                    }
+                    this.updateClock(roundRemaining);
+                } else {
+                    this.updateClock(remaining);
+                }
+                this.rafId = requestAnimationFrame(() => this.tick());
+            },
+
+            updateClock(ms) {
+                const totalSec = Math.ceil(ms / 1000);
+                const m = Math.floor(totalSec / 60);
+                const s = totalSec % 60;
+                const el = document.getElementById('wodTimerDisplay');
+                if (el) el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+            },
+
+            logRound() {
+                const session = state.sessions[state.currentSessionIndex];
+                let loggedSomething = false;
+                this.selectedExIds.forEach(idx => {
+                    const wInput = document.querySelector(`.wod-w-input[data-idx="${idx}"]`);
+                    const rInput = document.querySelector(`.wod-r-input[data-idx="${idx}"]`);
+                    if (wInput && rInput && (wInput.value !== '' || rInput.value !== '')) {
+                        if (!Array.isArray(session.exercises[idx].series)) session.exercises[idx].series = [];
+                        session.exercises[idx].series = session.exercises[idx].series.filter(s => s.weight !== '' || s.reps !== '');
+                        session.exercises[idx].series.push({
+                            weight: wInput.value || '0',
+                            reps: rInput.value || '0',
+                            completed: true,
+                            timestamp: Date.now()
+                        });
+                        loggedSomething = true;
+                    }
+                });
+                if (loggedSomething) {
+                    this.roundsCompleted++;
+                    document.getElementById('wodRoundDisplay').textContent = `Round ${this.roundsCompleted + 1}`;
+                    const btn = document.getElementById('logWodRoundBtn');
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = '✔ Série ajoutée !';
+                    btn.style.transform = 'scale(0.96)';
+                    setTimeout(() => { btn.innerHTML = orig; btn.style.transform = 'none'; }, 800);
+                    saveCurrentState(true, true); // skipDomSync=true : préserve les séries WOD injectées
+                } else {
+                    showNotification("Remplissez Poids ou Reps pour valider.", "error");
+                }
+            },
+
+            stop() {
+                this.active = false;
+                if (this.rafId) cancelAnimationFrame(this.rafId);
+                ModalManager.close(document.getElementById('globalWodModal'));
+                saveCurrentState(true);
+                if (typeof RenderScheduler !== 'undefined') RenderScheduler.scheduleTotals();
+                createTable();
+                updateAllTotals();
             }
-            tickEmomDisplay();
-        }
-
-        function tickEmomDisplay() {
-            const arc = document.getElementById('emomArc'); const txt = document.getElementById('emomTimerText');
-            if (!arc || !txt) return;
-            const circ = 389.6;
-            const pct = emomState.secondsLeft / emomState.duration;
-            arc.style.strokeDashoffset = circ - circ * pct;
-            const m = Math.floor(emomState.secondsLeft / 60);
-            const s = emomState.secondsLeft % 60;
-            txt.textContent = m > 0 ? `${m}:${String(s).padStart(2,'0')}` : `${s}s`;
-            arc.style.stroke = pct > 0.5 ? 'hsl(220,60%,50%)' : pct > 0.2 ? 'hsl(35,85%,52%)' : 'hsl(0,65%,52%)';
-        }
-
-        function stopEmom() {
-            if (emomState.interval) clearInterval(emomState.interval);
-            emomState.active = false;
-            emomState.secondsLeft = emomState.duration;
-            emomState.round = 1;
-            const btn = document.getElementById('emomStartBtn'); if(btn){ btn.textContent='▶ Démarrer'; btn.disabled=false; }
-            tickEmomDisplay();
         };
 
-        /* ============================================================
-           AMRAP — As Many Rounds As Possible
-        ============================================================ */
-        let amrapState = { interval: null, rounds: 0, seconds: 0, duration: 600, active: false };
-
-        function showAmrapModal(exerciseName) {
-            const existing = document.getElementById('emomOverlay');
-            if (existing) existing.remove();
-            if (amrapState.interval) { clearInterval(amrapState.interval); amrapState.active = false; }
-
-            const overlay = document.createElement('div');
-            overlay.id = 'emomOverlay';
-            overlay.className = 'emom-overlay';
-            overlay.innerHTML = `
-                <div class="emom-modal" role="dialog" aria-label="Mode AMRAP">
-                    <div class="emom-title">🔁 AMRAP</div>
-                    <div class="emom-subtitle">${exerciseName}</div>
-                    <div style="margin-bottom:var(--spacing-md);display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
-                        <label style="font-size:0.82rem;color:var(--color-text-subheader);">Durée totale :</label>
-                        <select id="amrapDurSel" style="padding:4px 8px;border-radius:8px;border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);font-size:0.85rem;">
-                            ${[300,420,600,720,900,1200].map(s=>`<option value="${s}" ${s===600?'selected':''}>${s<60?s+'s':s/60+' min'}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="emom-timer-ring">
-                        <svg width="140" height="140">
-                            <circle cx="70" cy="70" r="62" fill="none" stroke="var(--color-border-default)" stroke-width="8"/>
-                            <circle id="emomArc" cx="70" cy="70" r="62" fill="none" stroke="hsl(140,50%,42%)" stroke-width="8"
-                                stroke-dasharray="389.6" stroke-dashoffset="0" stroke-linecap="round"/>
-                        </svg>
-                        <div class="emom-timer-text" id="emomTimerText">10:00</div>
-                    </div>
-                    <div class="amrap-counter" id="amrapRounds">0</div>
-                    <div style="font-size:0.78rem;color:var(--color-text-subheader);margin-bottom:var(--spacing-sm);">rounds complétés</div>
-                    <div class="amrap-rnd-btns">
-                        <button class="amrap-rnd-btn minus" data-amrap-action="minus">−</button>
-                        <button class="amrap-rnd-btn plus" data-amrap-action="plus">+</button>
-                    </div>
-                    <div class="emom-actions">
-                        <button class="btn btn-success emom-btn" id="emomStartBtn" data-amrap-action="start">▶ Démarrer</button>
-                        <button class="btn btn-outline emom-btn" data-amrap-action="stop">⏹ Stop</button>
-                        <button class="btn btn-outline emom-btn" data-amrap-action="close">✕ Fermer</button>
-                    </div>
-                </div>`;
-            document.body.appendChild(overlay);
-        }
-
-        function startAmrap() {
-            if (amrapState.interval) clearInterval(amrapState.interval);
-            const dur = parseInt(document.getElementById('amrapDurSel').value) || 600;
-            amrapState = { interval: null, rounds: 0, seconds: dur, duration: dur, active: true };
-            document.getElementById('emomStartBtn').textContent = '⏱ En cours...';
-            document.getElementById('emomStartBtn').disabled = true;
-            document.getElementById('amrapRounds').textContent = 0;
-            amrapState.interval = setInterval(tickAmrap, 1000);
-            tickAmrapDisplay();
-        };
-
-        function amrapAdjust(delta) {
-            amrapState.rounds = Math.max(0, amrapState.rounds + delta);
-            const el = document.getElementById('amrapRounds'); if(el) el.textContent = amrapState.rounds;
-            if (navigator.vibrate) navigator.vibrate(30);
-        };
-
-        function tickAmrap() {
-            amrapState.seconds--;
-            if (amrapState.seconds <= 0) {
-                clearInterval(amrapState.interval);
-                amrapState.active = false;
-                beep(880, 1.0, 0.3);
-                if (navigator.vibrate) navigator.vibrate([200,100,200]);
-                showNotification(`🏁 AMRAP terminé — ${amrapState.rounds} rounds !`, 'success', 6000);
-                const btn = document.getElementById('emomStartBtn'); if(btn){ btn.textContent='▶ Recommencer'; btn.disabled=false; }
-            } else if (amrapState.seconds <= 10) {
-                beep(440, 0.15, 0.12);
-            }
-            tickAmrapDisplay();
-        }
-
-        function tickAmrapDisplay() {
-            const arc = document.getElementById('emomArc'); const txt = document.getElementById('emomTimerText');
-            if (!arc || !txt) return;
-            const circ = 389.6;
-            const pct = amrapState.seconds / amrapState.duration;
-            arc.style.strokeDashoffset = circ - circ * pct;
-            const m = Math.floor(amrapState.seconds / 60);
-            const s = amrapState.seconds % 60;
-            txt.textContent = `${m}:${String(s).padStart(2,'0')}`;
-            arc.style.stroke = pct > 0.5 ? 'hsl(140,50%,42%)' : pct > 0.2 ? 'hsl(35,85%,52%)' : 'hsl(0,65%,52%)';
-        }
-
-        function stopAmrap() {
-            if (amrapState.interval) clearInterval(amrapState.interval);
-            amrapState.active = false;
-            amrapState.seconds = amrapState.duration;
-            const btn = document.getElementById('emomStartBtn'); if(btn){ btn.textContent='▶ Démarrer'; btn.disabled=false; }
-            tickAmrapDisplay();
-        };
-
-        function initNewFeatures() {
+                function initNewFeatures() {
             initRestTimerUI();
             initWeeklyGoal();
             initSessionSummary();
@@ -14364,20 +14563,13 @@ body.dark-mode .review-btn-ghost:hover {
     <template id="tpl-exercise-row">
         <tr class="exercise-row" role="row">
             <td class="actions-col" data-label="Actions" role="cell">
-                <button class="quick-edit-btn tooltip" data-action="quick-edit">
-                    ✏️<span class="tooltiptext">Édition rapide</span>
+                <button class="quick-edit-btn" data-action="quick-edit" aria-label="Édition rapide">
+                    ✏️
                 </button>
-                <button class="link-btn tooltip" data-action="link-superset">
-                    🔗<span class="tooltiptext">Lier Superset</span>
-                </button>
-                <button class="link-btn tooltip" data-action="start-emom" title="Every Minute On the Minute">
-                    ⏱ EMOM<span class="tooltiptext">EMOM</span>
-                </button>
-                <button class="link-btn tooltip" data-action="start-amrap" title="As Many Rounds As Possible">
-                    🔁 AMRAP<span class="tooltiptext">AMRAP</span>
-                </button>
-                <button class="btn-ghost tooltip" data-action="add-series">
-                    ➕<span class="tooltiptext">Ajouter série</span>
+
+
+                <button class="btn-ghost" data-action="add-series" aria-label="Ajouter une série">
+                    ➕
                 </button>
             </td>
             <td class="exercise-col" data-label="Exercice" role="cell">
@@ -14397,7 +14589,7 @@ body.dark-mode .review-btn-ghost:hover {
             </td>
             <td role="cell">
                 <button class="btn-ghost" data-action="remove">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                    🗑️
                 </button>
             </td>
         </tr>
@@ -14420,7 +14612,7 @@ body.dark-mode .review-btn-ghost:hover {
             <div class="card-header-row">
                 <h4 class="ex-name"></h4>
                 <button class="btn-ghost" data-action="remove" >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                    🗑️
                 </button>
             </div>
             <div class="series-group">
@@ -14445,9 +14637,8 @@ body.dark-mode .review-btn-ghost:hover {
             </div>
             <div class="card-actions">
                 <button class="btn btn-info" data-action="quick-edit">✏️ Éditer</button>
-                <button class="btn btn-secondary link-btn" data-action="link-superset">🔗 Superset</button>
-                <button class="btn btn-outline link-btn" data-action="start-emom">⏱ EMOM</button>
-                <button class="btn btn-outline link-btn" data-action="start-amrap">🔁 AMRAP</button>
+
+
                 <div class="timer-container">
                     <div class="timer-display ex-timer" aria-live="polite"></div>
                     <button class="timer-btn" data-timer-action="start">▶</button>
@@ -14583,7 +14774,7 @@ body.dark-mode .review-btn-ghost:hover {
             <span>Train</span>
         </button>
         <button id="gnav-stats" aria-label="Nutrition et Stats">
-            <span class="gnav-icon">📊</span>
+            <span class="gnav-icon">🥗</span>
             <span>Nutrition</span>
         </button>
         <button id="gnav-profile" aria-label="Mon profil">
@@ -14947,5 +15138,59 @@ body.dark-mode .review-btn-ghost:hover {
     })();
 
     </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     GLOBAL WOD MODAL — EMOM / AMRAP v2
+════════════════════════════════════════════════════════════════ -->
+<div id="globalWodModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="wodModalTitle">
+    <div class="modal-content" style="max-width:500px;width:95%;max-height:90vh;display:flex;flex-direction:column;">
+        <button id="closeWodModalBtn" class="modal-close-btn" aria-label="Fermer">✕</button>
+        <h2 id="wodModalTitle" style="font-size:1.5rem;margin-bottom:var(--spacing-lg);">Configuration</h2>
+
+        <div id="wodSetupPhase" style="flex:1;overflow-y:auto;">
+            <p style="font-size:0.9rem;color:var(--color-text-subheader);margin-bottom:10px;">1. Cochez les exercices inclus :</p>
+            <div id="wodExerciseSelection" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;background:var(--color-surface-muted);padding:10px;border-radius:var(--radius-base);"></div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+                <label style="display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--color-text-header);">
+                    <span id="wodSetupTimeLabel">Durée (sec) :</span>
+                    <input type="number" id="wodSetupTimeInput" value="60" min="1" style="width:80px;height:44px;text-align:center;border-radius:8px;border:1.5px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);">
+                </label>
+                <label id="wodSetupRoundsLabel" style="display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--color-text-header);">
+                    <span>Nombre de Rounds :</span>
+                    <input type="number" id="wodSetupRoundsInput" value="10" min="1" style="width:80px;height:44px;text-align:center;border-radius:8px;border:1.5px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);">
+                </label>
+            </div>
+
+            <button id="startWodBtn" class="btn btn-primary" style="width:100%;height:56px;font-size:1.1rem;font-weight:900;">▶ DÉMARRER</button>
+        </div>
+
+        <div id="wodExecutionPhase" class="hidden" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="text-align:center;padding:10px 0 20px;border-bottom:1px solid var(--color-border-default);">
+                <div id="wodTimerDisplay" style="font-size:4.5rem;font-weight:900;font-family:var(--font-mono);color:var(--color-primary-default);line-height:1;">00:00</div>
+                <div id="wodRoundDisplay" style="font-size:1.2rem;font-weight:800;color:var(--color-text-subheader);margin-top:5px;">Round 1</div>
+            </div>
+            <div id="wodActiveExercises" style="flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:15px;"></div>
+            <div style="padding-top:15px;display:flex;gap:10px;">
+                <button id="logWodRoundBtn" class="btn btn-success" style="flex:2;height:56px;font-size:1.1rem;font-weight:800;">✔ Valider le Round</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CIRCUIT MODAL — Sélection multi-exercices
+════════════════════════════════════════════════════════════ -->
+<div id="globalCircuitModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="circuitModalTitle">
+    <div class="modal-content" style="max-width:460px;width:95%;max-height:85vh;display:flex;flex-direction:column;">
+        <button id="closeCircuitModalBtn" class="modal-close-btn" aria-label="Fermer">✕</button>
+        <h2 id="circuitModalTitle" style="font-size:1.4rem;margin-bottom:8px;">🔗 Créer un Circuit</h2>
+        <p style="font-size:0.85rem;color:var(--color-text-subheader);margin-bottom:var(--spacing-md);">Cochez les exercices à regrouper (2 minimum). Ils seront automatiquement rapprochés.</p>
+        <div id="circuitExerciseList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:var(--spacing-md);"></div>
+        <button id="confirmCircuitBtn" class="btn btn-primary" style="height:52px;font-size:1rem;font-weight:800;">🔗 Créer le Circuit</button>
+    </div>
+</div>
+
 </body>
 </html>
