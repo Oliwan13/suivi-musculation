@@ -657,7 +657,7 @@
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Mode PLAN : panneau latéral stratégie ── */
+    /* ── Mode PLAN : panneau latéral droit avec swipe ── */
     #planPanel {
         position: fixed;
         top: 0; right: 0; bottom: 0;
@@ -667,12 +667,46 @@
         box-shadow: -8px 0 40px var(--shadow-xl);
         z-index: 1100;
         transform: translateX(100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
         overflow-y: auto;
+        overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         display: flex;
         flex-direction: column;
+        will-change: transform;
+        /* Autorise le scroll vertical, bloque la nav horizontale iOS */
+        touch-action: pan-y;
     }
+
+    /* Poignée swipe — tab discret sur le bord droit (visible en mode execute) */
+    #planEdgeTab {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        background: var(--color-surface-default);
+        border: 1px solid var(--color-border-default);
+        border-right: none;
+        padding: 14px 6px 14px 10px;
+        border-radius: 12px 0 0 12px;
+        z-index: 1050;
+        box-shadow: -2px 0 10px var(--shadow-md);
+        display: none;           /* masqué par défaut */
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.75;
+        transition: opacity 0.2s ease, right 0.3s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    #planEdgeTab:hover  { opacity: 1; }
+    #planEdgeTab:active { opacity: 0.6; transform: translateY(-50%) scale(0.96); }
+
+    /* Visible uniquement en mode execute (séance en cours) */
+    body[data-mode="execute"] #planEdgeTab { display: flex; }
+
+    /* Se cache quand le panneau est ouvert */
+    body[data-mode="plan"] #planEdgeTab { right: -60px; opacity: 0; }
     #planBackdrop {
         position: fixed;
         inset: 0;
@@ -6577,6 +6611,1314 @@ body.dark-mode .superset-header {
         font-size: max(16px, 1rem) !important;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   v12 — planTriggerBtn context-aware · hidden containers · scroll model
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Containers cachés : display:none empêche la transparence */
+#app-container.hidden,
+.dashboard-container.hidden,
+.landing-container.hidden { display: none !important; }
+
+/* ⚡ planTriggerBtn — invisible par défaut, contextuel ──────────────── */
+#planTriggerBtn {
+    position: fixed;
+    z-index: var(--z-session-summary, 600);
+    border-radius: 50%;
+    background: var(--color-surface-default);
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 4px 12px var(--shadow-md);
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: box-shadow .2s ease, transform .15s ease, opacity .2s ease;
+    color: var(--color-text-subheader);
+}
+#planTriggerBtn:active { transform: scale(0.93); }
+#planTriggerBtn:hover  { box-shadow: 0 6px 18px var(--shadow-lg); color: var(--color-text-default); }
+
+/* Landing visible → caché */
+#landing:not(.hidden) ~ #planTriggerBtn,
+#landing:not(.hidden) ~ * #planTriggerBtn { display: none !important; }
+
+/* Dashboard → bas-droite, discret (36px) */
+#app-container.hidden ~ #planTriggerBtn {
+    display: flex;
+    bottom: calc(var(--nav-height, 68px) + 16px);
+    right: var(--spacing-md); left: auto;
+    width: 36px; height: 36px; font-size: 0.9rem;
+    opacity: 0.55;
+}
+#app-container.hidden ~ #planTriggerBtn:hover { opacity: 1; }
+
+/* Execute / Plan → bas-gauche, visible (40px) */
+body[data-mode="execute"] #planTriggerBtn,
+body[data-mode="plan"]    #planTriggerBtn {
+    display: flex;
+    bottom: calc(var(--nav-height, 68px) + 12px);
+    left: var(--spacing-md); right: auto;
+    width: 40px; height: 40px; font-size: 1rem;
+    opacity: 1;
+}
+
+/* Review → caché */
+body[data-mode="review"] #planTriggerBtn { display: none !important; }
+
+/* Scroll — modèle v5 restauré : scroll dans le container fixe ─────── */
+.dashboard-container {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-y: auto !important;
+}
+.dashboard-content {
+    padding-bottom: calc(var(--nav-height, 68px) + 48px + env(safe-area-inset-bottom, 0px)) !important;
+}
+.landing-container {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+body { overflow-y: auto !important; overflow-x: hidden !important; overscroll-behavior-x: none; }
+.main-container {
+    overflow: visible !important;
+    padding-bottom: calc(var(--nav-height, 68px) + 48px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Review screen lisibilité ────────────────────────────────────────── */
+#reviewOverlay {
+    background-color: var(--color-surface-default) !important;
+    color: var(--color-text-header) !important;
+}
+#reviewOverlay .review-stat-card, #reviewOverlay .summary-card {
+    background-color: var(--color-surface-card) !important;
+    border: 1px solid var(--color-border-default) !important;
+}
+#reviewOverlay .stat-value, #reviewOverlay .review-score {
+    color: var(--color-primary-default) !important; font-weight: 900 !important;
+}
+#reviewOverlay .stat-label, #reviewOverlay .text-muted {
+    color: var(--color-text-subheader) !important;
+}
+/* ═══════════════════════════════════════════════════════════════════════
+   ██████████  APPLE FITNESS GLASSMORPHISM — Senior UX Engineer Layer
+   ███████████  Version 7.0 — Micro-interactions & Frosted Glass System
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. GLASS SYSTEM TOKENS ─────────────────────────────────────────── */
+:root {
+    /* Glassmorphism tokens — Light */
+    --glass-bg-card:        hsla(0, 0%, 100%, 0.72);
+    --glass-bg-card-hover:  hsla(0, 0%, 100%, 0.88);
+    --glass-bg-input:       hsla(220, 30%, 99%, 0.85);
+    --glass-bg-nav:         hsla(214, 40%, 97%, 0.82);
+    --glass-bg-summary:     hsla(214, 50%, 98%, 0.78);
+    --glass-border:         hsla(220, 30%, 60%, 0.12);
+    --glass-border-active:  hsla(220, 60%, 50%, 0.35);
+    --glass-blur:           blur(20px) saturate(180%);
+    --glass-blur-nav:       blur(28px) saturate(200%);
+
+    /* Typography — SF Display-inspired metrics */
+    --font-display: -apple-system, 'SF Pro Display', 'Outfit', system-ui, sans-serif;
+    --font-text:    -apple-system, 'SF Pro Text', 'Outfit', system-ui, sans-serif;
+
+    /* Glow accents — light */
+    --glow-primary:   0 0 0 3px hsla(214, 72%, 58%, 0.18), 0 8px 24px hsla(214,72%,58%,0.10);
+    --glow-success:   0 0 0 3px hsla(145, 62%, 52%, 0.20), 0 8px 20px hsla(145,62%,52%,0.12);
+    --glow-input:     0 0 0 3px hsla(214, 72%, 58%, 0.20);
+
+    /* Background ambient mesh tokens */
+    --bg-mesh-1: radial-gradient(ellipse 80% 60% at 20% 10%,  hsla(214, 85%, 92%, 0.70) 0%, transparent 60%);
+    --bg-mesh-2: radial-gradient(ellipse 60% 50% at 80% 90%,  hsla(234, 90%, 93%, 0.55) 0%, transparent 60%);
+    --bg-mesh-3: radial-gradient(ellipse 50% 40% at 60% 45%,  hsla(198, 80%, 94%, 0.40) 0%, transparent 55%);
+
+    /* Card spring physics */
+    --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --spring-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+body.dark-mode {
+    /* Glass tokens override — Dark "Apple Fitness Night" */
+    --glass-bg-card:        hsla(240, 8%, 14%, 0.80);
+    --glass-bg-card-hover:  hsla(240, 8%, 17%, 0.92);
+    --glass-bg-input:       hsla(240, 8%, 10%, 0.90);
+    --glass-bg-nav:         hsla(240, 10%, 8%, 0.88);
+    --glass-bg-summary:     hsla(240, 8%, 12%, 0.75);
+    --glass-border:         hsla(0, 0%, 100%, 0.07);
+    --glass-border-active:  hsla(152, 72%, 52%, 0.45);
+    --glass-blur:           blur(24px) saturate(160%);
+    --glass-blur-nav:       blur(32px) saturate(180%);
+
+    /* Dark glow */
+    --glow-primary:   0 0 0 3px hsla(152, 72%, 52%, 0.22), 0 8px 28px hsla(152,72%,52%,0.14);
+    --glow-success:   0 0 0 3px hsla(152, 72%, 52%, 0.24), 0 6px 20px hsla(152,72%,52%,0.16);
+    --glow-input:     0 0 0 3px hsla(152, 72%, 52%, 0.24);
+
+    /* Dark mesh — deep space atmosphere */
+    --bg-mesh-1: radial-gradient(ellipse 70% 55% at 15% 10%,  hsla(152, 60%, 14%, 0.50) 0%, transparent 65%);
+    --bg-mesh-2: radial-gradient(ellipse 50% 45% at 85% 88%,  hsla(210, 70%, 16%, 0.45) 0%, transparent 60%);
+    --bg-mesh-3: radial-gradient(ellipse 45% 38% at 55% 48%,  hsla(240, 50%, 12%, 0.30) 0%, transparent 55%);
+}
+
+/* ── 2. BODY — Gradient Mesh Atmosphere ────────────────────────────── */
+body {
+    background:
+        var(--bg-mesh-1),
+        var(--bg-mesh-2),
+        var(--bg-mesh-3),
+        linear-gradient(165deg,
+            var(--color-background-gradient-start) 0%,
+            var(--color-background-gradient-end)   100%);
+    background-attachment: fixed;
+}
+body.dark-mode {
+    background:
+        var(--bg-mesh-1),
+        var(--bg-mesh-2),
+        var(--bg-mesh-3),
+        linear-gradient(165deg,
+            var(--color-background-gradient-start) 0%,
+            var(--color-background-gradient-end)   100%);
+    background-attachment: fixed;
+}
+
+/* ── 3. EXERCISE CARDS — True Glassmorphism ────────────────────────── */
+.exercise-card {
+    background:        var(--glass-bg-card) !important;
+    backdrop-filter:   var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border:            1px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.60) inset,
+        0 2px 8px hsla(220, 30%, 20%, 0.06),
+        0 8px 24px hsla(220, 30%, 20%, 0.06) !important;
+    transition:
+        transform   0.28s var(--spring-bounce),
+        box-shadow  0.22s var(--spring-smooth),
+        border-color 0.18s ease,
+        background  0.18s ease !important;
+}
+body.dark-mode .exercise-card {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.05) inset,
+        0 2px 8px hsla(0, 0%, 0%, 0.30),
+        0 8px 24px hsla(0, 0%, 0%, 0.22) !important;
+}
+
+/* Card active / focus-within — Floating effect */
+.exercise-card:focus-within {
+    background:      var(--glass-bg-card-hover) !important;
+    border-color:    var(--glass-border-active) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.80) inset,
+        var(--glow-primary),
+        0 16px 40px hsla(220, 30%, 20%, 0.12) !important;
+    transform: translateY(-3px) scale(1.005) !important;
+    z-index: 4;
+}
+body[data-mode="execute"] .exercise-card:focus-within {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.80) inset,
+        var(--glow-primary),
+        0 20px 50px hsla(220, 30%, 20%, 0.16) !important;
+    transform: translateY(-4px) scale(1.007) !important;
+}
+
+.exercise-card:hover:not(:focus-within) {
+    background:    var(--glass-bg-card-hover) !important;
+    border-color:  hsla(220, 30%, 60%, 0.18) !important;
+    transform:     translateY(-2px) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.70) inset,
+        0 6px 20px hsla(220, 30%, 20%, 0.09) !important;
+}
+
+/* ── 4. SERIES INPUTS — Premium Input Glassmorphism ─────────────────── */
+.exercise-card .series-input-group input {
+    background:    var(--glass-bg-input) !important;
+    border:        1.5px solid var(--glass-border) !important;
+    border-radius: var(--radius-base) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.90) inset,
+        0 2px 8px hsla(220, 30%, 20%, 0.06) !important;
+    transition:
+        border-color 0.15s ease,
+        box-shadow   0.18s ease,
+        transform    0.12s var(--spring-bounce),
+        background   0.15s ease !important;
+    letter-spacing: -0.02em;
+}
+
+.exercise-card .series-input-group input:focus {
+    background:  hsla(214, 60%, 98%, 0.98) !important;
+    border-color: var(--color-primary-default) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,1.0) inset,
+        var(--glow-input) !important;
+    transform:   scale(1.06) !important;
+    z-index: 2;
+}
+body.dark-mode .exercise-card .series-input-group input {
+    background:    var(--glass-bg-input) !important;
+    border:        1.5px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.04) inset,
+        0 2px 6px hsla(0, 0%, 0%, 0.28) !important;
+}
+body.dark-mode .exercise-card .series-input-group input:focus {
+    background:  hsl(240, 10%, 11%) !important;
+    border-color: var(--color-primary-default) !important;
+    box-shadow:
+        0 1px 0 hsla(152,72%,52%,0.08) inset,
+        var(--glow-input) !important;
+    color:       hsl(152, 80%, 78%) !important;
+    transform:   scale(1.06) !important;
+}
+
+/* Completed — Apple Fitness "ring closed" style */
+.exercise-card .series-input-group input.completed {
+    background:  linear-gradient(135deg,
+        var(--color-success-gradient-start),
+        var(--color-success-gradient-end)) !important;
+    border-color: transparent !important;
+    box-shadow:
+        0 2px 8px hsla(145, 62%, 45%, 0.35),
+        0 4px 16px hsla(145, 62%, 45%, 0.20) !important;
+    color: white !important;
+}
+
+/* ── 5. SUMMARY BAR — Frosted Glass Sticky ──────────────────────────── */
+.summary-section {
+    background:        var(--glass-bg-summary) !important;
+    backdrop-filter:   var(--glass-blur-nav) !important;
+    -webkit-backdrop-filter: var(--glass-blur-nav) !important;
+    border-bottom:     1px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.65) inset,
+        0 4px 20px hsla(220, 30%, 20%, 0.07) !important;
+}
+body.dark-mode .summary-section {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.04) inset,
+        0 4px 20px hsla(0, 0%, 0%, 0.40) !important;
+}
+
+.summary-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ── 6. BOTTOM NAVIGATION — iOS Frosted Bar ─────────────────────────── */
+.bottom-navigation,
+nav.bottom-nav,
+[class*="bottom-nav"] {
+    background:        var(--glass-bg-nav) !important;
+    backdrop-filter:   var(--glass-blur-nav) !important;
+    -webkit-backdrop-filter: var(--glass-blur-nav) !important;
+    border-top:        1px solid var(--glass-border) !important;
+    box-shadow:
+        0 -1px 0 hsla(0,0%,100%,0.65) inset,
+        0 -8px 32px hsla(220, 30%, 20%, 0.07) !important;
+}
+body.dark-mode .bottom-navigation,
+body.dark-mode nav.bottom-nav,
+body.dark-mode [class*="bottom-nav"] {
+    box-shadow:
+        0 -1px 0 hsla(0,0%,100%,0.05) inset,
+        0 -8px 32px hsla(0, 0%, 0%, 0.50) !important;
+}
+
+/* ── 7. BUTTONS — Apple-style Physical Press ────────────────────────── */
+.btn, button:not(.btn-ghost):not(.serie-input-delete):not([class=""]) {
+    transition:
+        transform   0.12s var(--spring-bounce),
+        box-shadow  0.15s var(--spring-smooth),
+        opacity     0.12s ease,
+        filter      0.12s ease !important;
+    will-change: transform;
+}
+.btn:not(:disabled):active,
+button:not(.btn-ghost):not(.serie-input-delete):active {
+    transform: scale(0.94) !important;
+    filter:    brightness(0.92) !important;
+    box-shadow: var(--btn-shadow-active) !important;
+}
+.btn:not(:disabled):hover:not(:active),
+button:not(.btn-ghost):not(.serie-input-delete):hover:not(:active) {
+    transform:  translateY(-1px) scale(1.01) !important;
+    box-shadow: var(--btn-shadow-hover) !important;
+}
+.btn-primary, .btn-primary:hover {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.25) inset,
+        0 4px 14px hsla(220, 70%, 50%, 0.30) !important;
+}
+.btn-success, .btn-success:hover {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.25) inset,
+        0 4px 14px hsla(145, 62%, 45%, 0.30) !important;
+}
+body.dark-mode .btn-primary {
+    box-shadow:
+        0 1px 0 hsla(152,72%,60%,0.30) inset,
+        0 4px 18px hsla(152, 72%, 45%, 0.38) !important;
+}
+
+/* ── 8. MODALS — Deep Glass Sheet ───────────────────────────────────── */
+.modal-content,
+.modal > div,
+[class*="modal-content"],
+[class*="sheet-content"] {
+    background:      var(--glass-bg-card-hover) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border:          1px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.70) inset,
+        0 24px 80px hsla(220, 30%, 15%, 0.22),
+        0 8px 32px  hsla(220, 30%, 15%, 0.14) !important;
+}
+body.dark-mode .modal-content,
+body.dark-mode .modal > div,
+body.dark-mode [class*="modal-content"] {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.05) inset,
+        0 24px 80px hsla(0, 0%, 0%, 0.70),
+        0 8px 32px  hsla(0, 0%, 0%, 0.50) !important;
+}
+.modal-backdrop, .overlay-backdrop {
+    backdrop-filter: blur(4px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(120%) !important;
+}
+
+/* ── 9. SECTION CARDS (History, Dashboard, etc.) ──────────────────── */
+.section-card,
+.dashboard-card,
+.history-card,
+.info-card,
+[class*="-card"]:not(.exercise-card):not(.summary-card):not(.scc-item) {
+    background:      var(--glass-bg-card) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border:          1px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.60) inset,
+        0 4px 16px hsla(220, 30%, 20%, 0.06) !important;
+}
+body.dark-mode .section-card,
+body.dark-mode .dashboard-card,
+body.dark-mode .history-card,
+body.dark-mode .info-card,
+body.dark-mode [class*="-card"]:not(.exercise-card):not(.summary-card):not(.scc-item) {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.04) inset,
+        0 4px 16px hsla(0, 0%, 0%, 0.35) !important;
+}
+
+/* ── 10. TYPOGRAPHY — SF-inspired weight contrast ─────────────────── */
+.exercise-card h4 {
+    font-family:     var(--font-display) !important;
+    font-weight:     700 !important;
+    letter-spacing:  -0.025em !important;
+    font-size:       1.08rem !important;
+}
+.summary-card h3 {
+    font-family:     var(--font-display) !important;
+    letter-spacing:  -0.02em !important;
+}
+.summary-card .value {
+    font-weight:    800 !important;
+    letter-spacing: -0.04em !important;
+}
+.card-stat-value {
+    font-weight:    800 !important;
+    letter-spacing: -0.03em !important;
+}
+
+/* ── 11. SERIES ROW — premium label with monospace numbers ──────────── */
+.exercise-card .series-row strong {
+    font-family:  var(--font-mono) !important;
+    font-size:    0.78rem !important;
+    font-weight:  700 !important;
+    letter-spacing: 0.01em !important;
+    background:   linear-gradient(135deg,
+        var(--color-primary-gradient-start),
+        var(--color-primary-gradient-end));
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    padding:      2px 4px !important;
+}
+body.dark-mode .exercise-card .series-row strong {
+    background: linear-gradient(135deg,
+        hsl(152, 65%, 58%),
+        hsl(168, 72%, 52%)) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* ── 12. APP MODE INDICATOR — pill badge ────────────────────────────── */
+#appModeIndicator {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    font-family:    var(--font-mono) !important;
+    font-size:      0.65rem !important;
+    font-weight:    800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    padding:        4px 10px !important;
+    border-radius:  20px !important;
+    border:         1px solid var(--glass-border) !important;
+}
+
+/* ── 13. NOTIF / TOAST — spring entrance ───────────────────────────── */
+@keyframes glassSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.94);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+.notification-banner,
+.badge-toast,
+.progress-toast {
+    animation: glassSlideUp 0.36s var(--spring-bounce) forwards !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+/* ── 14. EXERCISE CARD ENTRY — Physics spring ──────────────────────── */
+@keyframes cardSpringIn {
+    0%   { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(4px); }
+    60%  { opacity: 1; filter: blur(0px); }
+    80%  { transform: translateY(-3px) scale(1.008); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+}
+.exercise-card-new {
+    animation: cardSpringIn 0.44s var(--spring-bounce) forwards !important;
+}
+
+/* ── 15. SERIES ROW ENTRY — stagger ────────────────────────────────── */
+@keyframes rowSpringIn {
+    from { opacity: 0; transform: translateX(-8px) scale(0.97); }
+    to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+.series-row-new {
+    animation: rowSpringIn 0.30s var(--spring-bounce) forwards !important;
+}
+
+/* ── 16. SUCCESS FLASH — ring-closed celebration ───────────────────── */
+@keyframes ringClose {
+    0%   { box-shadow: 0 0 0 0   hsla(145,62%,52%,0.50), 0 1px 0 hsla(0,0%,100%,0.90) inset; }
+    40%  { box-shadow: 0 0 0 6px hsla(145,62%,52%,0.25), 0 1px 0 hsla(0,0%,100%,0.90) inset; }
+    100% { box-shadow: 0 0 0 0   hsla(145,62%,52%,0.00), 0 1px 0 hsla(0,0%,100%,0.90) inset; }
+}
+.set-complete-flash {
+    animation: ringClose 0.50s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+/* ── 17. READY PULSE — red urgency in dark mode ─────────────────────── */
+body.dark-mode #restTimerCountdown.rest-ready {
+    text-shadow: 0 0 20px hsla(2, 76%, 58%, 0.60) !important;
+}
+
+/* ── 18. STAT LABELS — minimalist contrast system ──────────────────── */
+.exercise-card .card-stat-label {
+    font-family:   var(--font-mono) !important;
+    font-size:     0.60rem !important;
+    font-weight:   600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.10em !important;
+    opacity:       0.60 !important;
+}
+.exercise-card .card-stat-value {
+    font-family:   var(--font-mono) !important;
+    font-size:     1.05rem !important;
+    color:         var(--color-text-header) !important;
+}
+
+/* ── 19. LANDING PAGE HERO — if present ─────────────────────────────── */
+#landingView .hero-title,
+.hero-title {
+    font-family:   var(--font-display) !important;
+    letter-spacing: -0.04em !important;
+    font-weight:   900 !important;
+}
+
+/* ── 20. SCROLLBAR — Apple-style thin ──────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background:    var(--glass-border);
+    border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-subheader);
+    opacity: 0.4;
+}
+
+/* ── 21. SELECTION — branded highlight ──────────────────────────────── */
+::selection {
+    background: hsla(214, 72%, 58%, 0.22);
+    color:      var(--color-text-header);
+}
+body.dark-mode ::selection {
+    background: hsla(152, 72%, 52%, 0.28);
+    color:      hsl(152, 80%, 90%);
+}
+
+/* ── 22. FOCUS RING — accessible + beautiful ────────────────────────── */
+:focus-visible:not(input):not(select):not(textarea) {
+    outline:        2px solid var(--color-primary-default) !important;
+    outline-offset: 3px !important;
+    border-radius:  4px !important;
+}
+
+/* ── 23. INPUTS GLOBALLY — glass treatment ──────────────────────────── */
+input:not([type="checkbox"]):not([type="radio"]):not(.weight):not(.reps),
+select,
+textarea {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* ── 24. SESSION CLOSED CARD — elevated glass ──────────────────────── */
+.session-closed-card {
+    background:      hsla(0, 0%, 100%, 0.88) !important;
+    backdrop-filter: blur(32px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+    border:          1px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.90) inset,
+        0 32px 80px hsla(220, 30%, 20%, 0.25),
+        0 8px 32px  hsla(220, 30%, 20%, 0.12) !important;
+}
+body.dark-mode .session-closed-card {
+    background:      hsla(240, 8%, 12%, 0.92) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.05) inset,
+        0 32px 80px hsla(0, 0%, 0%, 0.80),
+        0 8px 32px  hsla(0, 0%, 0%, 0.60) !important;
+}
+
+/* ── 25. EMOM/REST OVERLAY — glass sheet ───────────────────────────── */
+#restTimerOverlay,
+#emomTimerOverlay,
+[id*="TimerOverlay"] {
+    background:      hsla(0, 0%, 100%, 0.85) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+    border:          1px solid var(--glass-border) !important;
+}
+body.dark-mode #restTimerOverlay,
+body.dark-mode #emomTimerOverlay,
+body.dark-mode [id*="TimerOverlay"] {
+    background: hsla(240, 10%, 10%, 0.90) !important;
+}
+
+/* ── 26. REDUCED MOTION — toujours respecté ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration:   0.01ms !important;
+        transition-duration:  0.01ms !important;
+    }
+    .exercise-card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
+
+/* ── 27. LAYER PROMOTION & PAINT ISOLATION ─────────────────────────────
+   Trois règles CSS qui transforment la fluidité native en salle :
+
+   A) contain: layout style paint
+      → Chaque exercise-card est un "îlot de layout" isolé.
+        Une modification de taille/contenu dans une card ne déclenche PAS
+        de recalcul de layout sur les cards voisines (= zéro Layout Cascade).
+
+   B) will-change: transform
+      → Le GPU composite-thread prend en charge les transitions de la card.
+        La main thread reste libre pour la logique JS.
+        NB : appliqué via :hover + :focus-within pour éviter la promotion
+        permanente qui gaspille la VRAM sur les petits mobiles.
+
+   C) transform: translateZ(0) sur les éléments glass
+      → Force la création d'une couche de composition GPU (GPU Layer) pour
+        backdrop-filter. Sans ça, Safari/Chrome peuvent recalculer le flou
+        à chaque frame au lieu de le mettre en cache côté GPU.
+   ──────────────────────────────────────────────────────────────────── */
+
+/* A — contain:paint retiré (v11) — cassait le scroll natif iOS.
+   La promotion GPU via transform:translateZ(0) suffit. */
+.exercise-card {
+    /* contain sans paint — préserve le layout isolation sans bloquer le scroll */
+}
+
+/* B — Promotion GPU ciblée (hover/focus uniquement) */
+.exercise-card:hover,
+.exercise-card:focus-within {
+    will-change: transform;
+}
+
+/* C — GPU layer pour le glassmorphism — évite le recalcul de blur chaque frame */
+.exercise-card,
+.bottom-navigation,
+nav.bottom-nav,
+.summary-section,
+.modal-content,
+.session-closed-card,
+#restTimerOverlay,
+#emomTimerOverlay {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+/* D — Isolation du container de liste (zéro overflow layout vers parent) */
+#exerciseListContainer {
+    /* contain:layout retiré (v11) — bloquait le scroll.
+       isolation:isolate seul suffit pour le stacking des cards. */
+    isolation: isolate;
+}
+
+/* E — Historique virtualisé : hauteur fixe + overflow scroll
+      → Le navigateur sait exactement quelle zone repeindre
+         (optimise drastiquement les scroll events) */
+#historyList {
+    max-height: 70vh;           /* Scroll container défini — requis pour v7 render direct */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    /* contain:strict retiré — nécessitait une hauteur explicite (cassait l'affichage) */
+}
+
+/* F — Superset wrapper : isoler les animations internes */
+.superset-wrapper {
+    contain: layout style;
+    transform: translateZ(0);
+}
+/* ══ END Layer Promotion & Paint Isolation Layer ══════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ██████████  LYFTIV v9 — Senior UX Engineer Layer
+   ██████████  Apple Fitness / Linear / Notion — Mobile-first Refinement
+   ══════════════════════════════════════════════════════════════════════
+
+   CHANGELOG v9
+   01. Z-index system  — hiérarchie nette, zéro overlap
+   02. Progress bar    — fine ligne iOS fixe (2px)
+   03. Action primary  — 3 boutons larges, lisibles en salle
+   04. Tools drawer    — <details> collapsible, tous IDs JS préservés
+   05. Safari glass    — backface + translateZ + isolation
+   06. Paint contain   — contain:paint sur cards
+   07. Overflow fix    — backdrop-filter + overflow compat
+   08. Section flow    — display:flow-root anti margin-collapse
+   09. Dash hierarchy  — section-title system, empty state
+   10. Chart tabs      — tonnage/volume premiers, 1rm/freq secondaires
+   11. Heatmap compact — hauteur réduite
+   12. Weekly goal     — simplification affichage
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 01. Z-INDEX SYSTEM ─────────────────────────────────────────────── */
+:root {
+    --z-background: -1;
+    --z-base:        0;
+    --z-card:        10;
+    --z-sticky:      50;
+    --z-indicator:   80;
+    --z-floating:    60;
+    --z-nav:        100;
+    --z-overlay:    400;
+    --z-modal:      500;
+    --z-toast:     1000;
+    --z-critical: 10000;
+}
+/* Apply system tokens */
+.bottom-navigation, nav.bottom-nav       { z-index: var(--z-nav)      !important; }
+.modal-overlay                           { z-index: var(--z-modal)    !important; }
+.notification-banner, #notification-container { z-index: var(--z-toast) !important; }
+#badgeToast                              { z-index: var(--z-toast)    !important; }
+#autoSaveIndicator                       { z-index: var(--z-toast)    !important; }
+#restTimerOverlay, #emomTimerOverlay     { z-index: var(--z-overlay)  !important; }
+#appModeIndicator                        { z-index: var(--z-indicator)!important; }
+.progress-bar, #progressBar              { z-index: var(--z-critical) !important; }
+
+/* ── 02. PROGRESS BAR → FINE LIGNE iOS ─────────────────────────────── */
+/* Transformation du .progress-bar en indicateur fixe discret            */
+#progressBar {
+    position: fixed !important;
+    top: env(safe-area-inset-top, 0px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 2px !important;
+    width: 100% !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    /* Masquer quand à 0% */
+    opacity: 0;
+    transition: opacity 0.3s ease !important;
+}
+/* Visible dès qu'il y a progression */
+#progressBar[aria-valuenow]:not([aria-valuenow="0"]) {
+    opacity: 1;
+}
+#progressFill {
+    height: 2px !important;
+    border-radius: 0 !important;
+    background: linear-gradient(90deg, #ffd60a, #ff9f0a) !important;
+    box-shadow: 0 0 6px rgba(255, 159, 10, 0.50) !important;
+    transition: width 0.25s linear !important;
+    will-change: width !important;
+    pointer-events: none !important;
+}
+/* Compenser l'espace que la barre n'occupe plus dans le flow */
+.summary-section { padding-top: env(safe-area-inset-top, 0px); }
+
+/* ── 03. ACTION PRIMARY — 3 boutons larges ──────────────────────────── */
+.action-primary {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--spacing-sm) !important;
+    padding: var(--spacing-md) !important;
+}
+.btn-action-primary {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: var(--spacing-md) var(--spacing-sm) !important;
+    font-size: 0.80rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+    border-radius: var(--radius-medium) !important;
+    min-height: 64px !important;
+}
+.btn-action-primary .btn-icon {
+    font-size: 1.3rem !important;
+    line-height: 1 !important;
+}
+
+/* ── 04. TOOLS DRAWER ───────────────────────────────────────────────── */
+.tools-drawer {
+    margin: 0 var(--spacing-md) var(--spacing-md);
+    border-radius: var(--radius-medium);
+    background: var(--glass-bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    box-shadow: 0 1px 0 hsla(0,0%,100%,0.55) inset, 0 2px 8px var(--shadow-sm);
+}
+.tools-drawer-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-default);
+    user-select: none;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.tools-drawer-toggle::-webkit-details-marker { display: none; }
+.tools-toggle-label { flex: 1; }
+.tools-toggle-chevron {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--color-text-subheader);
+    transition: transform 0.25s var(--spring-smooth);
+    display: inline-block;
+    line-height: 1;
+}
+.tools-drawer[open] .tools-toggle-chevron {
+    transform: rotate(90deg);
+}
+.tools-drawer-body {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    animation: drawerOpen 0.22s var(--spring-smooth) both;
+}
+@keyframes drawerOpen {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xs);
+}
+@media (max-width: 380px) {
+    .tools-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.btn-tool {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 3px !important;
+    padding: var(--spacing-sm) var(--spacing-xs) !important;
+    font-size: 0.70rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--radius-base) !important;
+    background: var(--glass-bg-input) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--color-text-default) !important;
+    box-shadow: 0 1px 0 hsla(0,0%,100%,0.70) inset !important;
+    min-height: 52px !important;
+    transition: transform 0.12s var(--spring-bounce), background 0.12s ease !important;
+}
+.btn-tool:active {
+    transform: scale(0.92) !important;
+    background: var(--glass-bg-card-hover) !important;
+}
+.btn-tool .btn-icon {
+    font-size: 1.15rem !important;
+    line-height: 1 !important;
+}
+body.dark-mode .btn-tool {
+    background: var(--glass-bg-input) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--color-text-default) !important;
+    box-shadow: 0 1px 0 hsla(0,0%,100%,0.04) inset !important;
+}
+
+/* ── 05. SAFARI GLASSMORPHISM STABILITY ─────────────────────────────── */
+/* backface-visibility: hidden élimine les glitchs de repaint sur Safari */
+.exercise-card,
+.bottom-navigation,
+.summary-section,
+.modal-content,
+.tools-drawer,
+#restTimerOverlay,
+#emomTimerOverlay {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility:         hidden !important;
+    -webkit-transform:           translateZ(0) !important;
+    transform:                   translateZ(0) !important;
+}
+/* isolation: isolate — crée un stacking context propre pour backdrop-filter */
+.exercise-card,
+.tools-drawer,
+.modal-content {
+    isolation: isolate !important;
+}
+
+/* ── 07. OVERFLOW FIX — backdrop-filter + overflow hidden incompatibles ─
+   overflow: hidden tue backdrop-filter sur Chrome/Safari.
+   On remplace par clip-path pour les containers qui en avaient besoin.   */
+.exercise-list-container,
+#exerciseListContainer {
+    overflow: visible !important; /* ne pas clipper les glassmorphism children */
+}
+/* Maintenir le clip via clip-path si nécessaire */
+.exercise-card { clip-path: none !important; } /* reset tout héritage */
+
+/* ── 08. MARGIN COLLAPSE — display:flow-root ────────────────────────── */
+.summary-section,
+.action-primary,
+.tools-drawer,
+#sessionNotesSection,
+.section-controls,
+.controls {
+    display: flow-root; /* pas !important — on veut pouvoir override */
+}
+/* Exception pour les grids / flex déjà définis */
+.action-primary { display: grid !important; }
+
+/* ── 09. DASHBOARD — Hiérarchie visuelle ─────────────────────────────── */
+.dash-section-title {
+    font-family:    var(--font-display) !important;
+    font-size:      1.0rem !important;
+    font-weight:    800 !important;
+    color:          var(--color-text-header) !important;
+    margin:         0 0 var(--spacing-md) !important;
+    display:        flex !important;
+    align-items:    center !important;
+    gap:            8px !important;
+    letter-spacing: -0.02em !important;
+}
+/* Empty state — style unifié pour tous les widgets vides */
+.dash-empty-state {
+    display:     flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap:         6px !important;
+    text-align:  center !important;
+    padding:     var(--spacing-xl) var(--spacing-md) !important;
+    color:       var(--color-text-subheader) !important;
+    font-size:   var(--font-size-sm) !important;
+    line-height: 1.5 !important;
+}
+.dash-empty-icon {
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+    margin-bottom: 2px !important;
+}
+.dash-empty-state strong {
+    color:       var(--color-text-default) !important;
+    font-weight: 700 !important;
+    font-size:   0.875rem !important;
+}
+/* Dashboard widgets — glass treatment */
+#dashChartsSection > div,
+#weeklyGoalSection .weekly-goal-wrap,
+#dashDeloadSection > div,
+#disciplineWidget,
+#dashHeatmapSection > div,
+#dashBadgesSection > div {
+    background:      var(--glass-bg-card) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border:          1px solid var(--glass-border) !important;
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.60) inset,
+        0 4px 16px hsla(220, 30%, 20%, 0.06) !important;
+    border-radius:   var(--radius-large) !important;
+}
+body.dark-mode #dashChartsSection > div,
+body.dark-mode #weeklyGoalSection .weekly-goal-wrap,
+body.dark-mode #dashDeloadSection > div,
+body.dark-mode #disciplineWidget,
+body.dark-mode #dashHeatmapSection > div,
+body.dark-mode #dashBadgesSection > div {
+    box-shadow:
+        0 1px 0 hsla(0,0%,100%,0.04) inset,
+        0 4px 16px hsla(0, 0%, 0%, 0.35) !important;
+}
+
+/* ── 10. CHART TABS — secondaires visuellement plus discrets ────────── */
+.dash-chart-tab-secondary {
+    opacity:    0.65 !important;
+    font-size:  var(--font-size-xs) !important;
+    font-weight: 500 !important;
+}
+.dash-chart-tab-secondary.active {
+    opacity: 1 !important;
+}
+
+/* ── 11. HEATMAP — hauteur compacte ────────────────────────────────── */
+.heatmap-grid {
+    max-height: 80px !important; /* réduit de ~30% */
+}
+.heatmap-cell {
+    width:  10px !important;
+    height: 10px !important;
+}
+#heatmapGrid, .heatmap-months {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+}
+
+/* ── 12. WEEKLY GOAL — affichage simplifié ──────────────────────────── */
+/* Cacher le sous-titre verbeux (séances restantes) */
+#weeklyGoalSub {
+    display: none !important;
+}
+/* Agrandir légèrement le status */
+#weeklyGoalStatus {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+}
+/* Dots : plus grands et espacés */
+.weekly-goal-dots {
+    gap: 8px !important;
+    margin: var(--spacing-sm) 0 !important;
+}
+.weekly-goal-dot {
+    width:  14px !important;
+    height: 14px !important;
+}
+
+/* ── 13. PERFORMANCE — Limit glass blur to key elements only ─────────── */
+/* Sur les appareils à mémoire limitée, on désactive le blur des cards   */
+@media (max-resolution: 1dppx) and (max-width: 428px) {
+    /* iPhone SE, vieux Android — zéro blur sur les cards (perf > esthétique) */
+    .exercise-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: var(--color-surface-default) !important;
+    }
+}
+/* Conserver le blur uniquement sur les éléments critiques */
+.bottom-navigation,
+.modal-content,
+#restTimerOverlay,
+#emomTimerOverlay,
+.session-closed-card {
+    /* Ces éléments gardent toujours leur blur — ils sont peu nombreux */
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+/* ── 14. SECTION ICONS — standardisation ────────────────────────────── */
+/* Espace cohérent autour des emojis dans les titres */
+.dash-section-title > *:first-child,
+.dash-section-title span:first-child {
+    flex-shrink: 0;
+}
+
+/* ── 15. VISUAL COHESION — summary cards ────────────────────────────── */
+/* Icônes summary bar — agrandies + centrées */
+.summary-card .card-icon {
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+}
+/* Valeurs summary — weight + tracking display */
+.summary-card .value {
+    font-family:    var(--font-mono) !important;
+    font-size:      1.25rem !important;
+    font-weight:    800 !important;
+    letter-spacing: -0.04em !important;
+    color:          var(--color-text-header) !important;
+}
+
+/* body overflow-x */
+body { overflow-x: hidden !important; }
+
+/* ── END v9 UX Layer ═════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ██████  LYFTIV v10 — Staff Engineer Patch
+   █████   Bugs: historique, scroll, dark-mode contrast, glass stability
+   ══════════════════════════════════════════════════════════════════════
+
+   FIXES
+   01. CSS custom properties — --text-primary / --surface-glass (bridge vars)
+   02. Scroll fix — overflow visible sur exerciseListContainer + main scrollable
+   03. Contrast dark/light — bridge vers variables existantes, aucune rupture
+   04. Glass safari — backface + translateZ (renforcement ciblé)
+   05. Blur scope — seulement nav + modal + overlay
+   06. Progress bar iOS — déjà fait v9, renforcement ici
+   07. Cognitive load — masquer fréquence, execution rate, protocol verbose
+   08. Dashboard order — section order via CSS order property
+   09. Contain + transform — layer promotion complète
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 01. CSS BRIDGE VARIABLES ───────────────────────────────────────── */
+/* Alias légers qui bridgent vers les variables existantes.
+   Pas de rupture — les règles JS/HTML existantes utilisent body.dark-mode. */
+:root {
+    --text-primary:    var(--color-text-header);
+    --text-secondary:  var(--color-text-subheader);
+    --text-body:       var(--color-text-default);
+    --surface:         var(--color-surface-default);
+    --surface-muted:   var(--color-surface-muted);
+    --surface-input:   var(--color-surface-input);
+    --surface-glass:   var(--glass-bg-card);
+    --border:          var(--color-border-default);
+}
+/* Les dark-mode overrides héritent automatiquement des tokens existants.
+   body.dark-mode redéfinit déjà --color-text-header, --color-surface-default etc.
+   Ces aliases suivent donc automatiquement — zéro duplication. */
+
+/* ── 02. SCROLL FIX (v11 — minimal, ciblé) ─────────────────────────── */
+/* Règle d'or : le BODY est le scroll container principal.
+   On ne crée pas de scroll context intermédiaire sans height fixe — 
+   ça bloque le scroll au lieu de le débloquer.                         */
+
+/* Seule correction utile : .exercise-list-container avait overflow:hidden
+   ce qui cassait backdrop-filter sur les cards enfants.
+   On passe à clip (même rendu visuel, ne casse pas backdrop-filter).   */
+.exercise-list-container {
+    overflow: clip !important;
+}
+
+/* Le container de liste s'étire naturellement — le body scrolle */
+#exerciseListContainer {
+    overflow: visible !important;
+    /* PAS de overflow-y:auto sans height fixe — ça crée un scroll mort */
+}
+
+/* Dashboard : déjà overflow-y:auto dans les règles originales — ne pas écraser */
+/* .dashboard-container { OK par défaut } */
+
+/* ── 03. DARK / LIGHT CONTRAST RENFORCEMENT ─────────────────────────── */
+/* Quelques cas où le contraste était insuffisant */
+
+/* Exercise card header — toujours très lisible */
+.exercise-card h4,
+.exercise-card .ex-name {
+    color: var(--text-primary) !important;
+}
+/* Labels de series — lisibles en salle */
+.exercise-card .series-row strong,
+.serie-label {
+    color: var(--color-primary-default);
+}
+/* Stat values — monospace, forte graisse */
+.exercise-card .card-stat-value,
+.summary-card .value {
+    color: var(--text-primary) !important;
+}
+/* Stat labels */
+.exercise-card .card-stat-label,
+.summary-card h3 {
+    color: var(--text-secondary) !important;
+}
+/* Tools drawer — fond visible dans les deux modes */
+.tools-drawer {
+    background: var(--surface-glass) !important;
+}
+.btn-tool {
+    color: var(--text-body) !important;
+    background: var(--surface-input) !important;
+}
+body.dark-mode .btn-tool {
+    color: var(--color-text-default) !important;
+    background: var(--glass-bg-input) !important;
+}
+/* Session notes textarea */
+#sessionNotes {
+    color:       var(--text-body) !important;
+    background:  var(--surface-input) !important;
+    border-color: var(--border) !important;
+}
+/* Previous week input */
+#previousWeek {
+    color:       var(--text-body) !important;
+    background:  var(--surface-input) !important;
+}
+/* Ensure dark mode exercise list container bg is readable */
+body.dark-mode .exercise-list-container {
+    background: transparent !important;
+}
+body.dark-mode .main-container {
+    background: hsla(240, 8%, 11%, 0.96) !important;
+    border-color: var(--glass-border) !important;
+}
+
+/* ── 04. GLASS SAFARI STABILITY (renforcement ciblé) ────────────────── */
+/* Seulement les éléments critiques — on évite d'en mettre trop */
+.bottom-navigation,
+.modal-content,
+#restTimerOverlay,
+#emomTimerOverlay,
+.session-closed-card,
+.tools-drawer {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility:         hidden !important;
+    transform:                   translateZ(0) !important;
+    isolation:                   isolate !important;
+    /* Spécifier explicitement backdrop-filter pour Safari 14+ */
+    -webkit-backdrop-filter:     blur(24px) saturate(180%) !important;
+    backdrop-filter:             blur(24px) saturate(180%) !important;
+}
+
+/* ── 05. BLUR SCOPE — limiter aux éléments clés ─────────────────────── */
+/* Désactiver backdrop-filter sur les containers large — trop coûteux GPU */
+body,
+#app-container,
+.main-container,
+.dashboard-content,
+.dash-tab-panel,
+#exerciseListContainer,
+.exercise-list-container {
+    backdrop-filter:         none !important;
+    -webkit-backdrop-filter: none !important;
+}
+/* Exercise cards : blur léger (non critique — OK si désactivé sur vieux appareils) */
+.exercise-card {
+    backdrop-filter:         blur(12px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+}
+/* Sur petits écrans/résolutions faibles — supprimer le blur des cards */
+@media (max-resolution: 1dppx) and (max-width: 390px) {
+    .exercise-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+}
+
+/* ── 07. COGNITIVE LOAD — masquer éléments verbeux ──────────────────── */
+/* Fréquence — onglet de chart secondaire déjà visuellement discret en v9 */
+/* On le masque sur mobile — trop technique pour un usage en salle */
+@media (max-width: 480px) {
+    .dash-chart-tab[data-dchart="frequency"] {
+        display: none !important;
+    }
+}
+/* Masquer les empty states trop longs dans les widgets non activés */
+/* (ils ont été remplacés par .dash-empty-state en v9 — OK) */
+
+/* Masquer le verbeux "EXECUTION RATE — 14J / PROTOCOLE" généré en JS
+   On cible le widget discipline mais on garde l'indicateur circulaire */
+#disciplineWidget .discipline-rate-label,
+#disciplineWidget .discipline-protocol-label {
+    display: none !important;
+}
+/* Garder le cercle et le ratio numérique */
+#disciplineWidget .discipline-ring-svg,
+#disciplineWidget .discipline-score {
+    display: block !important;
+}
+
+/* ── 08. DASHBOARD ORDER — CSS order property ───────────────────────── */
+/* Réorganiser sans toucher au HTML (JS le génère) */
+#panelTraining {
+    display: flex !important;
+    flex-direction: column !important;
+}
+#nextActionCard         { order: 1 !important; }
+.session-selector       { order: 2 !important; }
+#dashChartsSection      { order: 3 !important; }
+#weeklyGoalSection      { order: 4 !important; }
+#dashHeatmapSection     { order: 5 !important; }
+#dashBadgesSection      { order: 6 !important; }
+#dashDeloadSection      { order: 7 !important; }
+/* Adhérence en bas — moins prioritaire */
+#panelTraining > section:has(#disciplineWidget) { order: 8 !important; }
+
+/* ── 09. CONTAIN + LAYER PROMOTION (renforcement v10) ────────────────── */
+/* contain: layout style paint retiré — il coupe la propagation du scroll.
+   On garde uniquement la promotion GPU via transform (sans contain:paint). */
+.exercise-card {
+    transform: translateZ(0) !important;
+    /* will-change uniquement au hover/focus — évite la promo permanente */
+}
+.exercise-card:hover,
+.exercise-card:focus-within {
+    will-change: transform !important;
+}
+/* Summary section */
+.summary-section {
+    transform: translateZ(0) !important;
+}
+/* Bottom nav — paint isolation OK (position:fixed, hors du flow) */
+.bottom-navigation {
+    contain: layout style !important;
+}
+
+/* ── 10. SESSION NOTES — section toujours accessible ────────────────── */
+#sessionNotesSection {
+    overflow: visible !important;
+}
+
+/* ── 11. PREVENT DOUBLE SCROLL — main container sur mobile ──────────── */
+@media (max-width: 768px) {
+    /* Le body scrolle, pas le main-container */
+    body {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+    /* Supprimer le border-radius du main sur très petits écrans */
+    .main-container {
+        border-radius: var(--radius-base) !important;
+        padding: var(--spacing-md) !important;
+    }
+}
+
+/* ── END v10 Staff Patch ════════════════════════════════════════════════ */
+
+
 </style>
 </head>
 <body>
@@ -7522,25 +8864,53 @@ body.dark-mode .superset-header {
                 <textarea id="sessionNotes" placeholder="Ajouter des notes sur la séance..." aria-label="Notes de séance"></textarea>
             </section>
             
-            <section class="action-buttons" aria-labelledby="actionButtonsTitle">
+            <section class="action-buttons action-primary" aria-labelledby="actionButtonsTitle">
                 <h2 id="actionButtonsTitle" class="sr-only">Actions principales</h2>
-                <button class="btn btn-success" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">Terminer & sauvegarder</button>
-                <button class="btn btn-primary" id="viewHistoryBtn" aria-label="Voir l'historique">Historique</button>
-                <button class="btn btn-primary" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">Calculateurs</button>
-                <button class="btn btn-secondary" id="nextSessionBtn" aria-label="Calculer la prochaine séance" title="Calcule les charges recommandées pour ta prochaine séance">
-                    📈 Prochaine séance
+                <button class="btn btn-success btn-action-primary" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">
+                    <span class="btn-icon" aria-hidden="true">✓</span>Terminer
                 </button>
-                <button class="btn btn-outline" id="globalEmomBtn" style="border-color:hsl(210,80%,58%);color:hsl(210,80%,58%);">⏱ Mode EMOM</button>
-                <button class="btn btn-outline" id="globalAmrapBtn" style="border-color:hsl(145,62%,48%);color:hsl(145,62%,48%);">🔁 Mode AMRAP</button>
-                <button class="btn btn-outline" id="globalCircuitBtn" style="border-color:hsl(240,60%,60%);color:hsl(240,60%,60%);">🔗 Créer un Circuit</button>
+                <button class="btn btn-primary btn-action-primary" id="viewHistoryBtn" aria-label="Voir l'historique">
+                    <span class="btn-icon" aria-hidden="true">📋</span>Historique
+                </button>
+                <button class="btn btn-secondary btn-action-primary" id="nextSessionBtn" aria-label="Calculer la prochaine séance" title="Calcule les charges recommandées pour ta prochaine séance">
+                    <span class="btn-icon" aria-hidden="true">📈</span>Prochaine
+                </button>
             </section>
-    
-            <section class="action-buttons" style="margin-top: var(--spacing-md);" aria-labelledby="dataManagementTitle">
-                <h2 id="dataManagementTitle" class="sr-only">Gestion des données</h2>
-                <button class="btn btn-info" id="exportBtn" aria-label="Exporter l'historique en CSV">CSV</button>
-                <button class="btn btn-info" id="exportJsonBtn" aria-label="Sauvegarder une copie JSON de toutes vos données">Backup JSON</button>
-                <button class="btn btn-info" id="importBtn" aria-label="Importer des données">Importer</button>
-            </section>
+
+            <!-- ── OUTILS — tiroir collapsible (garder tous les IDs JS) ── -->
+            <details class="tools-drawer" id="toolsDrawer">
+                <summary class="tools-drawer-toggle" aria-label="Ouvrir les outils avancés">
+                    <span class="tools-toggle-icon" aria-hidden="true">⚙️</span>
+                    <span class="tools-toggle-label">Outils</span>
+                    <span class="tools-toggle-chevron" aria-hidden="true">›</span>
+                </summary>
+                <div class="tools-drawer-body">
+                    <h2 id="dataManagementTitle" class="sr-only">Outils et gestion des données</h2>
+                    <div class="tools-grid">
+                        <button class="btn btn-tool" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">
+                            <span class="btn-icon" aria-hidden="true">🧮</span>Calculs
+                        </button>
+                        <button class="btn btn-tool" id="globalEmomBtn" aria-label="Mode EMOM">
+                            <span class="btn-icon" aria-hidden="true">⏱</span>EMOM
+                        </button>
+                        <button class="btn btn-tool" id="globalAmrapBtn" aria-label="Mode AMRAP">
+                            <span class="btn-icon" aria-hidden="true">🔁</span>AMRAP
+                        </button>
+                        <button class="btn btn-tool" id="globalCircuitBtn" aria-label="Créer un Circuit">
+                            <span class="btn-icon" aria-hidden="true">🔗</span>Circuit
+                        </button>
+                        <button class="btn btn-tool" id="exportBtn" aria-label="Exporter l'historique en CSV">
+                            <span class="btn-icon" aria-hidden="true">📤</span>CSV
+                        </button>
+                        <button class="btn btn-tool" id="exportJsonBtn" aria-label="Sauvegarder une copie JSON de toutes vos données">
+                            <span class="btn-icon" aria-hidden="true">💾</span>Backup
+                        </button>
+                        <button class="btn btn-tool" id="importBtn" aria-label="Importer des données">
+                            <span class="btn-icon" aria-hidden="true">📥</span>Import
+                        </button>
+                    </div>
+                </div>
+            </details>
             <input type="file" id="importFile" class="hidden" accept=".json,.csv" multiple aria-label="Fichier d'importation">
         </main> 
     </div>
@@ -8392,6 +9762,11 @@ body.dark-mode .superset-header {
             _pendingTotals: false,
             _frameId:       null,
 
+            // ── Frame Lock — garantie 60 FPS ────────────────────────────
+            // Si createTable dépasse le budget frame (>10ms), updateAllTotals
+            // est reporté à la frame suivante au lieu de bloquer la frame courante.
+            FRAME_BUDGET_MS: 10,
+
             /** Demande un re-render de la table des exercices */
             scheduleTable() {
                 this._pendingTable = true;
@@ -8412,10 +9787,30 @@ body.dark-mode .superset-header {
             },
 
             _flush() {
-                if (this._frameId) return; // déjà prévu
+                if (this._frameId) return;
                 this._frameId = requestAnimationFrame(() => {
-                    if (this._pendingTable)  { createTable();       this._pendingTable  = false; }
-                    if (this._pendingTotals) { updateAllTotals();   this._pendingTotals = false; }
+                    const t0 = performance.now();
+
+                    // Priorité 1 — reconstruction DOM (coûteuse, traiter en premier)
+                    if (this._pendingTable) {
+                        createTable();
+                        this._pendingTable = false;
+                    }
+
+                    // Priorité 2 — totaux visuels — reportés si budget de frame dépassé
+                    if (this._pendingTotals) {
+                        const elapsed = performance.now() - t0;
+                        if (elapsed < this.FRAME_BUDGET_MS) {
+                            updateAllTotals();
+                            this._pendingTotals = false;
+                        } else {
+                            // Hors budget : deuxième frame dédiée pour les totaux
+                            this._frameId = null;
+                            this._flush();
+                            return;
+                        }
+                    }
+
                     this._frameId = null;
                 });
             }
@@ -9390,6 +10785,65 @@ body.dark-mode .superset-header {
             showNotification(`🔗 Circuit créé (${groupedExercises.length} exercices) !`, "success");
         }
 
+        /* ── formatSupersetsUI — post-processing visuel superset ── */
+        function formatSupersetsUI() {
+            const session = state.sessions[state.currentSessionIndex];
+            if (!session?.exercises) return;
+            const container = document.getElementById('exerciseListContainer') ||
+                              document.querySelector('.mobile-cards') ||
+                              document.getElementById('exerciseList');
+            if (!container) return;
+
+            const cards = Array.from(container.querySelectorAll('.exercise-card'));
+            if (!cards.length) return;
+
+            let currentGroupId = null;
+            let wrapper = null;
+            let mainCounter = 1;
+            let letterCode = 65; // 'A'
+
+            cards.forEach((card, idx) => {
+                const ex = session.exercises[idx];
+                if (!ex) return;
+                const titleEl = card.querySelector('.ex-name, h3, h4');
+
+                if (ex.groupId) {
+                    if (ex.groupId !== currentGroupId) {
+                        wrapper = document.createElement('div');
+                        wrapper.className = 'superset-wrapper';
+                        wrapper.innerHTML = '<div class="superset-header">🔗 Circuit / Superset</div><div class="superset-body"></div>';
+                        card.parentNode.insertBefore(wrapper, card);
+                        currentGroupId = ex.groupId;
+                        letterCode = 65;
+                    }
+                    wrapper.querySelector('.superset-body').appendChild(card);
+                    if (titleEl) titleEl.textContent = `${mainCounter}${String.fromCharCode(letterCode)} – ${ex.name}`;
+                    letterCode++;
+
+                    // Masquer timer repos si pas le dernier du groupe
+                    const isLast = (idx === session.exercises.length - 1) || (session.exercises[idx + 1]?.groupId !== ex.groupId);
+                    const restBtn = card.querySelector('[data-timer-action="start"]');
+                    const timerContainer = card.querySelector('.timer-container');
+                    if (!isLast) {
+                        if (restBtn) restBtn.style.display = 'none';
+                        if (timerContainer) timerContainer.style.opacity = '0.3';
+                    }
+                    if (isLast) mainCounter++;
+
+                    // Bouton lier → délier
+                    const linkBtn = card.querySelector('[data-action="link-superset"]');
+                    if (linkBtn) {
+                        linkBtn.innerHTML = '✂️';
+                        linkBtn.setAttribute('aria-label', 'Délier du superset');
+                        linkBtn.style.color = 'var(--color-danger-default)';
+                    }
+                } else {
+                    currentGroupId = null;
+                    if (titleEl) titleEl.textContent = `${mainCounter} – ${ex.name}`;
+                    mainCounter++;
+                }
+            });
+        }
 
         function createTable() {
             if (!state.isInitialized) return;
@@ -10147,6 +11601,11 @@ body.dark-mode .superset-header {
             history = history.filter(session => !(session.isAutoSave && session.id === state.workoutStartTime));
             history.push(workoutData);
             StorageAPI.set('workoutHistory', history);
+            // ── FIX v10 : Forcer le re-rendu de l'historique après sauvegarde ──
+            // state.historyLoaded = true est posé dans displayHistory() — on reset
+            // le flag pour que le prochain displayHistory() relise le localStorage.
+            state.historyLoaded = false;
+            displayHistory();
             showNotification("Séance sauvegardée dans l'historique avec succès !", "success");
             setTimeout(checkDeload, 500);
             
@@ -10479,74 +11938,94 @@ body.dark-mode .superset-header {
         }
 
         function parseCsvToHistory(csvContent) {
-            const lines = csvContent.replace(/\r/g, '').split('\n').filter(line => line.trim() && !line.startsWith('---'));
+            // Strip BOM UTF-8 + normalize line endings
+            const clean = csvContent.replace(/^\uFEFF/, '').replace(/\r/g, '');
+            const lines = clean.split('\n').filter(line => line.trim() && !line.startsWith('---'));
             if (lines.length < 2) {
                 showNotification("Le fichier CSV est vide ou invalide.", "error");
                 return [];
             }
 
-            const history = [];
-            let currentSession = null;
-            let currentExercise = null;
+            // Parser CSV robuste — respecte les champs entre guillemets
+            function parseCSVLine(line) {
+                const sep = (() => {
+                    let inQ = false, sc = 0, cc = 0;
+                    for (const ch of line) {
+                        if (ch === '"') { inQ = !inQ; continue; }
+                        if (!inQ) { if (ch === ';') sc++; else if (ch === ',') cc++; }
+                    }
+                    return sc >= cc ? ';' : ',';
+                })();
+                const cols = []; let cur = '', inQ = false;
+                for (let i = 0; i < line.length; i++) {
+                    const ch = line[i];
+                    if (ch === '"') {
+                        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+                        else inQ = !inQ;
+                    } else if (ch === sep && !inQ) {
+                        cols.push(cur.trim()); cur = '';
+                    } else cur += ch;
+                }
+                cols.push(cur.trim());
+                return cols;
+            }
+
+            // Parser date — tous formats fr-FR
+            // "07/03/2026 à 12:00" | "07/03/2026 12:00" | "07/03/2026 12h00"
+            function parseDate(str) {
+                if (!str) return null;
+                const m = str.match(/(\d{2})\/(\d{2})\/(\d{4})(?:.*?(\d{2})[h:](\d{2}))?/);
+                if (m) {
+                    const d = new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]||'12'}:${m[5]||'00'}:00`);
+                    if (!isNaN(d)) return d;
+                }
+                const d2 = new Date(str);
+                return isNaN(d2) ? null : d2;
+            }
+
+            const history = []; let currentSession = null, currentExercise = null;
 
             for (let i = 1; i < lines.length; i++) {
-                const cols = lines[i].split(';').map(c => c.trim().replace(/^"|"$/g, ''));
-                const type = (cols[0] || '').toLowerCase();
+                const cols = parseCSVLine(lines[i]);
+                const type = (cols[0] || '').toLowerCase().trim();
 
                 if (type === 'session') {
-                    const dateString = cols[1] || '';
-                    const dateParts = dateString.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})/);
-                    let parsedDate = dateParts ? new Date(`${dateParts[3]}-${dateParts[2]}-${dateParts[1]}T${dateParts[4]}:${dateParts[5]}:00`) : new Date(dateString);
-
-                    if (isNaN(parsedDate.getTime())) continue;
-
+                    const parsedDate = parseDate(cols[1] || '');
+                    if (!parsedDate) continue;
                     currentSession = {
                         id: parsedDate.getTime() + Math.random(),
                         date: parsedDate.toISOString(),
                         sessionName: cols[2] || 'Séance importée',
                         duration: cols[3] || '00:00:00',
                         notes: cols[7] || '',
-                        exercises: [],
-                        totalReps: 0,
-                        totalKgRep: 0
+                        exercises: [], totalReps: 0, totalKgRep: 0
                     };
-                    history.push(currentSession);
-                    currentExercise = null;
+                    history.push(currentSession); currentExercise = null;
+
                 } else if (type === 'exercice' && currentSession) {
-                    currentExercise = {
-                        name: cols[2] || 'Exercice inconnu',
-                        rest: '1 min',
-                        series: [],
-                        exerciseReps: 0
-                    };
+                    currentExercise = { name: cols[2] || 'Exercice inconnu', rest: '1 min', series: [], exerciseReps: 0 };
                     currentSession.exercises.push(currentExercise);
+
                 } else if (type === 'serie' && currentExercise) {
-                    const reps = (cols[5] || '0').replace(',', '.');
-                    const weight = (cols[6] || '0').replace(',', '.');
-                    if (parseFloat(reps) > 0 || parseFloat(weight) > 0) {
-                        currentExercise.series.push({ reps, weight });
-                    }
+                    const reps   = parseFloat((cols[5] || '0').replace(',', '.')) || 0;
+                    const weight = parseFloat((cols[6] || '0').replace(',', '.')) || 0;
+                    if (reps > 0 || weight > 0) currentExercise.series.push({ reps, weight });
                 }
             }
 
             history.forEach(session => {
                 let sessionTonnage = 0;
                 session.exercises.forEach(ex => {
-                    let exerciseTonnage = 0;
-                    ex.series.forEach(serie => {
-                        const reps = parseFloat(serie.reps) || 0;
-                        const weight = parseFloat(serie.weight) || 0;
-                        exerciseTonnage += reps * weight;
-                        ex.exerciseReps += reps;
+                    let exT = 0;
+                    ex.series.forEach(s => {
+                        const r = parseFloat(s.reps) || 0, w = parseFloat(s.weight) || 0;
+                        exT += r * w; ex.exerciseReps += r;
                     });
-                    sessionTonnage += exerciseTonnage;
-                    session.totalReps += ex.exerciseReps;
+                    sessionTonnage += exT; session.totalReps += ex.exerciseReps;
                 });
-                if (session.totalReps > 0) {
-                    session.totalKgRep = (sessionTonnage / session.totalReps).toFixed(2);
-                }
+                session.totalKgRep = session.totalReps > 0
+                    ? (sessionTonnage / session.totalReps).toFixed(2) : 0;
             });
-
             return history;
         }
         
@@ -11498,9 +12977,10 @@ body.dark-mode .superset-header {
             dom.exerciseListContainer.addEventListener('mousedown', pressHandler);
             dom.exerciseListContainer.addEventListener('mouseup', releaseHandler);
             dom.exerciseListContainer.addEventListener('mouseleave', releaseHandler, true);
-            dom.exerciseListContainer.addEventListener('touchstart', pressHandler);
-            dom.exerciseListContainer.addEventListener('touchend', releaseHandler);
-            dom.exerciseListContainer.addEventListener('touchcancel', releaseHandler, true);
+            // ── { passive: true } — débloque le scrolling natif 60 FPS sur iOS/Android
+            dom.exerciseListContainer.addEventListener('touchstart',  pressHandler,   { passive: true });
+            dom.exerciseListContainer.addEventListener('touchend',    releaseHandler, { passive: true });
+            dom.exerciseListContainer.addEventListener('touchcancel', releaseHandler, { passive: true, capture: true });
 
             dom.exerciseListContainer.addEventListener('dblclick', (e) => {
                 const button = e.target.closest('.serie-input-delete');
@@ -11588,7 +13068,10 @@ body.dark-mode .superset-header {
                         try {
                             const importedData = parseFile(result);
                             importedData.forEach(importedSession => {
-                                const existingIndex = currentHistory.findIndex(s => s.id === importedSession.id);
+                                const existingIndex = currentHistory.findIndex(s =>
+                                    s.date === importedSession.date &&
+                                    s.sessionName === importedSession.sessionName
+                                );
                                 if (existingIndex !== -1) {
                                     currentHistory[existingIndex] = importedSession;
                                     totalUpdated++;
@@ -12241,7 +13724,7 @@ body.dark-mode .superset-header {
                 const remaining = goal - done;
                 statusEl.textContent = done + ' / ' + goal + ' séances cette semaine';
                 statusEl.style.color = 'var(--color-text-header)';
-                subEl.textContent = remaining + ' séance' + (remaining > 1 ? 's' : '') + ' restante' + (remaining > 1 ? 's' : '') + ' pour atteindre l\'objectif';
+                subEl.textContent = ''; // v10: verbose text removed
             }
 
             document.getElementById('wgCountDisplay').textContent = goal + ' / sem.';
@@ -12808,8 +14291,9 @@ body.dark-mode .superset-header {
                 }
             });
 
-            // ── PLAN — bouton flottant ────────────────────────────────────
+            // ── PLAN — bouton flottant + edge tab ────────────────────────────
             document.getElementById('planTriggerBtn').addEventListener('click', _openPlan);
+            document.getElementById('planEdgeTab').addEventListener('click', _openPlan);
             document.getElementById('planBackdrop').addEventListener('click', _closePlan);
             document.getElementById('planCloseBtn').addEventListener('click', _closePlan);
 
@@ -12846,6 +14330,43 @@ body.dark-mode .superset-header {
             if (state.workoutStartTime) AppMode.set('execute');
             else AppMode.clear();
         }
+
+        // ── SWIPE GESTURE — Panneau Plan (droite ↔ gauche) ──────────────────
+        // Ouvre en swipant depuis le bord droit (zone 80px), ferme en swipant droite
+        // touch-action: pan-y sur #planPanel + overscroll-behavior-x: none sur body
+        // → iOS Safari ne déclenche PAS le retour arrière natif
+        (function initPlanSwipe() {
+            let _sx = 0, _sy = 0;
+
+            document.addEventListener('touchstart', e => {
+                _sx = e.changedTouches[0].clientX;
+                _sy = e.changedTouches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', e => {
+                const ex = e.changedTouches[0].clientX;
+                const ey = e.changedTouches[0].clientY;
+                const dx = _sx - ex;   // > 0 = vers la gauche (ouverture)
+                const dy = _sy - ey;
+
+                // Mouvement principalement horizontal ?
+                if (Math.abs(dx) <= Math.abs(dy)) return;
+
+                const isOpen = document.body.dataset.mode === 'plan';
+
+                // Swipe gauche — ouverture (depuis bord droit 80px, mode execute uniquement)
+                if (dx > 50 && !isOpen
+                    && document.body.dataset.mode === 'execute'
+                    && _sx > window.innerWidth - 80) {
+                    _openPlan();
+                }
+
+                // Swipe droite — fermeture (depuis n'importe où dans le panneau)
+                if (dx < -50 && isOpen) {
+                    _closePlan();
+                }
+            }, { passive: true });
+        })();
 
         function _populatePlanSessionList() {
             const list = document.getElementById('planSessionList');
@@ -14449,10 +15970,12 @@ body.dark-mode .superset-header {
                         <span style="color:var(--color-text-subheader);font-size:0.78rem;">Reçois des rappels pour maintenir ton streak</span>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:4px;">
-                        <button data-notif-action="enable" class="btn btn-primary" style="padding:5px 10px;font-size:0.75rem;font-weight:700;">Activer</button>
-                        <button data-notif-action="dismiss" class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;">Plus tard</button>
+                        <button id="btnEnableNotif" class="btn btn-primary" style="padding:5px 10px;font-size:0.75rem;font-weight:700;">Activer</button>
+                        <button id="btnDismissNotif" class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;">Plus tard</button>
                     </div>`;
                 document.body.appendChild(banner);
+                document.getElementById('btnEnableNotif').addEventListener('click', enableNotifications);
+                document.getElementById('btnDismissNotif').addEventListener('click', dismissNotifBanner);
             }, 30000);
         }
 
@@ -14709,6 +16232,11 @@ body.dark-mode .superset-header {
     </aside>
 
     <!-- Bouton flottant discret pour ouvrir le mode PLAN -->
+    <!-- Poignée swipe bord droit — ouvre le panneau Plan en mode execute -->
+    <div id="planEdgeTab" role="button" aria-label="Ouvrir le panneau Plan" title="Glisser ou cliquer pour ouvrir le Plan">
+        <span style="font-size:1rem;line-height:1;">⚡</span>
+    </div>
+
     <button id="planTriggerBtn" aria-label="Ouvrir le plan d'entraînement" title="Plan & stratégie">
         ⚡
     </button>
@@ -14737,7 +16265,7 @@ body.dark-mode .superset-header {
             <span>Home</span>
         </button>
         <button id="gnav-train" aria-label="Lancer une séance">
-            <span class="gnav-icon">🏋️</span>
+            <span class="gnav-icon">▶️</span>
             <span>Train</span>
         </button>
         <button id="gnav-stats" aria-label="Nutrition et Stats">
