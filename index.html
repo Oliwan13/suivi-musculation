@@ -11806,6 +11806,8 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             if (!Array.isArray(ex.series)) ex.series = [];
             if (!ex.series[serieIndex]) ex.series[serieIndex] = {};
             ex.series[serieIndex][field] = value;
+            // Cache invalidé : les données de la session ont changé
+            invalidateNextSessionCache();
         }
 
         function resetAppStateToDefault() {
@@ -12265,7 +12267,7 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
 
         function updateAllTotals() {
             if (!state.isInitialized) return;
-            
+
             let totalSessionReps = 0;
             let totalSessionKgRep = 0;
             let completedSeriesOverall = 0;
@@ -12281,165 +12283,178 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             let totalPossibleSeries = 0;
             let exercisesWith1RM = [];
 
+            // ── Phase 1 : calculs purs en mémoire (zéro DOM read) ───────────
+            // Accumule les mutations CSS à appliquer en batch dans le rAF
+            const domMutations = []; // [{el, add:[], remove:[], toggle:[{cls,force}]}]
+
             (exercises || []).forEach((ex, idx) => {
-                if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) {
-                    return;
-                }
+                if (!ex || typeof ex !== 'object' || !Array.isArray(ex.series)) return;
 
                 let exerciseTonnage = 0;
                 let exerciseTotalReps = 0;
                 let exerciseKgRep = 0;
                 let oneRMs = [];
-                
-                totalPossibleSeries += (ex.series || []).length;
 
-                (ex.series || []).forEach((s, i) => {
-                    const repsInput = document.querySelector(`[data-ex='${idx}'][data-serie='${i}'].reps`);
-                    const weightInput = document.querySelector(`[data-ex='${idx}'][data-serie='${i}'].weight`);
-                    
-                    const repsValue = repsInput?.value.trim() || '';
-                    const weightValue = weightInput?.value.trim() || '';
+                totalPossibleSeries += ex.series.length;
 
-                    const repsSegments = parseInputValues(repsValue);
+                ex.series.forEach((s, i) => {
+                    // Lecture STATE uniquement — updateSingleSerie() garantit la sync
+                    const repsValue   = String(s.reps   || '').trim();
+                    const weightValue = String(s.weight || '').trim();
+
+                    const repsSegments   = parseInputValues(repsValue);
                     const weightSegments = parseInputValues(weightValue);
 
                     let currentSeriesTonnage = 0;
-                    let currentSeriesReps = 0;
-                    let currentSeriesValid = false;
+                    let currentSeriesReps    = 0;
+                    let currentSeriesValid   = false;
 
                     const minLength = Math.min(repsSegments.length, weightSegments.length);
                     for (let k = 0; k < minLength; k++) {
-                        const reps = repsSegments[k];
-                        const weight = weightSegments[k];
-                        
-                        currentSeriesTonnage += reps * weight;
-                        currentSeriesReps += reps;
-                        if (reps > 0 && weight > 0) {
-                            oneRMs.push(calculate1RM(weight, reps));
+                        const r = repsSegments[k];
+                        const w = weightSegments[k];
+                        currentSeriesTonnage += r * w;
+                        currentSeriesReps    += r;
+                        if (r > 0 && w > 0) {
+                            oneRMs.push(calculate1RM(w, r));
                             currentSeriesValid = true;
                         }
                     }
 
-                    if (weightInput) {
-                        if (!isValidAndCompleteNumber(weightInput.value) && weightInput.value.trim() !== '') {
-                             weightInput.classList.add('is-invalid');
-                        } else {
-                            weightInput.classList.remove('is-invalid');
-                        }
-                    }
-                    if (repsInput) {
-                         if (!isValidAndCompleteNumber(repsInput.value) && repsInput.value.trim() !== '') {
-                            repsInput.classList.add('is-invalid');
-                        } else {
-                            repsInput.classList.remove('is-invalid');
-                        }
-                    }
+                    if (currentSeriesValid) completedSeriesOverall++;
 
-                    if (currentSeriesValid) {
-                        repsInput.classList.add('completed');
-                        weightInput.classList.add('completed');
-                        completedSeriesOverall++;
-                    } else {
-                        repsInput?.classList.remove('completed');
-                        weightInput?.classList.remove('completed');
-                    }
-                    
-                    exerciseTonnage += currentSeriesTonnage;
+                    // Préparer mutation CSS — pas de DOM read ici
+                    domMutations.push({ exIdx: idx, serieIdx: i,
+                        repsVal: repsValue, weightVal: weightValue,
+                        valid: currentSeriesValid });
+
+                    exerciseTonnage   += currentSeriesTonnage;
                     exerciseTotalReps += currentSeriesReps;
                 });
 
-                if (exerciseTotalReps > 0) {
-                    exerciseKgRep = exerciseTonnage / exerciseTotalReps;
-                }
+                if (exerciseTotalReps > 0) exerciseKgRep = exerciseTonnage / exerciseTotalReps;
 
                 let weightedAverage1RM = 0;
                 if (oneRMs.length > 0) {
-                    let totalWeighted1RM = 0;
-                    let totalWeightSum = 0;
+                    let totalWeighted1RM = 0, totalWeightSum = 0;
                     for (let j = 0; j < oneRMs.length; j++) {
-                        const positionFromEnd = oneRMs.length - 1 - j;
-                        const weightFactor = 1 / (1 + positionFromEnd * 0.2);
-                        totalWeighted1RM += oneRMs[j] * weightFactor;
-                        totalWeightSum += weightFactor;
+                        const wf = 1 / (1 + (oneRMs.length - 1 - j) * 0.2);
+                        totalWeighted1RM += oneRMs[j] * wf;
+                        totalWeightSum   += wf;
                     }
                     weightedAverage1RM = totalWeighted1RM / totalWeightSum;
                 }
 
-                const kgRepEl = document.getElementById(`kgrep-${idx}`);
-                if (kgRepEl) {
-                    kgRepEl.textContent = exerciseKgRep.toFixed(2);
-                    kgRepEl.classList.toggle('kg-rep-high', exerciseKgRep > 0);
-                }
-                const onermEl = document.getElementById(`onerm-${idx}`);
-                if (onermEl) {
-                    onermEl.textContent = weightedAverage1RM > 0 ? weightedAverage1RM.toFixed(1) : '0';
-                    onermEl.classList.toggle('onerm-high', weightedAverage1RM > 0);
-                    if (weightedAverage1RM > 0) {
-                        exercisesWith1RM.push({ name: ex.name, oneRm: weightedAverage1RM.toFixed(1) });
-                    }
-                }
+                // Mutations kgrep / onerm — batch DOM write
+                const kgRepVal = exerciseKgRep;
+                const onermVal = weightedAverage1RM;
+                const exName   = ex.name;
+                domMutations.push({ type: 'exStats', exIdx: idx, kgRepVal, onermVal, exName });
+
                 totalTonnageForKgRep += exerciseTonnage;
-                totalSessionReps += exerciseTotalReps;
+                totalSessionReps     += exerciseTotalReps;
             });
 
             if (totalSessionReps > 0) {
                 totalSessionKgRep = totalTonnageForKgRep / totalSessionReps;
             }
 
-            const currentKgRep = parseFloat(dom.totalKgRepEl.textContent.replace(' kg/rep', '')) || 0;
-            const newKgRep = totalSessionKgRep;
-            animateNumberChange(dom.totalKgRepEl, currentKgRep, newKgRep, 500, ' kg/rep');
+            // ── Phase 2 : toutes les écritures DOM en un seul batch rAF ─────
+            // Sépare clairement les reads (ci-dessus, state pur) des writes (ci-dessous, DOM)
+            const _newKgRep        = totalSessionKgRep;
+            const _completedSeries = completedSeriesOverall;
+            const _totalPossible   = totalPossibleSeries;
+            const _previous        = parseFloat(dom.previousWeekInput.value) || 0;
+            const _delta           = _newKgRep - _previous;
+            const _currentKgRep    = parseFloat(dom.totalKgRepEl.textContent.replace(' kg/rep', '')) || 0;
+            const _startDelta      = parseFloat(dom.deltaEl.textContent.replace(' kg', '').replace('+', '')) || 0;
+            const _domMutations    = domMutations; // référence locale pour le rAF
 
-            dom.progressBar.setAttribute('aria-valuenow', (totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0).toFixed(0));
+            requestAnimationFrame(() => {
+                // ── Inputs : is-invalid + completed ─────────────────────────
+                _domMutations.forEach(m => {
+                    if (m.type === 'exStats') {
+                        // kgrep / onerm
+                        const kgRepEl = document.getElementById(`kgrep-${m.exIdx}`);
+                        if (kgRepEl) {
+                            kgRepEl.textContent = m.kgRepVal.toFixed(2);
+                            kgRepEl.classList.toggle('kg-rep-high', m.kgRepVal > 0);
+                        }
+                        const onermEl = document.getElementById(`onerm-${m.exIdx}`);
+                        if (onermEl) {
+                            onermEl.textContent = m.onermVal > 0 ? m.onermVal.toFixed(1) : '0';
+                            onermEl.classList.toggle('onerm-high', m.onermVal > 0);
+                            if (m.onermVal > 0) exercisesWith1RM.push({ name: m.exName, oneRm: m.onermVal.toFixed(1) });
+                        }
+                        return;
+                    }
+                    // Mutation CSS inputs — 1 querySelector par série (ciblé, non global)
+                    const repsInput   = document.querySelector(`[data-ex='${m.exIdx}'][data-serie='${m.serieIdx}'].reps`);
+                    const weightInput = document.querySelector(`[data-ex='${m.exIdx}'][data-serie='${m.serieIdx}'].weight`);
+                    if (weightInput) {
+                        weightInput.classList.toggle('is-invalid',
+                            !isValidAndCompleteNumber(weightInput.value) && weightInput.value.trim() !== '');
+                        weightInput.classList.toggle('completed', m.valid);
+                    }
+                    if (repsInput) {
+                        repsInput.classList.toggle('is-invalid',
+                            !isValidAndCompleteNumber(repsInput.value) && repsInput.value.trim() !== '');
+                        repsInput.classList.toggle('completed', m.valid);
+                    }
+                });
 
-            const previous = parseFloat(dom.previousWeekInput.value) || 0;
-            const delta = newKgRep - previous;
-            const startDelta = parseFloat(dom.deltaEl.textContent.replace(' kg', '').replace('+', '')) || 0;
-            
-            const deltaDuration = 500;
-            const deltaStartTime = performance.now();
+                // ── Barre de progression ─────────────────────────────────────
+                const pct = _totalPossible > 0 ? (_completedSeries / _totalPossible) * 100 : 0;
+                dom.progressFill.style.width = `${pct}%`;
+                dom.progressBar.setAttribute('aria-valuenow', pct.toFixed(0));
 
-            function updateDeltaAnimation() {
-                const elapsed = performance.now() - deltaStartTime;
-                const progress = Math.min(elapsed / deltaDuration, 1);
-                const currentValue = startDelta + (delta - startDelta) * progress;
-                const displayValue = Math.round(currentValue);
-
-                const displaySign = displayValue > 0 ? '+' : '';
-                dom.deltaEl.textContent = `${displaySign}${displayValue} kg`;
-                dom.deltaEl.style.color = displayValue > 0 ? 'var(--color-success-default)' : displayValue < 0 ? 'var(--color-danger-default)' : 'inherit';
-
-                if (progress < 1) {
-                    requestAnimationFrame(updateDeltaAnimation);
-                } else {
-                     const deltaVal = delta.toFixed(0);
-                    dom.deltaEl.textContent = `${delta > 0 ? '+' : ''}${deltaVal} kg`;
-                    dom.deltaEl.dataset.sign = delta > 0 ? 'positive' : delta < 0 ? 'negative' : '';
-                     dom.deltaEl.style.color = delta > 0 ? 'var(--color-success-default)' : delta < 0 ? 'var(--color-danger-default)' : 'inherit';
+                // ── Compteur X/Y exercices ───────────────────────────────────
+                const _exCountEl = document.getElementById('sessionExerciseCount');
+                if (_exCountEl) {
+                    const _exList = state.sessions?.[state.currentSessionIndex]?.exercises || [];
+                    const _total  = _exList.length;
+                    const _done   = _exList.filter(ex =>
+                        (ex.series || []).length > 0 &&
+                        (ex.series || []).every(s => parseFloat(s.reps) > 0)
+                    ).length;
+                    if (_total > 0) {
+                        _exCountEl.textContent = `${_done} / ${_total} exercices`;
+                        _exCountEl.classList.add('visible');
+                    } else {
+                        _exCountEl.classList.remove('visible');
+                    }
                 }
-            }
-            requestAnimationFrame(updateDeltaAnimation);
 
-            dom.progressFill.style.width = `${totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0}%`;
+                // ── Kg/rep total + animation delta ──────────────────────────
+                animateNumberChange(dom.totalKgRepEl, _currentKgRep, _newKgRep, 500, ' kg/rep');
 
-            // ── Compteur X/Y exercices (rec 5) ──────────────────────────────
-            const _exCountEl = document.getElementById('sessionExerciseCount');
-            if (_exCountEl) {
-                const _exercises = state.sessions?.[state.currentSessionIndex]?.exercises || [];
-                const _total = _exercises.length;
-                const _done  = _exercises.filter(ex =>
-                    (ex.series || []).length > 0 &&
-                    (ex.series || []).every(s => parseFloat(s.reps) > 0)
-                ).length;
-                if (_total > 0) {
-                    _exCountEl.textContent = `${_done} / ${_total} exercices`;
-                    _exCountEl.classList.add('visible');
-                } else {
-                    _exCountEl.classList.remove('visible');
+                const deltaDuration = 500;
+                const deltaStartTime = performance.now();
+                function updateDeltaAnimation() {
+                    const elapsed  = performance.now() - deltaStartTime;
+                    const progress = Math.min(elapsed / deltaDuration, 1);
+                    const cur      = _startDelta + (_delta - _startDelta) * progress;
+                    const disp     = Math.round(cur);
+                    dom.deltaEl.textContent = `${disp > 0 ? '+' : ''}${disp} kg`;
+                    dom.deltaEl.style.color = disp > 0 ? 'var(--color-success-default)'
+                        : disp < 0 ? 'var(--color-danger-default)' : 'inherit';
+                    if (progress < 1) {
+                        requestAnimationFrame(updateDeltaAnimation);
+                    } else {
+                        dom.deltaEl.textContent = `${_delta > 0 ? '+' : ''}${_delta.toFixed(0)} kg`;
+                        dom.deltaEl.dataset.sign = _delta > 0 ? 'positive' : _delta < 0 ? 'negative' : '';
+                        dom.deltaEl.style.color  = _delta > 0 ? 'var(--color-success-default)'
+                            : _delta < 0 ? 'var(--color-danger-default)' : 'inherit';
+                    }
                 }
-            }
+                requestAnimationFrame(updateDeltaAnimation);
+
+                // ── Dropdown 1RM ─────────────────────────────────────────────
+                populateOneRMDropdown(exercisesWith1RM);
+            });
+
+            // Sauvegarde hors du rAF — ne bloque pas le rendu
             saveCurrentState(true);
-            populateOneRMDropdown(exercisesWith1RM);
         }
 
         function populateOneRMDropdown(exercisesWith1RM) {
@@ -13721,6 +13736,8 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
                 if (dom.deltaEl)           dom.deltaEl.textContent      = "0 kg";
                 if (dom.previousWeekInput) dom.previousWeekInput.value  = "";
                 if (dom.sessionNotesInput) dom.sessionNotesInput.value  = "";
+                // Cache invalidé : session différente
+                invalidateNextSessionCache();
                 RenderScheduler.scheduleAll();
                 updateDeleteSessionButtonState();
                 showNotification("Séance changée.", "info", 2000);
@@ -13774,7 +13791,8 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
 
             /** Finaliser la séance et sauvegarder dans l'historique */
             finishWorkout() {
-                // Délégué à la fonction existante
+                // Cache invalidé : l'historique change, le calcul prochain peut changer
+                invalidateNextSessionCache();
                 if (typeof saveToHistory === 'function') saveToHistory();
             },
 
@@ -14476,7 +14494,27 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             });
 
             // ── Compléments alimentaires dashboard ────────────────────
-            document.getElementById('dashSupplSearch').addEventListener('input', e => renderDashSuppl(e.target.value));
+            // OPT: debounce 300ms — évite de reconstruire le DOM de la grille à chaque frappe
+            // Historique session intégré ici (l'ancien double listener Phase 1 a été supprimé)
+            (function() {
+                let _supplSearchTimer = null;
+                if (!window._sessionSupplHistory) window._sessionSupplHistory = [];
+
+                document.getElementById('dashSupplSearch').addEventListener('input', e => {
+                    if (_supplSearchTimer) clearTimeout(_supplSearchTimer);
+                    _supplSearchTimer = setTimeout(() => {
+                        const q = e.target.value.trim();
+                        renderDashSuppl(q);
+                        // Sécurité : accumuler l'historique de session pour détection croisée
+                        if (q.length > 1) {
+                            window._sessionSupplHistory.push(q.toLowerCase());
+                            checkSupplSafety(window._sessionSupplHistory);
+                        } else {
+                            checkSupplSafety([q]);
+                        }
+                    }, 300);
+                });
+            })();
 
             // ── Deload widget dashboard ──────────────────────────────
             document.getElementById('dashDeloadWidget').addEventListener('click', e => {
@@ -16713,7 +16751,37 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
         function detectZone(avgReps) { return PhysioCompute.trainingZone(avgReps); }
         function roundToQuarter(kg)  { return PhysioCompute.roundToPlate(kg); }
 
+        // ── MEMOIZATION — computeNextSessionData ──────────────────────────
+        // Coûteux (PhysioCompute.analyzeExercise sur chaque exercice × N séries).
+        // Résultat caché tant que la session active n'a pas changé.
+        // Invalidé par : invalidateNextSessionCache() → appelé depuis updateSingleSerie,
+        // Actions.switchSession, et après une séance terminée.
+        const _nextSessionCache = { key: null, result: null };
+
+        function _computeNextSessionCacheKey() {
+            const idx = state.currentSessionIndex;
+            const session = state.sessions?.[idx];
+            if (!session) return null;
+            // Clé = index + contenu sérialisé des séries (léger : strings uniquement)
+            const seriesSnapshot = (session.exercises || [])
+                .map(ex => (ex.series || []).map(s => (s.weight || '') + ':' + (s.reps || '')).join(','))
+                .join('|');
+            return idx + '§' + session.name + '§' + seriesSnapshot;
+        }
+
+        function invalidateNextSessionCache() {
+            _nextSessionCache.key = null;
+            _nextSessionCache.result = null;
+        }
+
         function computeNextSessionData() {
+            const cacheKey = _computeNextSessionCacheKey();
+
+            // Cache hit — résultat déjà calculé pour cette session dans cet état
+            if (cacheKey && cacheKey === _nextSessionCache.key) {
+                return _nextSessionCache.result;
+            }
+
             const session = state.sessions[state.currentSessionIndex];
             if (!session) return null;
 
@@ -16723,7 +16791,6 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             session.exercises.forEach((ex) => {
                 if (!ex || typeof ex.name !== 'string' || !Array.isArray(ex.series) || ex.series.length === 0) return;
 
-                // Collecter les séries brutes valides
                 const rawSeries = [];
                 ex.series.forEach(s => {
                     const wRaw = parseInputValues(s.weight);
@@ -16732,14 +16799,11 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
                     for (let k = 0; k < len; k++) rawSeries.push({ weight: wRaw[k], reps: rRaw[k] });
                 });
 
-                // Déléguer toute l'analyse à PhysioCompute
                 const analysis = PhysioCompute.analyzeExercise(rawSeries);
                 if (!analysis) return;
-
                 results.push({ name: ex.name, ...analysis });
             });
 
-            // Kg/rep global (indicateur de qualité de la séance)
             let totalTonnage = 0, totalReps = 0;
             results.forEach(r => {
                 totalTonnage += r.avgWeightCurrent * r.avgReps * r.seriesCount;
@@ -16747,7 +16811,13 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             });
             const currentKgRep = totalReps > 0 ? parseFloat((totalTonnage / totalReps).toFixed(2)) : null;
 
-            return { sessionName, results, lastKgRep: currentKgRep };
+            const result = { sessionName, results, lastKgRep: currentKgRep };
+
+            // Stocker en cache
+            _nextSessionCache.key    = cacheKey;
+            _nextSessionCache.result = result;
+
+            return result;
         }
 
         function renderNextSessionModal(data) {
@@ -18285,23 +18355,10 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
         }
     ];
 
-    // Surveiller la recherche de suppléments
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('dashSupplSearch');
-        const supplGrid = document.getElementById('dashSupplGrid');
-        if (!searchInput) return;
-
-        // Historique des suppléments recherchés dans la session
-        let sessionSupplHistory = [];
-
-        searchInput.addEventListener('input', () => {
-            const q = searchInput.value.toLowerCase();
-            if (q.length > 2) {
-                sessionSupplHistory.push(q);
-                checkSupplSafety(sessionSupplHistory);
-            }
-        });
-    });
+    // Historique session suppléments — alimente checkSupplSafety via le listener principal (ligne ~14477)
+    // Le double listener a été supprimé pour éviter la reconstruction DOM 2x à chaque frappe.
+    // checkSupplSafety est appelé dans le debounce principal 300ms.
+    window._sessionSupplHistory = [];
 
     function checkSupplSafety(history) {
         const allSearches = history.join(' ').toLowerCase();
