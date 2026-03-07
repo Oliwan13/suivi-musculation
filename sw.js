@@ -11,7 +11,7 @@ const FILES_TO_CACHE = [
     `${BASE}/`,
     `${BASE}/index.html`,
     `${BASE}/manifest.json`,
-    `${BASE}/styles.css`,
+    `${BASE}/css/styles.css`,
 
     // ── JS : data (aucune dépendance) ─────────────────────────────
     `${BASE}/js/data/training-zones.js`,
