@@ -4,7 +4,7 @@
    ⚠️  Incrémenter CACHE_NAME à chaque déploiement pour forcer le refresh
 ═══════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'lyftiv-v17';
+const CACHE_NAME = 'lyftiv-v18';
 const BASE = '/suivi-musculation';
 
 const FILES_TO_CACHE = [
@@ -37,6 +37,7 @@ const FILES_TO_CACHE = [
     `${BASE}/js/features/plan-panel.js`,
     `${BASE}/js/features/profile.js`,
     `${BASE}/js/features/onboarding.js`,
+    `${BASE}/js/features/program-builder.js`,
     `${BASE}/js/features/ai-coach.js`,
 ];
 
