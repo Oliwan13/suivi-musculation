@@ -1,6 +1,6 @@
 // js/features/ai-coach.js — Coach IA Lyftiv
 // Analyse l'historique local et génère des suggestions personnalisées
-// Dépend : window.StorageAPI, window.state, window.FeatureFlags
+// Dépend : window.StorageAPI, window.FeatureFlags, window.TrainingScience
 // ══════════════════════════════════════════════════════════════════════
 
 (function () {
@@ -10,6 +10,7 @@
     if (!window.FeatureFlags?.aiCoach) return;
 
     const StorageAPI = window.StorageAPI;
+    const TS          = window.TrainingScience; // Base de connaissances scientifique
 
     // ── Helpers ──────────────────────────────────────────────────────
 
@@ -220,16 +221,18 @@
                 html += renderInsight('📈', 'Progressions récentes', list, 'hsl(145,65%,48%)');
             }
 
-            // ── Stagnation ───────────────────────────────────────────
+            // ── Stagnation — avec conseil double progression (TrainingScience) ────
             if (stagnating.length) {
                 const list = stagnating.map(s =>
                     `<strong>${s.name}</strong> : ${s.weight} kg sur les ${s.sessions} dernières séances`
                 ).join('<br>');
-                const advice = 'Essaie la <em>surcharge progressive</em> : +2.5 kg ou +1 répétition par séance.';
+                const inc = TS?.progressiveOverload?.weightIncrements;
+                const upperInc = inc?.upperBody ?? 2.5;
+                const advice = `Applique la <em>double progression</em> (Jeff Nippard) : vise d'abord le haut de ta fourchette de reps sur TOUTES tes séries, puis ajoute <strong>+${upperInc} kg</strong>.`;
                 html += renderInsight('⚠️', 'Stagnation détectée', list + '<br><br>' + advice, 'hsl(35,80%,54%)');
             }
 
-            // ── Volume total ─────────────────────────────────────────
+            // ── Volume — comparaison avec les guidelines scientifiques ───────────
             const totalTonnage = history.slice(-5).reduce((acc, s) => {
                 return acc + (s.exercises || []).reduce((a, ex) => {
                     return a + (ex.series || []).reduce((b, sr) => b + (sr.reps || 0) * (sr.weight || 0), 0);
@@ -238,11 +241,28 @@
 
             if (totalTonnage > 0) {
                 const avg5 = Math.round(totalTonnage / Math.min(history.length, 5));
-                html += renderInsight('⚡', 'Volume moyen (5 dernières séances)', `<strong>${avg5.toLocaleString('fr-FR')} kg·rep</strong> par séance. Le volume est le principal driver de l'hypertrophie.`, 'hsl(280,72%,62%)');
+                const volRange = TS?.volume?.weeklySetRange;
+                const volNote = volRange
+                    ? ` La science recommande <strong>${volRange.min}-${volRange.max} séries/muscle/semaine</strong> (principe inverted-U).`
+                    : '';
+                html += renderInsight('⚡', 'Volume moyen (5 dernières séances)', `<strong>${avg5.toLocaleString('fr-FR')} kg·rep</strong> par séance.${volNote}`, 'hsl(280,72%,62%)');
             }
 
-            // ── Conseil récupération ─────────────────────────────────
-            html += renderInsight('💤', 'Conseil récupération', 'Priorité : <strong>7-9h de sommeil</strong> et 1.6-2.2g de protéines/kg/j pour maximiser la synthèse musculaire.', 'hsl(198,75%,48%)');
+            // ── Intensité — rappel RIR optimal (TrainingScience) ─────────────────
+            const rirRange = TS?.intensity?.rirRange;
+            if (rirRange) {
+                const rirMsg = `Travaille entre <strong>${rirRange.min}-${rirRange.max} RIR</strong> (Reps In Reserve). Au-delà de 3 RIR = sous-optimal pour l'hypertrophie. L'échec total n'est PAS obligatoire — 1-2 RIR donne des résultats comparables.`;
+                html += renderInsight('🎯', 'Intensité recommandée (RIR)', rirMsg, 'hsl(220,80%,60%)');
+            }
+
+            // ── Conseil récupération ─────────────────────────────────────────────
+            html += renderInsight('💤', 'Récupération & Nutrition', 'Priorité : <strong>7-9h de sommeil</strong> et <strong>1.6-2.2g de protéines/kg/j</strong> pour maximiser la synthèse musculaire post-entraînement.', 'hsl(198,75%,48%)');
+
+            // ── Techniques avancées (si > 5 séances) ─────────────────────────────
+            if (history.length >= 5 && TS?.advancedTechniques) {
+                const lp = TS.advancedTechniques.lengthened_partials;
+                html += renderInsight('🔬', 'Technique avancée suggérée', `<strong>${lp.name}</strong> : ${lp.description}<br><em>Utilisation : ${lp.usage}</em>`, 'hsl(280,72%,62%)');
+            }
 
             insights.innerHTML = html;
 
