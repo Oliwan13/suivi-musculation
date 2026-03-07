@@ -1045,34 +1045,55 @@
         width: 100%;
         max-width: 420px;
     }
+    /* ── BOUTONS REVIEW — styles définitifs jour ET nuit ── */
     .review-btn-cta {
-        background: var(--btn-primary-bg);
-        color: var(--color-text-on-accent);
+        /* Vert succès — texte blanc garanti sur fond saturé */
+        background: linear-gradient(135deg, hsl(145,62%,48%), hsl(162,68%,42%));
+        color: #ffffff !important;
         border: none;
         border-radius: var(--radius-button);
         height: 56px;
         font-size: 1rem;
-        font-weight: 700;
+        font-weight: 800;
         font-family: var(--font-body);
         cursor: pointer;
-        box-shadow: var(--btn-shadow-normal);
+        box-shadow: 0 4px 16px hsla(145,62%,40%,0.4);
         transition: box-shadow 0.2s ease, transform 0.1s ease;
         letter-spacing: -0.01em;
     }
-    .review-btn-cta:hover { box-shadow: var(--btn-shadow-hover); }
+    .review-btn-cta:hover { box-shadow: 0 8px 24px hsla(145,62%,40%,0.5); transform: translateY(-1px); }
     .review-btn-cta:active { transform: scale(0.97); }
+
+    /* Mode JOUR — ghost : fond gris clair, texte sombre bien lisible */
     .review-btn-ghost {
-        background: none;
-        border: 1px solid var(--color-border-default);
+        background: hsl(214, 20%, 93%);
+        border: 1.5px solid hsl(214, 20%, 82%);
         border-radius: var(--radius-button);
         height: 44px;
         font-size: 0.88rem;
-        color: var(--color-text-subheader);
+        font-weight: 600;
+        color: hsl(220, 18%, 30%) !important;
         font-family: var(--font-body);
         cursor: pointer;
-        transition: border-color 0.18s, color 0.18s;
+        transition: background 0.18s, border-color 0.18s, color 0.18s;
     }
-    .review-btn-ghost:hover { border-color: var(--color-primary-default); color: var(--color-text-default); }
+    .review-btn-ghost:hover {
+        background: hsl(214, 30%, 88%);
+        border-color: hsl(214, 50%, 65%);
+        color: hsl(220, 25%, 16%) !important;
+    }
+
+    /* Mode NUIT — ghost : fond sombre explicite, texte clair */
+    body.dark-mode .review-btn-ghost {
+        background: hsl(220, 15%, 22%) !important;
+        border: 1.5px solid hsl(220, 15%, 34%) !important;
+        color: hsl(220, 15%, 82%) !important;
+    }
+    body.dark-mode .review-btn-ghost:hover {
+        background: hsl(220, 15%, 28%) !important;
+        border-color: hsl(214, 50%, 55%) !important;
+        color: hsl(0, 0%, 96%) !important;
+    }
 
     
     @media (prefers-reduced-motion: reduce) {
@@ -4800,31 +4821,32 @@ body.dark-mode .plan-action-btn:active {
    Toujours scopé #planPanel → aucun impact sur le reste de l'app.
    ═══════════════════════════════════════════════════════════════════ */
 
-#planPanel {
+/* Plan panel — styles spécifiques dark mode uniquement */
+body.dark-mode #planPanel {
     background: hsl(240, 8%, 11%) !important;
     border-left: 1px solid hsl(240, 6%, 20%) !important;
     box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6) !important;
     color: hsl(0, 0%, 98%) !important;
 }
 
-#planPanel .plan-title {
+body.dark-mode #planPanel .plan-title {
     color: hsl(0, 0%, 98%);
     font-weight: 800;
 }
 
-#planPanel #planCloseBtn,
-#planPanel .icon-btn {
+body.dark-mode #planPanel #planCloseBtn,
+body.dark-mode #planPanel .icon-btn {
     background: hsl(240, 8%, 18%);
     border-color: hsl(240, 6%, 25%);
     color: hsl(220, 10%, 75%);
 }
-#planPanel #planCloseBtn:hover,
-#planPanel .icon-btn:hover {
+body.dark-mode #planPanel #planCloseBtn:hover,
+body.dark-mode #planPanel .icon-btn:hover {
     background: hsl(240, 8%, 23%);
     color: hsl(0, 0%, 98%);
 }
 
-#planPanel .plan-section-label {
+body.dark-mode #planPanel .plan-section-label {
     color: hsl(240, 6%, 50%) !important;
     border-bottom-color: hsl(240, 6%, 20%) !important;
     text-transform: uppercase;
@@ -4833,32 +4855,32 @@ body.dark-mode .plan-action-btn:active {
     font-weight: 900;
 }
 
-#planPanel .plan-session-btn {
+body.dark-mode #planPanel .plan-session-btn {
     background: hsl(240, 8%, 14%) !important;
     border-color: hsl(240, 6%, 22%) !important;
     color: hsl(220, 10%, 80%) !important;
 }
-#planPanel .plan-session-btn:hover {
+body.dark-mode #planPanel .plan-session-btn:hover {
     border-color: hsl(152, 72%, 52%) !important;
     background: hsl(240, 8%, 18%) !important;
 }
-#planPanel .plan-session-btn.active {
+body.dark-mode #planPanel .plan-session-btn.active {
     border-color: hsl(152, 72%, 52%) !important;
     background: hsl(240, 8%, 18%) !important;
     color: hsl(0, 0%, 98%) !important;
     font-weight: 700;
 }
 
-#planPanel .plan-action-btn {
+body.dark-mode #planPanel .plan-action-btn {
     background: hsl(240, 8%, 16%) !important;
     border-color: hsl(240, 6%, 22%) !important;
     color: hsl(0, 0%, 98%) !important;
 }
-#planPanel .plan-action-btn:hover {
+body.dark-mode #planPanel .plan-action-btn:hover {
     background: hsl(240, 8%, 21%) !important;
     border-color: hsl(240, 6%, 30%) !important;
 }
-#planPanel .plan-action-btn:active {
+body.dark-mode #planPanel .plan-action-btn:active {
     border-color: hsl(220, 80%, 65%) !important;
     background: hsla(220, 80%, 65%, 0.12) !important;
 }
@@ -5750,57 +5772,107 @@ body.dark-mode .session-card {
     transition: width 0.4s ease;
 }
 
-/* ── PLAN PANEL ──────────────────────────────────────────────────── */
+/* ── PLAN PANEL — Mode JOUR ──────────────────────────────────────── */
 #planPanel {
-    background: hsl(240, 7%, 11%) !important;
-    border-left: 1px solid hsl(240, 6%, 20%) !important;
+    background: hsl(214, 45%, 97%) !important;
+    border-left: 1px solid hsl(214, 20%, 86%) !important;
 }
 #planPanel .plan-title {
-    color: hsl(0, 0%, 97%);
+    color: hsl(220, 25%, 14%);
     font-weight: 800;
 }
 #planPanel .plan-section-label {
-    color: hsl(220, 8%, 50%);
+    color: hsl(220, 12%, 46%);
     font-size: 0.68rem;
     font-weight: 900;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    border-bottom: 1px solid hsl(240, 6%, 20%);
+    border-bottom: 1px solid hsl(214, 20%, 86%);
     padding-bottom: 8px;
     margin-bottom: 12px;
 }
 #planPanel .plan-session-btn {
-    background: hsl(240, 7%, 15%) !important;
-    border: 1px solid hsl(240, 6%, 22%) !important;
-    color: hsl(220, 10%, 80%) !important;
+    background: hsl(0, 0%, 100%) !important;
+    border: 1px solid hsl(214, 20%, 84%) !important;
+    color: hsl(220, 18%, 26%) !important;
     border-radius: 12px;
     padding: 10px 14px;
     font-size: 0.88rem;
 }
-#planPanel .plan-session-btn:hover,
+#planPanel .plan-session-btn:hover {
+    background: hsl(214, 50%, 95%) !important;
+    border-color: hsl(214, 60%, 60%) !important;
+    color: hsl(220, 25%, 14%) !important;
+}
 #planPanel .plan-session-btn.active {
-    border-color: var(--color-accent-primary) !important;
-    color: hsl(0, 0%, 98%) !important;
+    border-color: hsl(214, 60%, 52%) !important;
+    background: hsl(214, 55%, 94%) !important;
+    color: hsl(214, 60%, 30%) !important;
+    font-weight: 700 !important;
 }
 #planPanel .plan-action-btn {
-    background: hsl(240, 7%, 16%) !important;
-    border: 1px solid hsl(240, 6%, 22%) !important;
-    color: hsl(0, 0%, 97%) !important;
+    background: hsl(0, 0%, 100%) !important;
+    border: 1px solid hsl(214, 20%, 84%) !important;
+    color: hsl(220, 18%, 26%) !important;
     border-radius: 12px;
     padding: 13px 16px;
     font-size: 0.9rem;
     font-weight: 500;
 }
-#planPanel .plan-action-btn:hover { background: hsl(240, 7%, 20%) !important; }
+#planPanel .plan-action-btn:hover {
+    background: hsl(214, 50%, 95%) !important;
+    border-color: hsl(214, 60%, 60%) !important;
+}
 #planPanel .plan-action-btn:active {
+    border-color: hsl(210, 80%, 62%) !important;
+    background: hsla(210, 80%, 62%, 0.08) !important;
+}
+#planDisciplineWidget {
+    background: hsl(214, 30%, 94%) !important;
+    border: 1px solid hsl(214, 20%, 84%) !important;
+    border-radius: 16px;
+    padding: 16px;
+    color: hsl(220, 18%, 26%);
+}
+
+/* ── PLAN PANEL — Mode NUIT ──────────────────────────────────────── */
+body.dark-mode #planPanel {
+    background: hsl(240, 7%, 11%) !important;
+    border-left: 1px solid hsl(240, 6%, 20%) !important;
+}
+body.dark-mode #planPanel .plan-title { color: hsl(0, 0%, 97%); }
+body.dark-mode #planPanel .plan-section-label {
+    color: hsl(220, 8%, 50%);
+    border-bottom-color: hsl(240, 6%, 20%);
+}
+body.dark-mode #planPanel .plan-session-btn {
+    background: hsl(240, 7%, 15%) !important;
+    border: 1px solid hsl(240, 6%, 22%) !important;
+    color: hsl(220, 10%, 80%) !important;
+}
+body.dark-mode #planPanel .plan-session-btn:hover {
+    background: hsl(240, 7%, 20%) !important;
+    border-color: hsl(214, 72%, 58%) !important;
+    color: hsl(0, 0%, 98%) !important;
+}
+body.dark-mode #planPanel .plan-session-btn.active {
+    border-color: hsl(214, 72%, 58%) !important;
+    background: hsla(214, 72%, 58%, 0.15) !important;
+    color: hsl(214, 80%, 82%) !important;
+}
+body.dark-mode #planPanel .plan-action-btn {
+    background: hsl(240, 7%, 16%) !important;
+    border: 1px solid hsl(240, 6%, 22%) !important;
+    color: hsl(0, 0%, 97%) !important;
+}
+body.dark-mode #planPanel .plan-action-btn:hover { background: hsl(240, 7%, 20%) !important; }
+body.dark-mode #planPanel .plan-action-btn:active {
     border-color: hsl(210, 80%, 62%) !important;
     background: hsla(210, 80%, 62%, 0.1) !important;
 }
-#planDisciplineWidget {
+body.dark-mode #planDisciplineWidget {
     background: hsl(240, 7%, 8%) !important;
     border: 1px solid hsl(240, 6%, 20%) !important;
-    border-radius: 16px;
-    padding: 16px;
     color: hsl(0, 0%, 97%);
 }
 
@@ -7932,10 +8004,633 @@ body,
 
 /* ── END v10 Staff Patch ════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════════════════════════
+   PHASE 1 — v13 ADDITIONS
+   1. Onboarding overlay
+   2. Notifications locales
+   3. Alertes sécurité suppléments
+   4. UX améliorations (PR badge, animation, progression)
+════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. ONBOARDING OVERLAY ──────────────────────────────────────────── */
+#onboardingOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: linear-gradient(160deg, hsl(220,65%,10%) 0%, hsl(234,78%,14%) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+#onboardingOverlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+.onb-card {
+    background: hsla(220, 30%, 18%, 0.92);
+    border: 1.5px solid hsla(220, 60%, 60%, 0.3);
+    border-radius: 28px;
+    padding: 36px 28px 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 24px 80px hsla(220, 80%, 10%, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+.onb-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, hsla(214,72%,58%,0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+.onb-step { display: none; }
+.onb-step.active { display: block; animation: onbIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes onbIn {
+    from { opacity: 0; transform: translateX(24px) scale(0.96); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+.onb-progress-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 32px;
+}
+.onb-progress-dot {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: hsla(220,40%,60%,0.2);
+    transition: background 0.3s ease;
+}
+.onb-progress-dot.done { background: hsl(214,72%,58%); }
+.onb-progress-dot.active { background: hsl(140,60%,52%); }
+.onb-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    display: block;
+    animation: onbIconFloat 3s ease-in-out infinite;
+}
+@keyframes onbIconFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+.onb-title {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: hsl(0,0%,97%);
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+.onb-subtitle {
+    font-size: 0.9rem;
+    color: hsla(220,20%,75%,0.85);
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+/* Choix de sélection (objectif, niveau, fréquence) */
+.onb-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+.onb-choice-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: hsla(220,30%,25%,0.6);
+    border: 1.5px solid hsla(220,40%,50%,0.2);
+    border-radius: 14px;
+    color: hsl(0,0%,90%);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+.onb-choice-btn:hover {
+    background: hsla(214,72%,58%,0.15);
+    border-color: hsla(214,72%,58%,0.4);
+    transform: translateX(4px);
+}
+.onb-choice-btn.selected {
+    background: hsla(214,72%,58%,0.2);
+    border-color: hsl(214,72%,58%);
+    color: white;
+}
+.onb-choice-icon { font-size: 1.4rem; min-width: 28px; }
+.onb-choice-label { display: flex; flex-direction: column; gap: 2px; }
+.onb-choice-sub { font-size: 0.75rem; color: hsla(220,20%,65%,0.9); font-weight: 400; }
+/* Champs input onboarding */
+.onb-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.onb-input-row {
+    display: flex;
+    gap: 12px;
+}
+.onb-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.onb-field label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: hsla(220,20%,70%,0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.onb-field input, .onb-field select {
+    background: hsla(220,30%,22%,0.8);
+    border: 1.5px solid hsla(220,40%,50%,0.25);
+    border-radius: 12px;
+    color: hsl(0,0%,95%);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 12px 14px;
+    height: 48px;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+.onb-field input:focus, .onb-field select:focus {
+    outline: none;
+    border-color: hsl(214,72%,58%);
+    background: hsla(220,30%,26%,0.9);
+}
+.onb-field select option { background: hsl(220,30%,16%); }
+/* Boutons navigation onboarding */
+.onb-btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, hsl(214,72%,58%), hsl(234,78%,65%));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px hsla(214,72%,58%,0.4);
+}
+.onb-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px hsla(214,72%,58%,0.5); }
+.onb-btn-primary:active { transform: scale(0.97); }
+.onb-btn-skip {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    color: hsla(220,20%,60%,0.8);
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 6px;
+    transition: color 0.2s;
+}
+.onb-btn-skip:hover { color: hsl(220,20%,80%); }
+/* Écran analyse */
+.onb-analysis-wrap {
+    text-align: center;
+    padding: 24px 0;
+}
+.onb-analysis-ring {
+    width: 90px; height: 90px;
+    margin: 0 auto 20px;
+    position: relative;
+}
+.onb-analysis-ring svg { transform: rotate(-90deg); }
+.onb-analysis-ring-track { stroke: hsla(220,40%,50%,0.15); fill: none; stroke-width: 6; }
+.onb-analysis-ring-fill {
+    fill: none;
+    stroke-width: 6;
+    stroke: hsl(214,72%,58%);
+    stroke-linecap: round;
+    stroke-dasharray: 251;
+    stroke-dashoffset: 251;
+    transition: stroke-dashoffset 1.8s cubic-bezier(0.4,0,0.2,1);
+}
+.onb-analysis-ring-fill.animate { stroke-dashoffset: 0; }
+.onb-analysis-pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: white;
+}
+.onb-analysis-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    margin-bottom: 24px;
+}
+.onb-analysis-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: hsla(220,20%,70%,0.7);
+    transition: all 0.3s ease;
+}
+.onb-analysis-step.done { color: hsl(140,60%,65%); }
+.onb-analysis-step-icon { font-size: 1rem; min-width: 20px; text-align: center; }
+
+/* ── 2. NOTIFICATIONS — toggle activé ───────────────────────────────── */
+/* Badge PR sur exercice */
+.pr-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: linear-gradient(135deg, hsl(35,90%,55%), hsl(22,95%,58%));
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    animation: prPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 2px 8px hsla(35,90%,55%,0.5);
+    margin-left: 6px;
+    vertical-align: middle;
+}
+@keyframes prPop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* ── 4. SERIE VALIDATION ANIMATION ─────────────────────────────────── */
+.serie-validated {
+    animation: serieFlash 0.5s ease;
+}
+@keyframes serieFlash {
+    0%   { background: hsla(140,60%,52%,0.0); }
+    30%  { background: hsla(140,60%,52%,0.25); }
+    100% { background: hsla(140,60%,52%,0.0); }
+}
+
+/* ── PROGRESS BAR SÉANCE ────────────────────────────────────────────── */
+.session-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 2px;
+}
+.session-progress-track {
+    flex: 1;
+    height: 5px;
+    background: hsla(220,30%,80%,0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.session-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, hsl(140,60%,52%), hsl(162,68%,46%));
+    border-radius: 3px;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+}
+.session-progress-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-text-subheader);
+    min-width: 36px;
+    text-align: right;
+}
+
+/* ── CORRECTION BOUTONS LISIBILITÉ — Historique & Prochaine ────────── */
+/* En mode jour, les boutons btn-primary (bleu) et btn-secondary (orange)
+   doivent avoir un texte lisible. White sur fond vif = ok. Mais on force
+   explicitement pour garantir le contraste en toutes circonstances. */
+.btn-primary, .btn-success { color: #fff !important; }
+.btn-secondary {
+    color: hsl(20, 60%, 15%) !important; /* texte brun foncé sur orange — contraste AAA */
+}
+body.dark-mode .btn-secondary {
+    color: hsl(35, 90%, 92%) !important; /* texte crème clair sur orange sombre — lisible nuit */
+}
+/* Boutons action principale séance (Terminer / Historique / Prochaine) */
+#viewHistoryBtn  { color: #fff !important; }
+#nextSessionBtn  { color: hsl(20, 60%, 15%) !important; }
+body.dark-mode #nextSessionBtn { color: hsl(35, 90%, 92%) !important; }
+
+/* ── ALERTE SÉCURITÉ SUPPLÉMENTS ────────────────────────────────────── */
+#safetyAlertBanner {
+    display: none;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, hsl(0,65%,96%), hsl(14,78%,96%));
+    border: 2px solid hsl(0,65%,70%);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    animation: alertSlide 0.4s ease;
+}
+#safetyAlertBanner.show { display: flex; }
+@keyframes alertSlide {
+    from { transform: translateY(-8px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+body.dark-mode #safetyAlertBanner {
+    background: linear-gradient(135deg, hsla(0,60%,20%,0.7), hsla(14,60%,18%,0.7));
+    border-color: hsl(0,60%,45%);
+}
+.safety-alert-icon { font-size: 1.4rem; margin-top: 1px; }
+.safety-alert-content { flex: 1; }
+.safety-alert-title {
+    font-weight: 800;
+    font-size: 0.88rem;
+    color: hsl(0,60%,35%);
+    margin-bottom: 4px;
+}
+body.dark-mode .safety-alert-title { color: hsl(0,60%,70%); }
+.safety-alert-msg {
+    font-size: 0.8rem;
+    color: hsl(0,40%,45%);
+    line-height: 1.5;
+}
+body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
+.safety-alert-close {
+    background: none; border: none; cursor: pointer; font-size: 1rem;
+    color: hsl(0,40%,55%); padding: 0 2px; line-height: 1;
+}
+
+/* ── NOTIF SETTINGS PANEL ───────────────────────────────────────────── */
+.notif-settings-panel {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: var(--color-surface-muted);
+    border: 1.5px solid var(--color-border-default);
+    border-radius: 14px;
+    margin-top: 10px;
+}
+.notif-settings-panel.show { display: flex; }
+.notif-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+}
+.notif-setting-label { color: var(--color-text-default); font-weight: 600; }
+.notif-setting-sub { font-size: 0.75rem; color: var(--color-text-subheader); }
 
 </style>
 </head>
 <body>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         ONBOARDING OVERLAY v13
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="onboardingOverlay" class="hidden">
+        <div class="onb-card">
+            <!-- Barre de progression -->
+            <div class="onb-progress-bar" id="onbProgressBar">
+                <div class="onb-progress-dot active" data-step="0"></div>
+                <div class="onb-progress-dot" data-step="1"></div>
+                <div class="onb-progress-dot" data-step="2"></div>
+                <div class="onb-progress-dot" data-step="3"></div>
+                <div class="onb-progress-dot" data-step="4"></div>
+                <div class="onb-progress-dot" data-step="5"></div>
+                <div class="onb-progress-dot" data-step="6"></div>
+            </div>
+
+            <!-- STEP 0 : Welcome -->
+            <div class="onb-step active" data-step="0">
+                <span class="onb-icon">🏋️</span>
+                <h1 class="onb-title">Bienvenue sur Lyftiv</h1>
+                <p class="onb-subtitle">La science du progrès. En 30 secondes, on configure votre programme personnalisé.</p>
+                <button class="onb-btn-primary" onclick="onbNext()">Commencer →</button>
+                <button class="onb-btn-skip" onclick="onbSkip()">Passer l'onboarding</button>
+            </div>
+
+            <!-- STEP 1 : Objectif -->
+            <div class="onb-step" data-step="1">
+                <span class="onb-icon">🎯</span>
+                <h2 class="onb-title">Quel est votre objectif ?</h2>
+                <p class="onb-subtitle">On adaptera votre programme et vos recommandations nutritionnelles.</p>
+                <div class="onb-choices" id="onbGoalChoices">
+                    <button class="onb-choice-btn" data-value="prise" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">💪</span>
+                        <span class="onb-choice-label">
+                            Prise de masse
+                            <span class="onb-choice-sub">Construire du muscle, volume maximum</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="force" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">🏋️</span>
+                        <span class="onb-choice-label">
+                            Force
+                            <span class="onb-choice-sub">Progresser sur les charges lourdes</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="seche" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">🔥</span>
+                        <span class="onb-choice-label">
+                            Sèche / Définition
+                            <span class="onb-choice-sub">Perdre du gras tout en gardant le muscle</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="recompo" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">⚡</span>
+                        <span class="onb-choice-label">
+                            Recomposition
+                            <span class="onb-choice-sub">Équilibre entre prise de muscle et perte de gras</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="sante" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">❤️</span>
+                        <span class="onb-choice-label">
+                            Santé & Bien-être
+                            <span class="onb-choice-sub">Rester actif, améliorer sa condition physique</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbGoalNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 2 : Niveau -->
+            <div class="onb-step" data-step="2">
+                <span class="onb-icon">📊</span>
+                <h2 class="onb-title">Votre niveau actuel ?</h2>
+                <p class="onb-subtitle">Pour calibrer les charges et la progression de votre programme.</p>
+                <div class="onb-choices">
+                    <button class="onb-choice-btn" data-value="debutant" onclick="onbSelect(this,'level')">
+                        <span class="onb-choice-icon">🌱</span>
+                        <span class="onb-choice-label">
+                            Débutant
+                            <span class="onb-choice-sub">Moins de 1 an d'entraînement régulier</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="intermediaire" onclick="onbSelect(this,'level')">
+                        <span class="onb-choice-icon">🔥</span>
+                        <span class="onb-choice-label">
+                            Intermédiaire
+                            <span class="onb-choice-sub">1 à 3 ans de pratique, bases solides</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="avance" onclick="onbSelect(this,'level')">
+                        <span class="onb-choice-icon">⚡</span>
+                        <span class="onb-choice-label">
+                            Avancé
+                            <span class="onb-choice-sub">Plus de 3 ans, progressions stagnantes</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbLevelNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 3 : Profil -->
+            <div class="onb-step" data-step="3">
+                <span class="onb-icon">⚖️</span>
+                <h2 class="onb-title">Votre profil</h2>
+                <p class="onb-subtitle">Nécessaire pour calculer vos besoins caloriques et vos charges optimales.</p>
+                <div class="onb-input-group">
+                    <div class="onb-input-row">
+                        <div class="onb-field">
+                            <label>Prénom</label>
+                            <input type="text" id="onbName" placeholder="Alex" maxlength="30" autocomplete="given-name">
+                        </div>
+                        <div class="onb-field">
+                            <label>Genre</label>
+                            <select id="onbGender">
+                                <option value="male">Homme</option>
+                                <option value="female">Femme</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="onb-input-row">
+                        <div class="onb-field">
+                            <label>Âge</label>
+                            <input type="number" id="onbAge" placeholder="28" min="15" max="90" inputmode="numeric">
+                        </div>
+                        <div class="onb-field">
+                            <label>Poids (kg)</label>
+                            <input type="number" id="onbWeight" placeholder="80" min="30" max="300" inputmode="decimal">
+                        </div>
+                        <div class="onb-field">
+                            <label>Taille (cm)</label>
+                            <input type="number" id="onbHeight" placeholder="178" min="130" max="230" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()">Continuer →</button>
+                <button class="onb-btn-skip" onclick="onbNext()">Passer cette étape</button>
+            </div>
+
+            <!-- STEP 4 : Fréquence -->
+            <div class="onb-step" data-step="4">
+                <span class="onb-icon">📅</span>
+                <h2 class="onb-title">Fréquence d'entraînement ?</h2>
+                <p class="onb-subtitle">Combien de séances par semaine pouvez-vous réaliser ?</p>
+                <div class="onb-choices">
+                    <button class="onb-choice-btn" data-value="2" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">📅</span>
+                        <span class="onb-choice-label">
+                            2x par semaine
+                            <span class="onb-choice-sub">Corps entier, récupération maximale</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="3" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">🗓️</span>
+                        <span class="onb-choice-label">
+                            3x par semaine
+                            <span class="onb-choice-sub">Programme Push/Pull/Legs ou Full Body</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="4" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">⚡</span>
+                        <span class="onb-choice-label">
+                            4x par semaine
+                            <span class="onb-choice-sub">Split Upper/Lower, optimal masse/force</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="5" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">🔥</span>
+                        <span class="onb-choice-label">
+                            5x+ par semaine
+                            <span class="onb-choice-sub">Split avancé, volume élevé</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbFreqNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 5 : Équipement -->
+            <div class="onb-step" data-step="5">
+                <span class="onb-icon">🏗️</span>
+                <h2 class="onb-title">Votre environnement ?</h2>
+                <p class="onb-subtitle">Pour adapter les exercices de votre programme.</p>
+                <div class="onb-choices">
+                    <button class="onb-choice-btn" data-value="gym" onclick="onbSelect(this,'equipment')">
+                        <span class="onb-choice-icon">🏋️</span>
+                        <span class="onb-choice-label">
+                            Salle de sport complète
+                            <span class="onb-choice-sub">Machines, barres, haltères, câbles</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="home" onclick="onbSelect(this,'equipment')">
+                        <span class="onb-choice-icon">🏠</span>
+                        <span class="onb-choice-label">
+                            Home gym
+                            <span class="onb-choice-sub">Équipement limité à la maison</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="minimal" onclick="onbSelect(this,'equipment')">
+                        <span class="onb-choice-icon">🎽</span>
+                        <span class="onb-choice-label">
+                            Poids du corps
+                            <span class="onb-choice-sub">Sans matériel ou presque</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbEquipNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 6 : Analyse -->
+            <div class="onb-step" data-step="6">
+                <div class="onb-analysis-wrap">
+                    <div class="onb-analysis-ring" id="onbAnalysisRing">
+                        <svg width="90" height="90" viewBox="0 0 90 90">
+                            <circle class="onb-analysis-ring-track" cx="45" cy="45" r="40"/>
+                            <circle class="onb-analysis-ring-fill" id="onbRingFill" cx="45" cy="45" r="40"/>
+                        </svg>
+                        <div class="onb-analysis-pct" id="onbAnalysisPct">0%</div>
+                    </div>
+                    <h2 class="onb-title" style="margin-bottom:8px;">Analyse du profil…</h2>
+                    <p class="onb-subtitle" style="margin-bottom:20px;">Génération de votre programme personnalisé</p>
+                    <div class="onb-analysis-steps" id="onbAnalysisSteps">
+                        <div class="onb-analysis-step" data-idx="0"><span class="onb-analysis-step-icon">⏳</span> Calcul des besoins caloriques…</div>
+                        <div class="onb-analysis-step" data-idx="1"><span class="onb-analysis-step-icon">⏳</span> Calibration des charges initiales…</div>
+                        <div class="onb-analysis-step" data-idx="2"><span class="onb-analysis-step-icon">⏳</span> Sélection du programme optimal…</div>
+                        <div class="onb-analysis-step" data-idx="3"><span class="onb-analysis-step-icon">⏳</span> Configuration des alertes sécurité…</div>
+                    </div>
+                </div>
+                <!-- Bouton caché, déclenché automatiquement après animation -->
+                <button class="onb-btn-primary hidden" id="onbFinishBtn" onclick="onbFinish()">🚀 Lancer Lyftiv !</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ═══════════════════════════════════════════════════════════
          PAGE D'ACCUEIL LYFTIV
@@ -8593,6 +9288,15 @@ body,
                     </div>
                 </div>
                 <p style="color:var(--color-text-subheader);font-size:var(--font-size-sm);margin-bottom:var(--spacing-md);">Base scientifique validée · Références : études cliniques & méta-analyses</p>
+                <!-- Alerte sécurité dynamique -->
+                <div id="safetyAlertBanner" role="alert" aria-live="polite">
+                    <span class="safety-alert-icon">🚨</span>
+                    <div class="safety-alert-content">
+                        <div class="safety-alert-title" id="safetyAlertTitle">Interaction détectée</div>
+                        <div class="safety-alert-msg" id="safetyAlertMsg"></div>
+                    </div>
+                    <button class="safety-alert-close" onclick="document.getElementById('safetyAlertBanner').classList.remove('show')" aria-label="Fermer l'alerte">✕</button>
+                </div>
                 <input type="text" id="dashSupplSearch" placeholder="🔍 Rechercher un complément..." aria-label="Rechercher"
                     style="width:100%;padding:8px 14px;border:1px solid var(--color-border-default);border-radius:var(--radius-base);font-size:var(--font-size-sm);background:var(--color-surface-input);color:var(--color-text-default);margin-bottom:var(--spacing-md);box-sizing:border-box;">
                 <div id="dashSupplGrid" class="suppl-grid" ></div>
@@ -8751,9 +9455,41 @@ body,
                         <div class="theme-toggle-sub">Rappels repos et hydratation</div>
                     </div>
                     <label class="toggle-switch" aria-label="Notifications">
-                        <input type="checkbox" id="profileNotifsToggle" disabled>
+                        <input type="checkbox" id="profileNotifsToggle">
                         <span class="toggle-slider"></span>
                     </label>
+                </div>
+                <!-- Panneau de paramétrage notifications -->
+                <div class="notif-settings-panel" id="notifSettingsPanel">
+                    <div style="font-size:0.82rem;font-weight:700;color:var(--color-text-subheader);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">⚙️ Paramétrer les rappels</div>
+                    <div class="notif-setting-row">
+                        <div>
+                            <div class="notif-setting-label">💪 Rappel séance</div>
+                            <div class="notif-setting-sub">Heure d'entraînement quotidienne</div>
+                        </div>
+                        <input type="time" id="notifTimeWorkout" value="18:00" style="background:var(--color-surface-muted);border:1.5px solid var(--color-border-default);border-radius:8px;padding:4px 8px;color:var(--color-text-default);font-family:inherit;font-size:0.85rem;">
+                    </div>
+                    <div class="notif-setting-row">
+                        <div>
+                            <div class="notif-setting-label">💧 Rappel hydratation</div>
+                            <div class="notif-setting-sub">Toutes les 2h pendant l'éveil</div>
+                        </div>
+                        <label class="toggle-switch" style="transform:scale(0.85);">
+                            <input type="checkbox" id="notifHydroToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="notif-setting-row">
+                        <div>
+                            <div class="notif-setting-label">🍽️ Fin de jeûne</div>
+                            <div class="notif-setting-sub">Alerte quand le jeûne est terminé</div>
+                        </div>
+                        <label class="toggle-switch" style="transform:scale(0.85);">
+                            <input type="checkbox" id="notifFastToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button onclick="saveNotifSettings()" style="background:var(--color-primary-default);color:white;border:none;border-radius:10px;padding:10px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">💾 Enregistrer les rappels</button>
                 </div>
             </section>
 
@@ -8827,6 +9563,14 @@ body,
             
             <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
               <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <!-- Widget progression séance v13 — positionné sous la barre native, avant les exercices -->
+            <div class="session-progress-wrap" id="sessionProgressWrap" style="padding:8px var(--spacing-md) 2px;margin-bottom:4px;">
+                <span style="font-size:0.72rem;font-weight:700;color:var(--color-text-subheader);text-transform:uppercase;letter-spacing:0.06em;min-width:56px;">Séance</span>
+                <div class="session-progress-track" style="flex:1;">
+                    <div class="session-progress-fill" id="sessionProgressFill"></div>
+                </div>
+                <div class="session-progress-label" id="sessionProgressLabel">0%</div>
             </div>
             <div id="sessionExerciseCount" aria-live="polite"></div>
             
@@ -9301,6 +10045,8 @@ body,
             // Mettre à jour le mode actuel (retour de séance)
             AppMode.clear();
         }
+        // Exposer globalement pour l'onboarding
+        window.showDashboard = showDashboard;
 
         // Affichage initial
         if (sessionStorage.getItem('dashboardShown')) {
@@ -9313,8 +10059,14 @@ body,
             landing.classList.add('hidden');
             dashboard.classList.remove('hidden');
             appContainer.classList.add('hidden');
+        } else if (!localStorage.getItem('lyftiv_onboarded')) {
+            // Première visite → onboarding (masquer landing et dashboard)
+            landing.classList.add('hidden');
+            dashboard.classList.add('hidden');
+            appContainer.classList.add('hidden');
+            // L'overlay onboarding sera affiché par onbInit()
         } else {
-            // Première visite → landing
+            // Déjà onboardé → landing
             landing.classList.remove('hidden');
             dashboard.classList.add('hidden');
             appContainer.classList.add('hidden');
@@ -16729,5 +17481,494 @@ body,
     </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 1 — v13 JAVASCRIPT
+     1. Onboarding système complet
+     2. Notifications locales activables
+     3. Alertes sécurité suppléments
+     4. UX améliorations (PR badge, progress séance)
+════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+    'use strict';
+
+    /* ════════════════════════════════════════════════════════
+       1. ONBOARDING SYSTEM
+    ════════════════════════════════════════════════════════ */
+    const ONB_KEY = 'lyftiv_onboarded';
+    const ONB_DATA_KEY = 'lyftiv_onb_data';
+
+    let onbData = {
+        goal: null, level: null, frequency: null, equipment: null,
+        name: '', gender: 'male', age: null, weight: null, height: null
+    };
+    let onbCurrentStep = 0;
+    const ONB_STEPS_COUNT = 7; // 0-6
+
+    function onbShouldShow() {
+        return !localStorage.getItem(ONB_KEY);
+    }
+
+    function onbInit() {
+        if (!onbShouldShow()) return;
+        const overlay = document.getElementById('onboardingOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('hidden');
+        onbUpdateProgress(0);
+    }
+
+    window.onbSelect = function(btn, field) {
+        const parent = btn.closest('.onb-choices');
+        if (parent) parent.querySelectorAll('.onb-choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        onbData[field] = btn.dataset.value;
+        // Activer le bouton suivant
+        const nextBtns = { goal: 'onbGoalNext', level: 'onbLevelNext', frequency: 'onbFreqNext', equipment: 'onbEquipNext' };
+        const nextBtnId = nextBtns[field];
+        if (nextBtnId) {
+            const b = document.getElementById(nextBtnId);
+            if (b) b.disabled = false;
+        }
+        if (navigator.vibrate) navigator.vibrate(10);
+    };
+
+    window.onbNext = function() {
+        // Sauvegarder données profil à l'étape 3
+        if (onbCurrentStep === 3) {
+            onbData.name = (document.getElementById('onbName') || {}).value || '';
+            onbData.gender = (document.getElementById('onbGender') || {}).value || 'male';
+            onbData.age = parseInt((document.getElementById('onbAge') || {}).value) || null;
+            onbData.weight = parseFloat((document.getElementById('onbWeight') || {}).value) || null;
+            onbData.height = parseInt((document.getElementById('onbHeight') || {}).value) || null;
+        }
+
+        const steps = document.querySelectorAll('.onb-step');
+        if (onbCurrentStep < steps.length - 1) {
+            steps[onbCurrentStep].classList.remove('active');
+            onbCurrentStep++;
+            steps[onbCurrentStep].classList.add('active');
+            onbUpdateProgress(onbCurrentStep);
+
+            // Si étape analyse (6), lancer l'animation
+            if (onbCurrentStep === 6) {
+                onbRunAnalysis();
+            }
+        }
+    };
+
+    window.onbSkip = function() {
+        onbFinish();
+    };
+
+    window.onbFinish = function() {
+        // Sauvegarder données dans le profil
+        localStorage.setItem(ONB_KEY, '1');
+        localStorage.setItem(ONB_DATA_KEY, JSON.stringify(onbData));
+
+        // Sync vers profil Lyftiv existant
+        if (onbData.name || onbData.age || onbData.weight || onbData.height) {
+            const existingProfile = JSON.parse(localStorage.getItem('lyftiv_profile') || '{}');
+            const merged = Object.assign({}, existingProfile, {
+                name: onbData.name || existingProfile.name,
+                gender: onbData.gender || existingProfile.gender || 'male',
+                age: onbData.age || existingProfile.age,
+                weight: onbData.weight || existingProfile.weight,
+                height: onbData.height || existingProfile.height,
+                goal: onbData.goal || existingProfile.goal,
+                level: onbData.level || existingProfile.level,
+                frequency: onbData.frequency || existingProfile.frequency,
+                savedAt: Date.now()
+            });
+            localStorage.setItem('lyftiv_profile', JSON.stringify(merged));
+        }
+
+        // Objectif hebdomadaire auto basé sur fréquence
+        if (onbData.frequency) {
+            localStorage.setItem('lyftiv_weekly_goal', onbData.frequency);
+        }
+
+        // Animation de sortie
+        const overlay = document.getElementById('onboardingOverlay');
+        if (overlay) {
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
+                // Aller directement au dashboard
+                if (typeof showDashboard === 'function') {
+                    showDashboard();
+                }
+            }, 500);
+        }
+    };
+
+    function onbUpdateProgress(step) {
+        document.querySelectorAll('.onb-progress-dot').forEach((dot, i) => {
+            dot.classList.remove('active', 'done');
+            if (i < step) dot.classList.add('done');
+            else if (i === step) dot.classList.add('active');
+        });
+    }
+
+    function onbRunAnalysis() {
+        const ring = document.getElementById('onbRingFill');
+        const pct = document.getElementById('onbAnalysisPct');
+        const steps = document.querySelectorAll('#onbAnalysisSteps .onb-analysis-step');
+        const finishBtn = document.getElementById('onbFinishBtn');
+
+        const circumference = 2 * Math.PI * 40; // r=40
+        ring.style.strokeDasharray = circumference;
+        ring.style.strokeDashoffset = circumference;
+
+        let progress = 0;
+        const stepsData = [
+            { delay: 400, text: '✅' },
+            { delay: 900, text: '✅' },
+            { delay: 1400, text: '✅' },
+            { delay: 1900, text: '✅' },
+        ];
+
+        // Animer le ring
+        setTimeout(() => {
+            ring.style.transition = 'stroke-dashoffset 2.2s cubic-bezier(0.4,0,0.2,1)';
+            ring.style.strokeDashoffset = 0;
+        }, 100);
+
+        // Compteur %
+        const pctInterval = setInterval(() => {
+            progress = Math.min(progress + 2, 100);
+            if (pct) pct.textContent = progress + '%';
+            if (progress >= 100) clearInterval(pctInterval);
+        }, 44);
+
+        // Étapes analyse
+        stepsData.forEach(({ delay, text }, i) => {
+            setTimeout(() => {
+                if (steps[i]) {
+                    steps[i].classList.add('done');
+                    steps[i].querySelector('.onb-analysis-step-icon').textContent = text;
+                }
+            }, delay);
+        });
+
+        // Afficher bouton finish
+        setTimeout(() => {
+            if (finishBtn) {
+                finishBtn.classList.remove('hidden');
+                finishBtn.style.animation = 'onbIn 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+            }
+        }, 2400);
+    }
+
+    // Afficher l'onboarding au chargement si nécessaire
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(onbInit, 200);
+    });
+
+
+    /* ════════════════════════════════════════════════════════
+       2. NOTIFICATIONS LOCALES
+    ════════════════════════════════════════════════════════ */
+    const NOTIF_KEY = 'lyftiv_notif_settings';
+
+    function getNotifSettings() {
+        try { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || {}; } catch(e) { return {}; }
+    }
+
+    window.saveNotifSettings = function() {
+        const settings = {
+            enabled: true,
+            workoutTime: (document.getElementById('notifTimeWorkout') || {}).value || '18:00',
+            hydro: (document.getElementById('notifHydroToggle') || {}).checked !== false,
+            fast: (document.getElementById('notifFastToggle') || {}).checked !== false,
+            savedAt: Date.now()
+        };
+        localStorage.setItem(NOTIF_KEY, JSON.stringify(settings));
+        scheduleAllNotifications(settings);
+        // Feedback
+        const btn = document.querySelector('#notifSettingsPanel button');
+        if (btn) { btn.textContent = '✅ Rappels enregistrés !'; setTimeout(() => { btn.textContent = '💾 Enregistrer les rappels'; }, 2500); }
+        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+    };
+
+    function scheduleAllNotifications(settings) {
+        if (!('Notification' in window)) return;
+
+        // Rappel séance quotidien
+        if (settings.enabled && settings.workoutTime) {
+            const [h, m] = settings.workoutTime.split(':').map(Number);
+            const now = new Date();
+            let target = new Date();
+            target.setHours(h, m, 0, 0);
+            if (target <= now) target.setDate(target.getDate() + 1);
+            const delay = target - now;
+            setTimeout(() => {
+                if (Notification.permission === 'granted') {
+                    new Notification('🏋️ Lyftiv — Heure de s\'entraîner !', {
+                        body: 'Votre séance vous attend. Restez consistant — la régularité fait les champions.',
+                        icon: './icon-192.png',
+                        badge: './icon-192.png',
+                        tag: 'lyftiv-workout-reminder',
+                        renotify: true
+                    });
+                }
+                // Replanifier pour le lendemain (simplifié)
+            }, delay);
+        }
+    }
+
+    // Initialiser le toggle notifications avec sa logique
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('profileNotifsToggle');
+        const panel = document.getElementById('notifSettingsPanel');
+        if (!toggle || !panel) return;
+
+        // Charger état sauvegardé
+        const saved = getNotifSettings();
+        if (saved.enabled) {
+            toggle.checked = true;
+            panel.classList.add('show');
+            if (saved.workoutTime) {
+                const el = document.getElementById('notifTimeWorkout');
+                if (el) el.value = saved.workoutTime;
+            }
+            if (saved.hydro === false) {
+                const el = document.getElementById('notifHydroToggle');
+                if (el) el.checked = false;
+            }
+            if (saved.fast === false) {
+                const el = document.getElementById('notifFastToggle');
+                if (el) el.checked = false;
+            }
+        }
+
+        toggle.addEventListener('change', async () => {
+            if (toggle.checked) {
+                // Demander permission
+                if ('Notification' in window && Notification.permission === 'default') {
+                    const perm = await Notification.requestPermission();
+                    if (perm !== 'granted') {
+                        toggle.checked = false;
+                        panel.classList.remove('show');
+                        return;
+                    }
+                }
+                if ('Notification' in window && Notification.permission === 'denied') {
+                    toggle.checked = false;
+                    alert('Les notifications sont bloquées dans votre navigateur. Autorisez-les dans les paramètres du navigateur.');
+                    return;
+                }
+                panel.classList.add('show');
+            } else {
+                panel.classList.remove('show');
+                const settings = getNotifSettings();
+                settings.enabled = false;
+                localStorage.setItem(NOTIF_KEY, JSON.stringify(settings));
+            }
+        });
+    });
+
+
+    /* ════════════════════════════════════════════════════════
+       3. ALERTES SÉCURITÉ SUPPLÉMENTS
+       Règles : détection de combinaisons à risque
+    ════════════════════════════════════════════════════════ */
+    const SAFETY_RULES = [
+        {
+            keywords: ['caféine', 'pre-workout', 'pre workout', 'pré-workout', 'stimulant', 'ephedrine', 'éphédrine', 'synephrine', 'synéphrine'],
+            combo: ['caféine', 'pre-workout', 'ephedrine', 'synephrine'],
+            minMatches: 2,
+            title: '⚡ Surdosage en stimulants détecté',
+            msg: 'Vous combinez plusieurs stimulants. Risque de palpitations, hypertension et troubles du rythme cardiaque. Ne dépassez pas 400mg de caféine/jour. Consultez votre médecin si vous avez des antécédents cardiaques.',
+            severity: 'high'
+        },
+        {
+            keywords: ['creatine', 'créatine'],
+            combo: ['diurétique', 'alcool', 'caféine'],
+            crossKeywords: ['diurétique', 'alcool'],
+            minMatches: 1,
+            title: '💧 Risque de déshydratation',
+            msg: 'La créatine augmente les besoins en eau. Associée à un diurétique ou à l\'alcool, elle peut provoquer une déshydratation sévère. Buvez au minimum 2.5L d\'eau par jour lors d\'une cure de créatine.',
+            severity: 'medium'
+        },
+        {
+            keywords: ['vitamine k', 'vitamine k2', 'vitamine d', 'omega', 'oméga', 'magnésium'],
+            special: 'anticoagulant',
+            title: '🩺 Interaction médicamenteuse possible',
+            msg: 'La Vitamine K peut interférer avec les anticoagulants (Warfarine). Si vous prenez un traitement médical, consultez votre pharmacien avant toute supplémentation.',
+            severity: 'high',
+            singleMatch: true,
+            matchOn: ['vitamine k', 'vitamine k2']
+        },
+        {
+            keywords: ['zinc', 'fer', 'calcium', 'magnésium'],
+            combo: ['zinc', 'fer', 'calcium', 'magnésium'],
+            minMatches: 3,
+            title: '🔬 Compétition minérale',
+            msg: 'La prise simultanée de Zinc, Fer, Calcium et Magnésium réduit significativement leur absorption respective. Espacez les prises d\'au moins 2 heures.',
+            severity: 'medium'
+        }
+    ];
+
+    // Surveiller la recherche de suppléments
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('dashSupplSearch');
+        const supplGrid = document.getElementById('dashSupplGrid');
+        if (!searchInput) return;
+
+        // Historique des suppléments recherchés dans la session
+        let sessionSupplHistory = [];
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase();
+            if (q.length > 2) {
+                sessionSupplHistory.push(q);
+                checkSupplSafety(sessionSupplHistory);
+            }
+        });
+    });
+
+    function checkSupplSafety(history) {
+        const allSearches = history.join(' ').toLowerCase();
+        const banner = document.getElementById('safetyAlertBanner');
+        const titleEl = document.getElementById('safetyAlertTitle');
+        const msgEl = document.getElementById('safetyAlertMsg');
+        if (!banner || !titleEl || !msgEl) return;
+
+        for (const rule of SAFETY_RULES) {
+            let triggered = false;
+
+            if (rule.singleMatch) {
+                triggered = rule.matchOn.some(kw => allSearches.includes(kw));
+            } else if (rule.crossKeywords) {
+                const hasMain = rule.keywords.some(kw => allSearches.includes(kw));
+                const hasCross = rule.crossKeywords.some(kw => allSearches.includes(kw));
+                triggered = hasMain && hasCross;
+            } else if (rule.minMatches) {
+                const matches = rule.combo.filter(kw => allSearches.includes(kw)).length;
+                triggered = matches >= rule.minMatches;
+            }
+
+            if (triggered) {
+                titleEl.textContent = rule.title;
+                msgEl.textContent = rule.msg;
+                banner.classList.add('show');
+                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                return;
+            }
+        }
+        // Pas de risque détecté : masquer
+        banner.classList.remove('show');
+    }
+
+
+    /* ════════════════════════════════════════════════════════
+       4. UX AMÉLIORATIONS
+       a) Barre de progression séance
+       b) Badge PR automatique
+    ════════════════════════════════════════════════════════ */
+
+    // ── a) Barre de progression séance ──────────────────────
+    function injectSessionProgressBar() {
+        // Le widget est directement dans le HTML (sous #progressBar), pas besoin d'injection
+        return;
+    }
+
+    // La progression est calculée par updateAllTotals() → #progressFill (source de vérité).
+    // Notre widget compact se synchronise sur cette source, sans recalcul propre.
+    function updateSessionProgress() {
+        const sourceFill = document.getElementById('progressFill');
+        const myFill     = document.getElementById('sessionProgressFill');
+        const myLabel    = document.getElementById('sessionProgressLabel');
+        if (!sourceFill || !myFill || !myLabel) return;
+
+        const pct = Math.round(parseFloat(sourceFill.style.width) || 0);
+        myFill.style.width = pct + '%';
+        myLabel.textContent = pct + '%';
+
+        if (pct >= 100) {
+            myFill.style.background = 'linear-gradient(90deg, hsl(35,90%,55%), hsl(22,95%,60%))';
+            myLabel.style.color     = 'hsl(35,80%,45%)';
+            myLabel.style.fontWeight = '900';
+        } else {
+            myFill.style.background  = '';
+            myLabel.style.color      = '';
+            myLabel.style.fontWeight = '';
+        }
+    }
+
+    // Observer le style du progressFill source (mis à jour par updateAllTotals)
+    function observeSessionProgress() {
+        const sourceFill = document.getElementById('progressFill');
+        if (!sourceFill) return;
+        const obs = new MutationObserver(() => setTimeout(updateSessionProgress, 60));
+        obs.observe(sourceFill, { attributes: true, attributeFilter: ['style'] });
+
+        // Réactivité immédiate sur les inputs
+        const container = document.getElementById('exerciseListContainer');
+        if (container) container.addEventListener('input', () => setTimeout(updateSessionProgress, 80));
+    }
+
+    // ── b) Badge PR automatique ──────────────────────────────
+    function checkAndShowPRBadge(exerciseName, weight, reps) {
+        if (!exerciseName || !weight || !reps) return;
+        const historyKey = 'workoutHistory';
+        let history = [];
+        try { history = JSON.parse(localStorage.getItem(historyKey)) || []; } catch(e) {}
+
+        // Chercher le meilleur tonnage pour cet exercice
+        let bestVolume = 0;
+        history.forEach(session => {
+            if (!session.exercises) return;
+            session.exercises.forEach(ex => {
+                if (ex.name && ex.name.toLowerCase() === exerciseName.toLowerCase()) {
+                    (ex.series || []).forEach(s => {
+                        const parts = String(s).split(/[xX×]/);
+                        const w = parseFloat(parts[0]) || 0;
+                        const r = parseFloat(parts[1]) || 0;
+                        if (w * r > bestVolume) bestVolume = w * r;
+                    });
+                }
+            });
+        });
+
+        const currentVolume = weight * reps;
+        return currentVolume > bestVolume && history.length > 0;
+    }
+
+    // Injecter badge PR sur les cartes d'exercice
+    function injectPRBadgeIfNeeded(exerciseName, weight, reps, targetEl) {
+        if (!targetEl) return;
+        // Supprimer badge existant
+        const existing = targetEl.querySelector('.pr-badge');
+        if (existing) existing.remove();
+
+        if (checkAndShowPRBadge(exerciseName, weight, reps)) {
+            const badge = document.createElement('span');
+            badge.className = 'pr-badge';
+            badge.title = 'Nouveau record personnel !';
+            badge.innerHTML = '🏆 PR';
+            targetEl.appendChild(badge);
+        }
+    }
+
+    // Exposer pour usage externe
+    window.LyftivPhase1 = {
+        updateSessionProgress,
+        injectPRBadgeIfNeeded,
+        checkSupplSafety
+    };
+
+    // Init au DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+        // Délai court pour laisser l'app s'initialiser
+        setTimeout(() => {
+            injectSessionProgressBar();
+            observeSessionProgress();
+        }, 1200);
+    });
+
+})();
+</script>
 </body>
 </html>
