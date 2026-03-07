@@ -4,7 +4,7 @@
    ⚠️  Incrémenter CACHE_NAME à chaque déploiement pour forcer le refresh
 ═══════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'lyftiv-v16';
+const CACHE_NAME = 'lyftiv-v17';
 const BASE = '/suivi-musculation';
 
 const FILES_TO_CACHE = [
