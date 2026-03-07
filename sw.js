@@ -15,6 +15,7 @@ const FILES_TO_CACHE = [
 
     // ── JS : data (aucune dépendance) ─────────────────────────────
     `${BASE}/js/data/training-zones.js`,
+    `${BASE}/js/data/training-science.js`,
     `${BASE}/js/data/default-sessions.js`,
     `${BASE}/js/data/supplement-db.js`,
 
