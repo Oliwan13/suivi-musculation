@@ -417,7 +417,19 @@
             </div><!-- /corps -->
 
             <!-- Footer sticky -->
-            <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--color-border-default);flex-shrink:0;">
+            <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--color-border-default);flex-shrink:0;display:flex;flex-direction:column;gap:8px;">
+                <button id="pbAiGenerateBtn" style="
+                    width:100%;height:44px;font-size:.88rem;font-weight:800;
+                    background:linear-gradient(135deg,hsla(260,70%,55%,.15),hsla(210,80%,60%,.15));
+                    border:1.5px solid hsl(260,60%,60%);
+                    color:hsl(260,80%,75%);
+                    border-radius:var(--radius-base,10px);cursor:pointer;font-family:inherit;
+                    display:flex;align-items:center;justify-content:center;gap:8px;
+                    transition:all .2s;
+                ">
+                    <span id="pbAiIcon">✨</span>
+                    <span id="pbAiText">Générer avec Claude AI</span>
+                </button>
                 <button id="pbApplyBtn" class="btn btn-primary" style="width:100%;height:50px;font-size:1rem;font-weight:900;">
                     ✅ Appliquer ce programme
                 </button>
@@ -643,6 +655,181 @@
             _applyProgram(_sessions);
             close();
         });
+
+        // Générer avec Claude AI
+        document.getElementById('pbAiGenerateBtn').addEventListener('click', async () => {
+            await _generateWithAI();
+        });
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  GÉNÉRATION IA (Claude API)
+    // ══════════════════════════════════════════════════════════════════════
+
+    async function _generateWithAI() {
+        const btnIcon = document.getElementById('pbAiIcon');
+        const btnText = document.getElementById('pbAiText');
+        const preview = document.getElementById('pbPreview');
+        if (!btnIcon || !preview) return;
+
+        btnIcon.textContent = '⏳';
+        btnText.textContent = 'Claude génère…';
+        document.getElementById('pbAiGenerateBtn').disabled = true;
+
+        // Données contextuelles
+        let profile = {};
+        let history = [];
+        try {
+            profile = JSON.parse(localStorage.getItem('lyftiv_profile') || '{}');
+            history = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+        } catch(e) {}
+
+        // Exercices disponibles par groupe musculaire
+        const exerciseOptions = {};
+        if (window.TrainingScience?.exerciseTiers) {
+            Object.entries(window.TrainingScience.exerciseTiers).forEach(([m, t]) => {
+                exerciseOptions[m] = [...(t.S||[]).slice(0,3), ...(t.A||[]).slice(0,2)];
+            });
+        }
+
+        // Historique des exercices récents (top 10 les plus fréquents)
+        const recentExercises = {};
+        history.slice(-15).forEach(s => {
+            (s.exercises||[]).forEach(ex => {
+                recentExercises[ex.name] = (recentExercises[ex.name] || 0) + 1;
+            });
+        });
+        const topExercises = Object.entries(recentExercises)
+            .sort((a,b) => b[1]-a[1]).slice(0,10).map(([name]) => name);
+
+        const prompt = `Tu es un coach en musculation science-based. Génère un programme d'entraînement personnalisé.
+
+CONFIGURATION DEMANDÉE:
+- Split: ${SPLIT_DEFINITIONS[_cfg.splitType]?.label || _cfg.splitType}
+- Jours/semaine: ${_cfg.days}
+- Niveau: ${_cfg.level}
+- Objectif: ${_cfg.goal}
+- Équipement: ${_cfg.equipment}
+- Priorités musculaires: ${_cfg.priority.join(', ') || 'aucune'}
+
+PROFIL UTILISATEUR:
+${JSON.stringify({ name: profile.name, goal: profile.goal, level: profile.level }, null, 2)}
+
+EXERCICES FAVORIS (à intégrer si possible):
+${topExercises.join(', ') || 'Aucun historique'}
+
+BANQUE D'EXERCICES DISPONIBLES (choisir parmi ceux-ci):
+${JSON.stringify(exerciseOptions, null, 2)}
+
+Réponds UNIQUEMENT avec du JSON valide sans markdown, dans ce format EXACT:
+{
+  "rationale": "Explication courte du programme (1-2 phrases)",
+  "sessions": [
+    {
+      "name": "Nom de la séance (ex: Push A, Pull, Legs, etc.)",
+      "exercises": [
+        {
+          "name": "Nom exact de l'exercice (depuis la banque ou exercice favori)",
+          "muscleGroup": "chest|back_lats|back_upper|shoulders_lateral|shoulders_anterior|shoulders_posterior|biceps|triceps|quads|hamstrings|glutes|calves",
+          "series": ["3x8-12", "3x10-15"],
+          "rest": "90s",
+          "note": "Conseil technique court (optionnel)"
+        }
+      ]
+    }
+  ]
+}
+
+Règles:
+- ${_cfg.days} séances exactement
+- 4-6 exercices par séance
+- Favorise les exercices S-tier et A-tier de la banque
+- Intègre les exercices favoris si pertinents pour les groupes musculaires
+- Le format "series" doit être un tableau de strings comme "3x8-12"
+- Le champ "rest" est une string comme "90s", "2min"`;
+
+        try {
+            preview.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 0;color:var(--color-text-subheader);">
+                    <div style="font-size:1.8rem;animation:spin 1s linear infinite;">✨</div>
+                    <div style="font-size:0.82rem;font-weight:600;">Claude optimise ton programme…</div>
+                </div>
+                <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 1000,
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+
+            if (!response.ok) throw new Error('API error ' + response.status);
+            const data = await response.json();
+            const text = data.content.map(i => i.text || '').join('');
+            const clean = text.replace(/```json|```/g, '').trim();
+            const result = JSON.parse(clean);
+
+            // Valider et normaliser les sessions
+            if (!result.sessions?.length) throw new Error('Format invalide');
+
+            _sessions = result.sessions.map(s => ({
+                name: s.name,
+                exercises: (s.exercises || []).map(ex => ({
+                    name: ex.name,
+                    muscleGroup: ex.muscleGroup || '',
+                    series: Array.isArray(ex.series) ? ex.series : [ex.series || '3x10-12'],
+                    rest: ex.rest || '90s',
+                    note: ex.note || '',
+                }))
+            }));
+
+            // Afficher le rationale + aperçu
+            if (result.rationale) {
+                const banner = document.createElement('div');
+                banner.style.cssText = 'background:hsla(260,70%,60%,.1);border:1px solid hsla(260,70%,60%,.3);border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.78rem;color:var(--color-text-subheader);line-height:1.5;';
+                banner.innerHTML = `✨ <em>${result.rationale}</em>`;
+                preview.innerHTML = '';
+                preview.appendChild(banner);
+            } else {
+                preview.innerHTML = '';
+            }
+
+            // Afficher l'aperçu des sessions générées
+            _sessions.forEach((s, si) => {
+                const block = document.createElement('div');
+                block.style.cssText = 'background:var(--color-surface-muted);border:1px solid var(--color-border-default);border-radius:12px;margin-bottom:10px;overflow:hidden;';
+                block.innerHTML = `
+                    <div style="padding:9px 14px;background:hsla(260,70%,60%,.07);border-bottom:1px solid var(--color-border-default);display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-weight:800;font-size:.8rem;color:var(--color-text-header);">${si+1}. ${s.name}</span>
+                        <span style="font-size:.65rem;color:hsl(260,70%,65%);font-weight:700;">✨ IA</span>
+                    </div>
+                    <div style="padding:8px 14px;">
+                        ${s.exercises.map(ex => `
+                        <div style="padding:6px 0;border-bottom:1px solid var(--color-border-default);">
+                            <div style="font-size:.77rem;font-weight:700;color:var(--color-text-header);">${ex.name}</div>
+                            <div style="font-size:.66rem;color:var(--color-text-subheader);">${ex.series.join(' · ')} · ${ex.rest}${ex.note ? ' · <em>'+ex.note+'</em>' : ''}</div>
+                        </div>`).join('')}
+                    </div>`;
+                preview.appendChild(block);
+            });
+
+            btnIcon.textContent = '✅';
+            btnText.textContent = 'Programme IA généré !';
+
+        } catch (err) {
+            console.warn('[ProgramBuilder AI] Fallback:', err.message);
+            _refreshPreview(); // Fallback sur algo local
+            btnIcon.textContent = '✨';
+            btnText.textContent = 'Réessayer avec Claude AI';
+            if (typeof window.showNotification === 'function') {
+                window.showNotification('Programme généré en mode local (API indisponible)', 'info', 3000);
+            }
+        } finally {
+            document.getElementById('pbAiGenerateBtn').disabled = false;
+        }
     }
 
     function _updateDaysUI() {
