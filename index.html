@@ -353,6 +353,12 @@
 
                     </span>
                 </button>
+                <button class="dash-tab-btn" id="tabCoach" data-tab="panelCoach" role="tab" aria-selected="false" aria-controls="panelCoach">
+                    <span class="tab-icon">🤖</span>
+                    <span class="tab-label">
+                        <span class="tab-title">Coach IA</span>
+                    </span>
+                </button>
             </div>
 
             <div id="panelTraining" class="dash-tab-panel" role="tabpanel" aria-labelledby="tabTraining">
@@ -1234,6 +1240,59 @@
 
             </div><!-- /panelProfile -->
 
+            <!-- ── PANNEAU COACH IA ──────────────────────────────── -->
+            <div id="panelCoach" class="dash-tab-panel hidden" role="tabpanel" aria-labelledby="tabCoach">
+                <div class="dash-page-title">
+                    <div>
+                        <h1>🤖 Coach IA</h1>
+                        <div class="dash-greeting">Analyse personnalisée basée sur ton historique</div>
+                    </div>
+                </div>
+
+                <!-- Insights IA -->
+                <section class="dash-section" style="margin-bottom:var(--spacing-lg);">
+                    <div id="aiCoachContainer" style="background:var(--color-surface-default);border:1.5px solid var(--color-border-default);border-radius:var(--radius-large);overflow:hidden;box-shadow:0 4px 16px var(--shadow-sm);">
+                        <!-- Header -->
+                        <div style="padding:var(--spacing-lg);border-bottom:1px solid var(--color-border-default);display:flex;align-items:center;gap:12px;">
+                            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(220,80%,60%),hsl(280,70%,65%));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🤖</div>
+                            <div>
+                                <div style="font-weight:800;color:var(--color-text-header);font-size:var(--font-size-base);">Lyftiv AI Coach</div>
+                                <div style="font-size:var(--font-size-xs);color:var(--color-text-subheader);">Analyse ton historique · Suggère des ajustements</div>
+                            </div>
+                        </div>
+
+                        <!-- Analyse -->
+                        <div id="aiCoachContent" style="padding:var(--spacing-lg);">
+                            <div id="aiCoachPlaceholder" style="text-align:center;padding:var(--spacing-xl) 0;color:var(--color-text-subheader);">
+                                <div style="font-size:2.5rem;margin-bottom:var(--spacing-sm);">📊</div>
+                                <p style="font-size:var(--font-size-sm);margin:0;">Enregistre au moins une séance<br>pour activer les suggestions IA.</p>
+                            </div>
+                            <div id="aiCoachInsights" class="hidden"></div>
+                        </div>
+
+                        <!-- Bouton générer -->
+                        <div style="padding:0 var(--spacing-lg) var(--spacing-lg);">
+                            <button class="btn btn-primary" id="aiCoachGenerateBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;">
+                                <span id="aiCoachBtnIcon">✨</span>
+                                <span id="aiCoachBtnText">Analyser mes séances</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Prochaine séance suggérée -->
+                <section class="dash-section" style="margin-bottom:var(--spacing-lg);">
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);">
+                        <div style="font-size:0.9rem;font-weight:800;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">
+                            🎯 Objectif de progression
+                        </div>
+                        <div id="aiProgressionTarget" style="font-size:var(--font-size-sm);color:var(--color-text-subheader);">
+                            Lance une analyse pour voir tes objectifs personnalisés.
+                        </div>
+                    </div>
+                </section>
+            </div><!-- /panelCoach -->
+
             <footer class="dashboard-footer">
                 <p>⚗️ Conçu par <strong>Olivio JAONINA</strong>, pharmacien &amp; ingénieur numérique · <em>Lyftiv – Votre progression, notre science.</em></p>
             </footer>
@@ -1638,6 +1697,7 @@
     <script src="js/features/plan-panel.js"></script>
     <script src="js/features/profile.js"></script>
     <script src="js/features/onboarding.js"></script>
+    <script src="js/features/ai-coach.js"></script>
 
     <!-- ══════════════════════════════════════════════════════════════════
          SERVICE WORKER — Enregistrement (inline, spécifique au déploiement)
