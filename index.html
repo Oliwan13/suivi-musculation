@@ -360,6 +360,18 @@
                         <span class="tab-title">Coach IA</span>
                     </span>
                 </button>
+                <button class="dash-tab-btn" id="tabLigues" data-tab="panelLigues" role="tab" aria-selected="false" aria-controls="panelLigues">
+                    <span class="tab-icon">🏆</span>
+                    <span class="tab-label">
+                        <span class="tab-title">Ligues</span>
+                    </span>
+                </button>
+                <button class="dash-tab-btn" id="tabCoachPro" data-tab="panelCoachPro" role="tab" aria-selected="false" aria-controls="panelCoachPro">
+                    <span class="tab-icon">👨‍💼</span>
+                    <span class="tab-label">
+                        <span class="tab-title">Pro</span>
+                    </span>
+                </button>
             </div>
 
             <div id="panelTraining" class="dash-tab-panel" role="tabpanel" aria-labelledby="tabTraining">
@@ -1326,6 +1338,26 @@
                 </section>
             </div><!-- /panelCoach -->
 
+            <!-- ═══ PANEL LIGUES ════════════════════════════════════ -->
+            <div id="panelLigues" class="dash-tab-panel hidden" role="tabpanel" aria-labelledby="tabLigues">
+                <div class="dash-page-title">
+                    <div><h1>🏆 Ligues & Classements</h1><div class="dash-greeting">Ton rang parmi la communauté Lyftiv</div></div>
+                </div>
+                <div id="panelLiguesContent" style="padding:0 var(--spacing-lg,16px);">
+                    <div style="text-align:center;padding:32px 0;color:var(--color-text-subheader);">Chargement…</div>
+                </div>
+            </div>
+
+            <!-- ═══ PANEL PRO COACH ══════════════════════════════════ -->
+            <div id="panelCoachPro" class="dash-tab-panel hidden" role="tabpanel" aria-labelledby="tabCoachPro">
+                <div class="dash-page-title">
+                    <div><h1>👨‍💼 Pro Coachs</h1><div class="dash-greeting">Suivi coach-athlète · Rapports · Partage</div></div>
+                </div>
+                <div id="panelCoachProContent" style="padding:0 var(--spacing-lg,16px);">
+                    <div style="text-align:center;padding:32px 0;color:var(--color-text-subheader);">Chargement…</div>
+                </div>
+            </div>
+
             <footer class="dashboard-footer">
                 <p>⚗️ Conçu par <strong>Olivio JAONINA</strong>, pharmacien &amp; ingénieur numérique · <em>Lyftiv – Votre progression, notre science.</em></p>
             </footer>
@@ -1364,7 +1396,8 @@
 
             <div class="premium-teaser-banner" role="note" aria-label="Fonctionnalités Premium">
                 👑
-                <span><strong>Premium à venir :</strong> Générateur IA de programme · Sync Cloud · Gamification &amp; Ligues · Lyftiv Pro Coachs</span>
+                <span><strong>Lyftiv Pro :</strong> Messagerie Coach · Plans personnalisés · Vidéos techniques · Nutrition avancée</span>
+                <span id="cloudSyncBadge" style="margin-left:auto;font-size:1rem;cursor:pointer;" title="Statut sync cloud">☁️</span>
             </div>
 
             <div class="controls">
@@ -1734,7 +1767,20 @@
     <script src="js/features/ai-coach.js"></script>
     <script src="js/features/program-builder.js"></script>
     <script src="js/features/fuzzy-search.js"></script>
-    <script src="js/features/auth.js"></script>
+    <script src="js/features/supabase-sync.js"></script>
+    <script src="js/features/gamification.js"></script>
+    <script src="js/features/pro-coach.js"></script>
+    <script>
+    // Init Ligues + Pro panels via tab clicks
+    window.addEventListener('load', () => {
+        document.getElementById('tabLigues')?.addEventListener('click', () => {
+            window.LyftivGamification?.renderLeaguePanel('panelLiguesContent');
+        });
+        document.getElementById('tabCoachPro')?.addEventListener('click', () => {
+            window.LyftivProCoach?.renderCoachPanel('panelCoachProContent');
+        });
+    });
+    </script>
 
     <!-- ══════════════════════════════════════════════════════════════════
          SERVICE WORKER — Enregistrement (inline, spécifique au déploiement)
