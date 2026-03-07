@@ -742,7 +742,7 @@
     #planTriggerBtn:active { transform: scale(0.93); }
     #planTriggerBtn:hover { box-shadow: 0 6px 18px var(--shadow-lg); color: var(--color-text-default); }
 
-    /* Indicateur mode — pill discret dans la topbar */
+    /* Indicateur mode — pill cliquable dans la topbar */
     #appModeIndicator {
         display: inline-flex;
         align-items: center;
@@ -751,13 +751,36 @@
         font-weight: 900;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        padding: 3px 8px;
+        padding: 4px 10px;
         border-radius: 20px;
         background: var(--color-surface-muted);
         border: 1px solid var(--color-border-default);
         color: var(--color-text-subheader);
-        transition: background 0.3s ease, color 0.3s ease;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
         margin-left: auto;
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    #appModeIndicator:hover {
+        background: var(--color-primary-default);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 2px 10px hsla(214, 72%, 50%, 0.35);
+    }
+    #appModeIndicator:active {
+        transform: scale(0.94);
+    }
+    /* En mode execute — mise en évidence de la pastille */
+    body[data-mode="execute"] #appModeIndicator {
+        background: hsla(214, 72%, 55%, 0.12);
+        border-color: hsla(214, 72%, 55%, 0.3);
+        color: hsl(214, 72%, 45%);
+    }
+    body.dark-mode[data-mode="execute"] #appModeIndicator {
+        background: hsla(214, 72%, 55%, 0.18);
+        border-color: hsla(214, 72%, 55%, 0.35);
+        color: hsl(214, 72%, 72%);
     }
 
     /* Styles internes du panneau PLAN */
@@ -864,12 +887,15 @@
     /* ══════════════════════════════════════════════════════════════════════
        NEXT ACTION CARD — trigger central du dashboard
     ══════════════════════════════════════════════════════════════════════ */
+    /* ── NEXT ACTION CARD — Hero redesign ─────────────────────────────── */
     .next-action-card {
-        background: var(--color-surface-default);
-        border: 1.5px solid var(--color-border-default);
-        border-radius: var(--radius-large);
-        padding: var(--spacing-lg) var(--spacing-xl);
-        box-shadow: 0 4px 20px var(--shadow-md);
+        background: linear-gradient(145deg, hsl(214, 72%, 30%), hsl(220, 80%, 22%));
+        border: none;
+        border-radius: 20px;
+        padding: var(--spacing-xl) var(--spacing-xl);
+        box-shadow:
+            0 8px 32px hsla(214, 72%, 30%, 0.45),
+            0 2px 8px hsla(214, 72%, 20%, 0.3);
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -878,83 +904,118 @@
         overflow: hidden;
         width: 100%;
         box-sizing: border-box;
+        cursor: default;
     }
+    /* Halo lumineux en arrière-plan */
     .next-action-card::before {
         content: '';
         position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 4px;
-        background: var(--color-primary-default);
-        border-radius: 4px 0 0 4px;
+        top: -40%;
+        right: -10%;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, hsla(145, 72%, 60%, 0.18) 0%, transparent 70%);
+        pointer-events: none;
     }
-    body.dark-mode .next-action-card {
-        background: hsl(240, 6%, 10%);
-        border-color: hsl(240, 5%, 22%);
+    .next-action-card::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -5%;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, hsla(214, 80%, 70%, 0.1) 0%, transparent 70%);
+        pointer-events: none;
     }
     .next-action-label {
-        font-size: 0.6rem;
+        font-size: 0.62rem;
         font-weight: 900;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
-        color: var(--color-primary-default);
+        color: hsla(145, 70%, 72%, 0.9);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .next-action-label::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: hsl(145, 70%, 62%);
+        box-shadow: 0 0 6px hsla(145, 70%, 62%, 0.8);
+        animation: naPulse 2s ease-in-out infinite;
+    }
+    @keyframes naPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.5; transform: scale(0.7); }
     }
     .next-action-session {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-weight: 900;
-        color: var(--color-text-header);
+        color: #ffffff;
         letter-spacing: -0.03em;
         line-height: 1.1;
+        text-shadow: 0 1px 4px hsla(220,80%,10%,0.3);
     }
     .next-action-meta {
-        font-size: 0.78rem;
-        color: var(--color-text-subheader);
+        font-size: 0.76rem;
+        color: hsla(214, 60%, 80%, 0.75);
         font-family: var(--font-mono);
     }
     .next-action-recovery {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 700;
         padding: 3px 10px;
         border-radius: 12px;
-        background: var(--color-surface-muted);
-        color: var(--color-text-subheader);
-        border: 1px solid var(--color-border-default);
+        background: hsla(0, 0%, 100%, 0.10);
+        color: hsla(0, 0%, 100%, 0.75);
+        border: 1px solid hsla(0, 0%, 100%, 0.15);
+        backdrop-filter: blur(4px);
     }
     .next-action-recovery.optimal {
-        background: hsla(145, 62%, 52%, 0.12);
-        color: hsl(145, 55%, 42%);
-        border-color: hsla(145, 62%, 52%, 0.3);
+        background: hsla(145, 62%, 52%, 0.22);
+        color: hsl(145, 75%, 72%);
+        border-color: hsla(145, 62%, 52%, 0.4);
     }
     .next-action-recovery.low {
-        background: hsla(35, 90%, 55%, 0.12);
-        color: hsl(35, 70%, 38%);
-        border-color: hsla(35, 90%, 55%, 0.3);
+        background: hsla(35, 90%, 55%, 0.18);
+        color: hsl(35, 90%, 75%);
+        border-color: hsla(35, 90%, 55%, 0.35);
     }
-    body.dark-mode .next-action-recovery.optimal { color: hsl(145, 65%, 56%); }
-    body.dark-mode .next-action-recovery.low      { color: hsl(38, 80%, 60%); }
     .next-action-cta {
-        margin-top: var(--spacing-xs);
+        margin-top: var(--spacing-sm);
         width: 100%;
-        height: 56px;
-        background: var(--btn-primary-bg);
-        color: var(--color-text-on-accent);
+        height: 62px;
+        background: linear-gradient(135deg, hsl(145, 68%, 50%), hsl(162, 72%, 44%));
+        color: hsl(152, 80%, 8%);
         border: none;
         border-radius: var(--radius-button);
-        font-size: 1rem;
+        font-size: 1.05rem;
         font-weight: 900;
         font-family: var(--font-body);
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         cursor: pointer;
-        box-shadow: var(--btn-shadow-normal);
-        transition: box-shadow 0.2s ease, transform 0.12s ease;
+        box-shadow:
+            0 4px 20px hsla(145, 68%, 42%, 0.55),
+            0 1px 0 hsla(145, 68%, 72%, 0.3) inset;
+        transition: box-shadow 0.2s ease, transform 0.12s ease, filter 0.15s ease;
+        position: relative;
+        z-index: 1;
     }
-    .next-action-cta:hover { box-shadow: var(--btn-shadow-hover); }
-    .next-action-cta:active { transform: scale(0.97); }
+    .next-action-cta:hover {
+        box-shadow: 0 8px 28px hsla(145, 68%, 42%, 0.65);
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+    }
+    .next-action-cta:active { transform: scale(0.97) translateY(0); }
     @media (max-width: 480px) {
-        .next-action-card {
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--radius-base);
-        }
-        .next-action-session { font-size: 1.2rem; }
+        .next-action-card { padding: var(--spacing-lg); border-radius: 16px; }
+        .next-action-session { font-size: 1.25rem; }
+        .next-action-cta { height: 56px; font-size: 0.98rem; }
     }
 
     /* Score ring "vivant" — micro-pulse 4s, respiration lente */
@@ -4645,19 +4706,12 @@ body.dark-mode #planDisciplineWidget {
 }
 
 /* ── Next action card — signal d'action fort ────────────────────── */
+/* next-action-card : design bleu foncé unifié jour + nuit, pas de dark override nécessaire */
 body.dark-mode .next-action-card {
-    background: linear-gradient(145deg, hsl(240, 8%, 13%), hsl(240, 8%, 10%));
-    border: 1px solid hsl(240, 6%, 22%);
-}
-body.dark-mode .next-action-cta {
-    background: hsl(152, 72%, 52%);
-    color: hsl(152, 80%, 8%); /* Texte sombre sur vert = contraste maximal */
-    font-weight: 900;
-    letter-spacing: 0.04em;
-}
-body.dark-mode .next-action-cta:hover {
-    background: hsl(152, 72%, 58%);
-    box-shadow: 0 6px 24px hsla(152, 72%, 42%, 0.44);
+    background: linear-gradient(145deg, hsl(220, 55%, 18%), hsl(220, 65%, 13%));
+    box-shadow:
+        0 8px 32px hsla(220, 65%, 10%, 0.7),
+        0 2px 8px hsla(220, 65%, 10%, 0.5);
 }
 
 /* ── Exercise cards dark — hiérarchie renforcée ─────────────────── */
@@ -4907,95 +4961,22 @@ body.dark-mode #planPanel .plan-action-btn:active {
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 1. NEXT ACTION CARD — Centre gravitationnel ─────────────────── */
-
+/* Design bleu héro unifié — override dark uniquement pour l'intensité */
 body.dark-mode .next-action-card {
-    background: hsl(240, 8%, 10%);
-    border: 1px solid hsl(240, 6%, 20%);
-    border-radius: 24px;
-    padding: 28px 24px;
+    background: linear-gradient(145deg, hsl(220, 55%, 18%), hsl(220, 65%, 13%));
     box-shadow:
-        0 0 0 1px hsl(240, 6%, 16%),
-        0 4px 32px rgba(0, 0, 0, 0.5);
-    gap: 14px;
+        0 8px 40px hsla(220, 65%, 8%, 0.8),
+        0 2px 8px hsla(220, 65%, 8%, 0.5);
 }
-
-/* Accent vert sur le bord gauche */
-body.dark-mode .next-action-card::before {
-    background: hsl(152, 72%, 52%);
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-}
-
-/* Label "PROCHAINE ACTION" */
-body.dark-mode .next-action-label {
-    color: hsl(152, 72%, 52%);
-    font-size: 0.62rem;
-    font-weight: 900;
-    letter-spacing: 0.16em;
-}
-
-/* Titre de la séance — massif */
-body.dark-mode .next-action-session {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: hsl(0, 0%, 98%);
-    letter-spacing: -0.04em;
-    line-height: 1;
-}
-
-/* Meta et récupération */
-body.dark-mode .next-action-meta {
-    color: hsl(240, 6%, 55%);
-    font-size: 0.88rem;
-}
-
-/* Bouton EXECUTE PROTOCOL — massif, vert, haptique */
 body.dark-mode .next-action-cta,
 body.dark-mode #naExecuteBtn {
-    background: hsl(152, 72%, 52%) !important;
-    color: hsl(152, 100%, 6%) !important;
-    border: none !important;
-    border-radius: 16px !important;
-    height: 60px !important;
-    min-height: 60px !important;
-    font-size: 1.1rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 0.06em !important;
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 10px !important;
-    margin-top: 8px !important;
-    box-shadow: 0 4px 24px hsla(152, 72%, 42%, 0.35) !important;
-    transition:
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.2s ease !important;
+    box-shadow:
+        0 4px 24px hsla(145, 68%, 42%, 0.6),
+        0 1px 0 hsla(145, 68%, 72%, 0.3) inset !important;
 }
-
 body.dark-mode .next-action-cta:hover,
 body.dark-mode #naExecuteBtn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 32px hsla(152, 72%, 42%, 0.50) !important;
-}
-
-body.dark-mode .next-action-cta:active,
-body.dark-mode #naExecuteBtn:active {
-    transform: scale(0.97) !important;
-    box-shadow: 0 2px 12px hsla(152, 72%, 42%, 0.25) !important;
-    transition: transform 0.08s ease !important;
-}
-
-/* Récupération optimale → vert, low → ambre */
-body.dark-mode .next-action-recovery.optimal {
-    color: hsl(152, 72%, 52%);
-    font-weight: 700;
-    font-size: 0.88rem;
-}
-body.dark-mode .next-action-recovery.low {
-    color: hsl(38, 90%, 58%);
-    font-weight: 700;
-    font-size: 0.88rem;
+    box-shadow: 0 8px 32px hsla(145, 68%, 42%, 0.75) !important;
 }
 
 /* ── 2. SESSION CARDS — Grille de sélection ──────────────────────── */
@@ -7703,9 +7684,12 @@ body.dark-mode #dashBadgesSection > div {
 }
 
 /* ── 12. WEEKLY GOAL — affichage simplifié ──────────────────────────── */
-/* Cacher le sous-titre verbeux (séances restantes) */
+/* Sous-titre objectif hebdomadaire — affiche la progression */
 #weeklyGoalSub {
-    display: none !important;
+    display: block !important;
+    font-size: 0.72rem !important;
+    color: var(--color-text-subheader) !important;
+    margin-top: 2px !important;
 }
 /* Agrandir légèrement le status */
 #weeklyGoalStatus {
@@ -7768,6 +7752,284 @@ body.dark-mode #dashBadgesSection > div {
 
 /* body overflow-x */
 body { overflow-x: hidden !important; }
+
+/* ── v14 : dash-page-title ───────────────────────────────────────── */
+.dash-page-title {
+    margin-bottom: var(--spacing-md) !important;
+}
+.dash-page-title h1 {
+    font-size: 1.25rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--color-text-header) !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+.dash-greeting {
+    font-size: 0.76rem;
+    color: var(--color-text-subheader);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* ── v14 : réduction espace vertical entre blocs ─────────────────── */
+.dash-section-block + .dash-section-block,
+.dash-section-block + section,
+section + .dash-section-block {
+    margin-top: calc(-1 * var(--spacing-sm));
+}
+
+/* ── v14 : profil-card-title flex ─────────────────────────────────── */
+.profile-card-title {
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* ── v14 : glass sur section-blocks ─────────────────────────────── */
+.dash-section-block .dash-section-header {
+    border-bottom-color: var(--color-border-default);
+}
+body.dark-mode .dash-section-block .dash-section-header {
+    border-bottom-color: hsla(220,15%,35%,0.5);
+}
+
+/* ── v14 : tooltip flèche positionnée ───────────────────────────── */
+.dash-chart-tab { position: relative; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LYFTIV v14 — Dashboard UX Overhaul
+   Résumé rapide · Sections hiérarchisées · Tooltips · Badges profil
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── RÉSUMÉ RAPIDE ──────────────────────────────────────────────────── */
+.dash-quick-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: var(--glass-bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    box-shadow: 0 2px 12px hsla(220,30%,20%,0.07);
+}
+body.dark-mode .dash-quick-summary {
+    background: var(--glass-bg-card);
+    border-color: var(--glass-border);
+    box-shadow: 0 2px 12px hsla(0,0%,0%,0.3);
+}
+.dqs-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 14px 6px;
+    text-align: center;
+    position: relative;
+    transition: background 0.15s;
+}
+.dqs-item:hover {
+    background: hsla(214,50%,96%,0.6);
+}
+body.dark-mode .dqs-item:hover {
+    background: hsla(220,15%,22%,0.5);
+}
+.dqs-divider {
+    width: 1px;
+    background: var(--color-border-default);
+    align-self: stretch;
+    margin: 10px 0;
+}
+.dqs-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+.dqs-value {
+    font-family: var(--font-display, var(--font-body));
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--color-text-header);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+.dqs-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--color-text-subheader);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+}
+.dqs-value.highlight { color: var(--color-success-default); }
+.dqs-value.warning   { color: var(--color-warning-default); }
+
+/* ── SECTION BLOCKS ─────────────────────────────────────────────────── */
+.dash-section-block {
+    margin-bottom: var(--spacing-xl);
+}
+.dash-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--color-border-default);
+}
+.dash-section-header > div { flex: 1; }
+.dash-section-title {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: var(--color-text-header) !important;
+    letter-spacing: -0.03em !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+}
+.dash-section-sub {
+    font-size: 0.75rem;
+    color: var(--color-text-subheader);
+    margin: 3px 0 0;
+    font-weight: 500;
+}
+.dash-subsection-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-text-subheader);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ── TOOLTIPS ⓘ ──────────────────────────────────────────────────────── */
+.dash-tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border-default);
+    font-size: 0.55rem;
+    font-style: normal;
+    color: var(--color-text-subheader);
+    cursor: help;
+    vertical-align: middle;
+    position: relative;
+    transition: background 0.15s;
+    font-weight: 700;
+    margin-left: 2px;
+    flex-shrink: 0;
+}
+.dash-tooltip-icon:hover {
+    background: var(--color-primary-default);
+    color: white;
+    border-color: transparent;
+}
+.dash-tooltip-icon::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: hsl(220, 20%, 16%);
+    color: hsl(0, 0%, 95%);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.45;
+    padding: 6px 10px;
+    border-radius: 8px;
+    white-space: normal;
+    width: 200px;
+    max-width: min(200px, 80vw);
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    letter-spacing: 0;
+    text-transform: none;
+}
+.dash-tooltip-icon::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: hsl(220, 20%, 16%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    z-index: 9999;
+}
+.dash-tooltip-icon:hover::after,
+.dash-tooltip-icon:hover::before { opacity: 1; }
+
+/* ── SECTION BADGES (dans profil) ───────────────────────────────────── */
+.profile-badges-section {
+    margin-top: var(--spacing-lg);
+}
+.profile-badges-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--color-text-header);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.profile-badges-title small {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-text-subheader);
+    margin-left: auto;
+}
+
+/* ── TITRE DASHBOARD ────────────────────────────────────────────────── */
+.dash-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: var(--spacing-lg);
+}
+.dash-page-title h1 {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--color-text-header);
+    letter-spacing: -0.04em;
+    margin: 0;
+    line-height: 1;
+}
+.dash-page-title .dash-greeting {
+    font-size: 0.78rem;
+    color: var(--color-text-subheader);
+    font-weight: 500;
+    margin-top: 3px;
+}
+
+/* ── SESSION SELECTOR — sous-titre ─────────────────────────────────── */
+.session-selector .dash-section-header {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* ── RESPONSIVE RÉSUMÉ ──────────────────────────────────────────────── */
+@media (max-width: 360px) {
+    .dqs-value { font-size: 1.1rem; }
+    .dqs-label { font-size: 0.58rem; }
+    .dqs-icon  { font-size: 0.9rem; }
+    .dqs-item  { padding: 10px 4px; }
+}
+
+/* ── END v14 UX Layer ════════════════════════════════════════════════ */
 
 /* ── END v9 UX Layer ═════════════════════════════════════════════════ */
 
@@ -7958,7 +8220,7 @@ body,
 #dashChartsSection      { order: 3 !important; }
 #weeklyGoalSection      { order: 4 !important; }
 #dashHeatmapSection     { order: 5 !important; }
-#dashBadgesSection      { order: 6 !important; }
+#dashBadgesSection      { order: 6 !important; display: none !important; }
 #dashDeloadSection      { order: 7 !important; }
 /* Adhérence en bas — moins prioritaire */
 #panelTraining > section:has(#disciplineWidget) { order: 8 !important; }
@@ -8731,7 +8993,50 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
 
             <div id="panelTraining" class="dash-tab-panel" role="tabpanel" aria-labelledby="tabTraining">
 
-            <!-- 1. PROCHAINE ACTION ────────────────────────────────── -->
+            <!-- ═══ RÉSUMÉ RAPIDE ═══════════════════════════════════ -->
+            <!-- ═══ TITRE PAGE ══════════════════════════════════════ -->
+            <div class="dash-page-title" id="dashPageTitle">
+                <div>
+                    <h1>📊 Tableau de bord</h1>
+                    <div class="dash-greeting" id="dashGreeting">Bienvenue !</div>
+                </div>
+            </div>
+
+            <div id="dashQuickSummary" class="dash-quick-summary" style="margin-bottom:var(--spacing-lg);">
+                <div class="dqs-item">
+                    <span class="dqs-icon">📅</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsWeekSessions">0</div>
+                        <div class="dqs-label">séance<span id="dqsWeekPlural"></span> cette semaine</div>
+                    </div>
+                </div>
+                <div class="dqs-divider"></div>
+                <div class="dqs-item">
+                    <span class="dqs-icon">🔥</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsStreak">0</div>
+                        <div class="dqs-label">jours de streak</div>
+                    </div>
+                </div>
+                <div class="dqs-divider"></div>
+                <div class="dqs-item">
+                    <span class="dqs-icon">🎯</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsGoalRatio">0/3</div>
+                        <div class="dqs-label">objectif semaine</div>
+                    </div>
+                </div>
+                <div class="dqs-divider"></div>
+                <div class="dqs-item">
+                    <span class="dqs-icon">⚡</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsTotal">0</div>
+                        <div class="dqs-label">séances au total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ PROCHAINE ACTION ═════════════════════════════════ -->
             <section id="nextActionCard" aria-label="Prochaine action recommandée" style="margin-bottom:var(--spacing-xl);">
                 <div id="nextActionInner" class="next-action-card">
                     <div class="next-action-label">PROCHAINE ACTION</div>
@@ -8744,92 +9049,135 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
                 </div>
             </section>
 
-            <!-- 2. MES SÉANCES ─────────────────────────────────────── -->
+            <!-- ═══ MES SÉANCES ══════════════════════════════════════ -->
             <section class="session-selector" aria-labelledby="session-selector-title" style="margin-bottom:var(--spacing-xl);">
-                <h2 id="session-selector-title" style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🗂 Mes séances</h2>
+                <div class="dash-section-header">
+                    <div>
+                        <h2 id="session-selector-title" class="dash-section-title">🗂 Mes séances</h2>
+                        <p class="dash-section-sub">Choisissez une séance pour démarrer</p>
+                    </div>
+                </div>
                 <div class="session-selector-grid" id="sessionSelectorGrid"></div>
             </section>
 
-            <!-- 3. MA PROGRESSION ──────────────────────────────────── -->
-            <section id="dashChartsSection" style="margin-bottom:var(--spacing-xl)">
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">📈 Ma progression</h2>
-                <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
-                    <div id="dashChartStats" style="display:flex;flex-wrap:wrap;gap:var(--spacing-sm);margin-bottom:var(--spacing-md);"></div>
-                    <div id="dashChartTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--spacing-sm);">
-                        <button class="dash-chart-tab active" data-dchart="1rm">1RM</button>
-                        <button class="dash-chart-tab" data-dchart="tonnage">Tonnage</button>
-                        <button class="dash-chart-tab" data-dchart="volume">Volume</button>
-                        <button class="dash-chart-tab" data-dchart="frequency">Fréquence</button>
-                    </div>
-                    <select id="dashChartExercise" style="width:100%;padding:6px 10px;border-radius:var(--radius-base);border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);font-size:var(--font-size-sm);margin-bottom:var(--spacing-sm);display:none;" aria-label="Exercice"></select>
-                    <div style="position:relative;height:220px;">
-                        <canvas id="dashProgressCanvas"></canvas>
-                    </div>
-                    <div id="dashChartEmpty" style="display:none;text-align:center;color:var(--color-text-subheader);padding:var(--spacing-xl);font-size:var(--font-size-sm);">
-                        📊 Enregistre au moins 2 séances pour voir ta progression ici.
+            <!-- ═══ SECTION 1 : PROGRESSION ═════════════════════════ -->
+            <div class="dash-section-block">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 class="dash-section-title">📈 Progression</h2>
+                        <p class="dash-section-sub">Analyse de tes performances dans le temps</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- 4. OBJECTIF SEMAINE ────────────────────────────────── -->
-            <section id="weeklyGoalSection" style="margin-bottom:var(--spacing-xl)">
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🎯 Objectif hebdomadaire</h2>
-                <div class="weekly-goal-wrap">
-                    <div class="weekly-goal-header">
-                        <div>
-                            <div id="weeklyGoalStatus" style="font-weight:700;color:var(--color-text-header);font-size:0.95rem;"></div>
-                            <div id="weeklyGoalSub" style="font-size:0.75rem;color:var(--color-text-subheader);margin-top:2px;"></div>
+                <!-- Graphique progression -->
+                <section id="dashChartsSection" style="margin-bottom:var(--spacing-md)">
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <div id="dashChartStats" style="display:flex;flex-wrap:wrap;gap:var(--spacing-sm);margin-bottom:var(--spacing-md);"></div>
+                        <div id="dashChartTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--spacing-sm);">
+                            <button class="dash-chart-tab active" data-dchart="1rm">
+                                1RM <span class="dash-tooltip-icon" data-tip="Charge maximale estimée pour 1 répétition, calculée depuis tes séries.">ⓘ</span>
+                            </button>
+                            <button class="dash-chart-tab" data-dchart="tonnage">
+                                Tonnage <span class="dash-tooltip-icon" data-tip="Volume total soulevé : poids × répétitions × séries.">ⓘ</span>
+                            </button>
+                            <button class="dash-chart-tab" data-dchart="volume">
+                                Volume <span class="dash-tooltip-icon" data-tip="Nombre total de répétitions effectuées par séance.">ⓘ</span>
+                            </button>
+                            <button class="dash-chart-tab" data-dchart="frequency">
+                                Fréquence <span class="dash-tooltip-icon" data-tip="Nombre de séances par semaine sur les 12 dernières semaines.">ⓘ</span>
+                            </button>
                         </div>
-                        <div class="weekly-goal-controls">
-                            <button class="wg-count-btn" id="wgDecBtn">&#8722;</button>
-                            <span class="wg-count-display" id="wgCountDisplay">3&#160;/ sem.</span>
-                            <button class="wg-count-btn" id="wgIncBtn">&#43;</button>
+                        <select id="dashChartExercise" style="width:100%;padding:6px 10px;border-radius:var(--radius-base);border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);font-size:var(--font-size-sm);margin-bottom:var(--spacing-sm);display:none;" aria-label="Exercice"></select>
+                        <div style="position:relative;height:220px;">
+                            <canvas id="dashProgressCanvas"></canvas>
+                        </div>
+                        <div id="dashChartEmpty" style="display:none;text-align:center;color:var(--color-text-subheader);padding:var(--spacing-xl);font-size:var(--font-size-sm);">
+                            📊 Enregistre au moins 2 séances pour voir ta progression ici.
                         </div>
                     </div>
-                    <div class="weekly-goal-dots" id="weeklyGoalDots"></div>
-                    <div class="weekly-goal-bar"><div class="weekly-goal-bar-fill" id="weeklyGoalBarFill" style="width:0%"></div></div>
-                </div>
-            </section>
+                </section>
 
-            <!-- 5. RÉCUPÉRATION & CYCLE ─────────────────────────────── -->
-            <section id="dashDeloadSection" style="margin-bottom:var(--spacing-xl)">
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🔄 Récupération & Cycle</h2>
-                <div id="dashDeloadWidget" style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
-                    <p style="text-align:center;color:var(--color-text-subheader);font-size:var(--font-size-sm);">Enregistre ta première séance pour activer l'analyse automatique.</p>
-                </div>
-            </section>
-
-            <!-- 6. ADHÉRENCE ───────────────────────────────────────── -->
-            <section style="margin-bottom:var(--spacing-xl);">
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">📋 Adhérence au protocole</h2>
-                <div id="disciplineWidget" style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
-                    <p style="text-align:center;color:var(--color-text-subheader);font-size:var(--font-size-sm);">Enregistre ta première séance pour activer le suivi d'adhérence.</p>
-                </div>
-            </section>
-
-            <!-- 7. ACTIVITÉ 12 MOIS ────────────────────────────────── -->
-            <section id="dashHeatmapSection" style="margin-bottom:var(--spacing-xl)">
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">📅 Activité — 12 mois</h2>
-                <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
-                    <div id="heatmapMonths" class="heatmap-months"></div>
-                    <div id="heatmapGrid" class="heatmap-grid"></div>
-                    <div class="heatmap-legend">
-                        <span>Moins</span>
-                        <div class="heatmap-legend-cell"></div>
-                        <div class="heatmap-legend-cell l1"></div>
-                        <div class="heatmap-legend-cell l2"></div>
-                        <div class="heatmap-legend-cell l3"></div>
-                        <div class="heatmap-legend-cell l4"></div>
-                        <span>Plus</span>
+                <!-- Objectif hebdomadaire — dans la section Progression -->
+                <section id="weeklyGoalSection" style="margin-bottom:var(--spacing-md)">
+                    <div class="weekly-goal-wrap">
+                        <div class="weekly-goal-header">
+                            <div>
+                                <div id="weeklyGoalStatus" style="font-weight:700;color:var(--color-text-header);font-size:0.95rem;"></div>
+                                <div id="weeklyGoalSub" style="font-size:0.75rem;color:var(--color-text-subheader);margin-top:2px;"></div>
+                            </div>
+                            <div class="weekly-goal-controls" title="Modifier l'objectif hebdomadaire">
+                                <button class="wg-count-btn" id="wgDecBtn" aria-label="Réduire l'objectif">&#8722;</button>
+                                <span class="wg-count-display" id="wgCountDisplay">3&#160;/ sem.</span>
+                                <button class="wg-count-btn" id="wgIncBtn" aria-label="Augmenter l'objectif">&#43;</button>
+                            </div>
+                        </div>
+                        <div class="weekly-goal-dots" id="weeklyGoalDots"></div>
+                        <div class="weekly-goal-bar"><div class="weekly-goal-bar-fill" id="weeklyGoalBarFill" style="width:0%"></div></div>
                     </div>
-                    <div id="heatmapSummary" style="margin-top:var(--spacing-md);display:flex;flex-wrap:wrap;gap:var(--spacing-sm);"></div>
-                </div>
-            </section>
+                </section>
+            </div>
 
-            <!-- 8. BADGES ──────────────────────────────────────────── -->
-            <section id="dashBadgesSection" style="margin-bottom:var(--spacing-xl)">
-                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🏅 Mes badges</h2>
-                <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+            <!-- ═══ SECTION 2 : ACTIVITÉ ═════════════════════════════ -->
+            <div class="dash-section-block">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 class="dash-section-title">📅 Activité</h2>
+                        <p class="dash-section-sub">Ton historique d'entraînement sur 12 mois</p>
+                    </div>
+                </div>
+
+                <!-- Heatmap -->
+                <section id="dashHeatmapSection" style="margin-bottom:var(--spacing-md)">
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <div id="heatmapMonths" class="heatmap-months"></div>
+                        <div id="heatmapGrid" class="heatmap-grid"></div>
+                        <div class="heatmap-legend">
+                            <span>Moins</span>
+                            <div class="heatmap-legend-cell"></div>
+                            <div class="heatmap-legend-cell l1"></div>
+                            <div class="heatmap-legend-cell l2"></div>
+                            <div class="heatmap-legend-cell l3"></div>
+                            <div class="heatmap-legend-cell l4"></div>
+                            <span>Plus</span>
+                        </div>
+                        <div id="heatmapSummary" style="margin-top:var(--spacing-md);display:flex;flex-wrap:wrap;gap:var(--spacing-sm);"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══ SECTION 3 : PROGRAMME ════════════════════════════ -->
+            <div class="dash-section-block">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 class="dash-section-title">🧬 Programme</h2>
+                        <p class="dash-section-sub">Récupération, cycle et respect du protocole</p>
+                    </div>
+                </div>
+
+                <!-- Récupération & Cycle -->
+                <section id="dashDeloadSection" style="margin-bottom:var(--spacing-md)">
+                    <div class="dash-subsection-label">🔄 Récupération & Cycle d'entraînement</div>
+                    <div id="dashDeloadWidget" style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <p style="text-align:center;color:var(--color-text-subheader);font-size:var(--font-size-sm);">Enregistre ta première séance pour activer l'analyse automatique.</p>
+                    </div>
+                </section>
+
+                <!-- Adhérence — renommé clairement -->
+                <section style="margin-bottom:var(--spacing-md);">
+                    <div class="dash-subsection-label">
+                        📋 Respect du programme
+                        <span class="dash-tooltip-icon" data-tip="Mesure la régularité de tes entraînements par rapport au programme défini. Plus ton taux est élevé, plus tu respectes la fréquence prévue.">ⓘ</span>
+                    </div>
+                    <div id="disciplineWidget" style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <p style="text-align:center;color:var(--color-text-subheader);font-size:var(--font-size-sm);">Enregistre ta première séance pour activer le suivi.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Badges déplacés dans le profil (voir panelProfile) -->
+            <!-- On garde l'ID pour compatibilité JS mais on masque la section dans le training panel -->
+            <section id="dashBadgesSection" style="display:none">
+                <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);">
                     <div class="badge-grid" id="badgeGrid"></div>
                 </div>
             </section>
@@ -9491,6 +9839,17 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
                     </div>
                     <button onclick="saveNotifSettings()" style="background:var(--color-primary-default);color:white;border:none;border-radius:10px;padding:10px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">💾 Enregistrer les rappels</button>
                 </div>
+            </section>
+
+            <!-- ═══ BADGES ══════════════════════════════════════════ -->
+            <section class="profile-card profile-badges-section">
+                <div class="profile-card-title">🏅 Mes badges
+                    <span style="font-size:0.7rem;font-weight:500;color:var(--color-text-subheader);margin-left:auto;">Débloqués par tes performances</span>
+                </div>
+                <div class="badge-grid" id="badgeGridProfile" style="margin-top:var(--spacing-sm);"></div>
+                <p id="badgeGridProfileEmpty" style="text-align:center;color:var(--color-text-subheader);font-size:0.8rem;padding:var(--spacing-md) 0;display:none;">
+                    Enregistre des séances pour débloquer tes premiers badges.
+                </p>
             </section>
 
             <!-- Données & Confidentialité -->
@@ -14512,13 +14871,18 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             const statusEl = document.getElementById('weeklyGoalStatus');
             const subEl = document.getElementById('weeklyGoalSub');
             if (done >= goal) {
-                statusEl.textContent = '🎉 Objectif atteint cette semaine !';
+                statusEl.textContent = '🎉 Objectif atteint !';
                 statusEl.style.color = 'var(--color-success-default)';
+                if (subEl) subEl.textContent = 'Bravo — objectif de ' + goal + ' séances/semaine respecté.';
             } else {
                 const remaining = goal - done;
                 statusEl.textContent = done + ' / ' + goal + ' séances cette semaine';
                 statusEl.style.color = 'var(--color-text-header)';
-                subEl.textContent = ''; // v10: verbose text removed
+                if (subEl) {
+                    subEl.textContent = remaining === 1
+                        ? "Plus qu’1 séance pour atteindre ton objectif — utilise + / − pour l’ajuster"
+                        : remaining + " séances restantes · utilise + / − pour ajuster l’objectif";
+                }
             }
 
             document.getElementById('wgCountDisplay').textContent = goal + ' / sem.';
@@ -15088,6 +15452,18 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             // ── PLAN — bouton flottant + edge tab ────────────────────────────
             document.getElementById('planTriggerBtn').addEventListener('click', _openPlan);
             document.getElementById('planEdgeTab').addEventListener('click', _openPlan);
+
+            // Pastille ● PLAN dans la topbar — cliquable pour ouvrir le panel
+            const modeIndicator = document.getElementById('appModeIndicator');
+            if (modeIndicator) {
+                modeIndicator.setAttribute('role', 'button');
+                modeIndicator.setAttribute('title', 'Ouvrir le panneau Plan');
+                modeIndicator.setAttribute('tabindex', '0');
+                modeIndicator.addEventListener('click', _openPlan);
+                modeIndicator.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _openPlan(); }
+                });
+            }
             document.getElementById('planBackdrop').addEventListener('click', _closePlan);
             document.getElementById('planCloseBtn').addEventListener('click', _closePlan);
 
@@ -15130,8 +15506,9 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
         // touch-action: pan-y sur #planPanel + overscroll-behavior-x: none sur body
         // → iOS Safari ne déclenche PAS le retour arrière natif
         (function initPlanSwipe() {
-            let _sx = 0, _sy = 0;
+            let _sx = 0, _sy = 0, _dragging = false;
 
+            // ── TOUCH (mobile) ──────────────────────────────────────────
             document.addEventListener('touchstart', e => {
                 _sx = e.changedTouches[0].clientX;
                 _sy = e.changedTouches[0].clientY;
@@ -15140,26 +15517,63 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             document.addEventListener('touchend', e => {
                 const ex = e.changedTouches[0].clientX;
                 const ey = e.changedTouches[0].clientY;
-                const dx = _sx - ex;   // > 0 = vers la gauche (ouverture)
+                const dx = _sx - ex;
                 const dy = _sy - ey;
-
-                // Mouvement principalement horizontal ?
                 if (Math.abs(dx) <= Math.abs(dy)) return;
 
                 const isOpen = document.body.dataset.mode === 'plan';
-
-                // Swipe gauche — ouverture (depuis bord droit 80px, mode execute uniquement)
                 if (dx > 50 && !isOpen
                     && document.body.dataset.mode === 'execute'
                     && _sx > window.innerWidth - 80) {
                     _openPlan();
                 }
-
-                // Swipe droite — fermeture (depuis n'importe où dans le panneau)
                 if (dx < -50 && isOpen) {
                     _closePlan();
                 }
             }, { passive: true });
+
+            // ── MOUSE (desktop) — drag depuis bord droit ou panneau ouvert ──
+            document.addEventListener('mousedown', e => {
+                _sx = e.clientX;
+                _sy = e.clientY;
+                _dragging = true;
+            });
+
+            document.addEventListener('mousemove', e => {
+                if (!_dragging) return;
+                // Éviter les drags accidentels (seulement si déplacement > 5px)
+            });
+
+            document.addEventListener('mouseup', e => {
+                if (!_dragging) return;
+                _dragging = false;
+                const ex = e.clientX;
+                const ey = e.clientY;
+                const dx = _sx - ex;   // > 0 = vers gauche
+                const dy = _sy - ey;
+
+                // Mouvement principalement horizontal ?
+                if (Math.abs(dx) <= Math.abs(dy)) return;
+                // Seuil plus élevé sur desktop (évite les clics accidentels)
+                if (Math.abs(dx) < 60) return;
+
+                const isOpen = document.body.dataset.mode === 'plan';
+
+                // Drag vers la gauche depuis bord droit 120px — mode execute
+                if (dx > 60 && !isOpen
+                    && document.body.dataset.mode === 'execute'
+                    && _sx > window.innerWidth - 120) {
+                    _openPlan();
+                }
+
+                // Drag vers la droite quand panneau ouvert
+                if (dx < -60 && isOpen) {
+                    _closePlan();
+                }
+            });
+
+            // Annuler si on sort de la fenêtre
+            document.addEventListener('mouseleave', () => { _dragging = false; });
         })();
 
         function _populatePlanSessionList() {
@@ -15181,6 +15595,65 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             });
         }
 
+        // ── RÉSUMÉ RAPIDE ─────────────────────────────────────────────────
+        function renderQuickSummary() {
+            const history  = getHistory().filter(s => !s.isAutoSave);
+            const goal     = getWeeklyGoal();
+            const weekDone = getSessionsThisWeek(history);
+            const streak   = calcStreak(history);
+            const total    = history.length;
+
+            const elWeek   = document.getElementById('dqsWeekSessions');
+            const elPlural = document.getElementById('dqsWeekPlural');
+            const elStreak = document.getElementById('dqsStreak');
+            const elGoal   = document.getElementById('dqsGoalRatio');
+            const elTotal  = document.getElementById('dqsTotal');
+
+            if (elWeek) {
+                elWeek.textContent = weekDone;
+                elWeek.className = 'dqs-value' + (weekDone >= goal ? ' highlight' : weekDone === 0 ? ' warning' : '');
+            }
+            if (elPlural) elPlural.textContent = weekDone > 1 ? 's' : '';
+            if (elStreak) {
+                elStreak.textContent = streak;
+                elStreak.className = 'dqs-value' + (streak >= 3 ? ' highlight' : streak === 0 ? ' warning' : '');
+            }
+            if (elGoal) {
+                elGoal.textContent = weekDone + '/' + goal;
+                elGoal.className = 'dqs-value' + (weekDone >= goal ? ' highlight' : '');
+            }
+            if (elTotal) elTotal.textContent = total;
+
+            // Salutation dynamique
+            const greeting = document.getElementById('dashGreeting');
+            const profile  = StorageAPI.get('lyftiv_profile');
+            const name     = profile?.name || '';
+            const hour     = new Date().getHours();
+            const salut    = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+            if (greeting) greeting.textContent = name ? salut + ', ' + name + ' 👋' : salut + " ! Prêt à t'entraîner ?";
+        }
+
+        // ── BADGES DANS LE PROFIL ─────────────────────────────────────────
+        function renderBadgesInProfile() {
+            const container = document.getElementById('badgeGridProfile');
+            const emptyMsg  = document.getElementById('badgeGridProfileEmpty');
+            if (!container) return;
+            const history = getHistory();
+            const earned  = getEarnedBadges(history);
+            container.innerHTML = '';
+            if (earned.length === 0) {
+                if (emptyMsg) emptyMsg.style.display = 'block';
+                return;
+            }
+            if (emptyMsg) emptyMsg.style.display = 'none';
+            earned.forEach(b => {
+                const el = document.createElement('div');
+                el.className = 'badge-item earned';
+                el.innerHTML = '<div class="badge-icon">' + b.icon + '</div><div class="badge-label">' + b.label + '</div>';
+                container.appendChild(el);
+            });
+        }
+
         function initDashboard() {
             populateDashChartExercise();
             renderDashChart('1rm');
@@ -15191,6 +15664,8 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
             renderWeeklyGoal();
             renderBadgeGrid();
             renderPeriodisationWidget();
+            renderQuickSummary();
+            renderBadgesInProfile();
 
             // Discipline Engine — Execution Rate widget
             const history = getHistory();
