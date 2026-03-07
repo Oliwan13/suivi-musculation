@@ -169,7 +169,11 @@
             const inProgress = StorageAPI.get('inProgressWorkout');
             if (inProgress) {
                 // Load session data
-                state.sessions = Array.isArray(inProgress.customSessions) ? inProgress.customSessions : JSON.parse(JSON.stringify(defaultSessions));
+                // Restauration : customSessions en cours → userSessions sauvegardés → defaultSessions
+                const _saved = StorageAPI.get('userSessions');
+                state.sessions = Array.isArray(inProgress.customSessions) && inProgress.customSessions.length > 0
+                    ? inProgress.customSessions
+                    : (Array.isArray(_saved) && _saved.length > 0 ? JSON.parse(JSON.stringify(_saved)) : JSON.parse(JSON.stringify(defaultSessions)));
                 state.currentSessionIndex = inProgress.sessionIndex || 0;
                 if (state.currentSessionIndex >= state.sessions.length) {
                     state.currentSessionIndex = 0;
@@ -201,8 +205,12 @@
                     }, 800);
                 }
             } else {
-                 state.sessions = JSON.parse(JSON.stringify(defaultSessions));
-                 StorageAPI.remove('inProgressWorkout');
+                // Priorité : programme généré par l'onboarding → defaultSessions en fallback
+                const savedSessions = StorageAPI.get('userSessions');
+                state.sessions = Array.isArray(savedSessions) && savedSessions.length > 0
+                    ? JSON.parse(JSON.stringify(savedSessions))
+                    : JSON.parse(JSON.stringify(defaultSessions));
+                StorageAPI.remove('inProgressWorkout');
             }
             
             if (state.isMobileView) {
