@@ -7377,6 +7377,20 @@ nav.bottom-nav,
     will-change: width !important;
     pointer-events: none !important;
 }
+
+    #sessionExerciseCount {
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--color-text-subheader);
+        padding: 2px 0 4px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    #sessionExerciseCount.visible {
+        opacity: 1;
+    }
 /* Compenser l'espace que la barre n'occupe plus dans le flow */
 .summary-section { padding-top: env(safe-area-inset-top, 0px); }
 
@@ -8814,6 +8828,7 @@ body,
             <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
               <div class="progress-fill" id="progressFill"></div>
             </div>
+            <div id="sessionExerciseCount" aria-live="polite"></div>
             
             <div id="exerciseListContainer" class="exercise-list-container">
                 </div>
@@ -11295,6 +11310,23 @@ body,
             requestAnimationFrame(updateDeltaAnimation);
 
             dom.progressFill.style.width = `${totalPossibleSeries > 0 ? (completedSeriesOverall / totalPossibleSeries) * 100 : 0}%`;
+
+            // ── Compteur X/Y exercices (rec 5) ──────────────────────────────
+            const _exCountEl = document.getElementById('sessionExerciseCount');
+            if (_exCountEl) {
+                const _exercises = state.sessions?.[state.currentSessionIndex]?.exercises || [];
+                const _total = _exercises.length;
+                const _done  = _exercises.filter(ex =>
+                    (ex.series || []).length > 0 &&
+                    (ex.series || []).every(s => parseFloat(s.reps) > 0)
+                ).length;
+                if (_total > 0) {
+                    _exCountEl.textContent = `${_done} / ${_total} exercices`;
+                    _exCountEl.classList.add('visible');
+                } else {
+                    _exCountEl.classList.remove('visible');
+                }
+            }
             saveCurrentState(true);
             populateOneRMDropdown(exercisesWith1RM);
         }
@@ -13005,7 +13037,17 @@ body,
 
             dom.previousWeekInput.addEventListener('input', updateAllTotals); 
             dom.exerciseListContainer.addEventListener('click', handleTableActions); 
-            document.getElementById('finishSessionBtn').addEventListener('click', finishAndSaveSession);
+            document.getElementById('finishSessionBtn').addEventListener('click', async () => {
+                const exerciseList = state.sessions?.[state.currentSessionIndex]?.exercises || [];
+                const hasData = exerciseList.some(ex =>
+                    (ex.series || []).some(s => parseFloat(s.reps) > 0 || parseFloat(s.weight) > 0)
+                );
+                if (hasData) {
+                    const confirmed = await customConfirm('Terminer et sauvegarder la séance ?');
+                    if (!confirmed) return;
+                }
+                finishAndSaveSession();
+            });
             document.getElementById('viewHistoryBtn').addEventListener('click', () => {
                 const triggeringElement = document.activeElement;
                 displayHistory();
