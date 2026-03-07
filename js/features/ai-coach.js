@@ -1,5 +1,5 @@
 // js/features/ai-coach.js — Coach IA Lyftiv
-// Analyse l'historique · Délègue la génération à window.ProgramBuilder
+// Analyse l'historique · Génère des insights via Claude API (claude-sonnet-4-20250514)
 // Dépend : window.StorageAPI, window.FeatureFlags, window.TrainingScience, window.ProgramBuilder
 // ══════════════════════════════════════════════════════════════════════
 
@@ -25,7 +25,7 @@
     }
 
     // ══════════════════════════════════════════════════════════════════
-    //  CALCULS ANALYSE
+    //  CALCULS LOCAUX (fallback + enrichissement du prompt)
     // ══════════════════════════════════════════════════════════════════
 
     function avgWeeklyFrequency(history) {
@@ -91,7 +91,7 @@
     }
 
     // ══════════════════════════════════════════════════════════════════
-    //  RENDU INSIGHT
+    //  RENDU INSIGHT (HTML template)
     // ══════════════════════════════════════════════════════════════════
 
     function renderInsight(icon, title, body, color = 'hsl(220,80%,60%)') {
@@ -107,11 +107,91 @@
     }
 
     // ══════════════════════════════════════════════════════════════════
+    //  CONSTRUCTION DU PROMPT CLAUDE
+    // ══════════════════════════════════════════════════════════════════
+
+    function buildCoachPrompt(history, profile, stats) {
+        const last5 = history.slice(-5).map(s => ({
+            date: s.date,
+            session: s.sessionName,
+            exercises: (s.exercises || []).map(ex => ({
+                name: ex.name,
+                series: (ex.series || []).map(sr => `${sr.reps||0}×${sr.weight||0}kg`).join(', ')
+            }))
+        }));
+
+        const profileStr = [
+            profile.name ? `Prénom : ${profile.name}` : null,
+            profile.goal ? `Objectif : ${profile.goal}` : null,
+            profile.level ? `Niveau : ${profile.level}` : null,
+            profile.frequency ? `Fréquence cible : ${profile.frequency}j/sem` : null,
+            profile.equipment ? `Équipement : ${profile.equipment}` : null,
+        ].filter(Boolean).join(' | ');
+
+        return `Tu es un coach sportif expert en musculation basé sur la science (science-based). 
+Analyse les données d'entraînement ci-dessous et génère un coaching personnalisé en français.
+
+PROFIL UTILISATEUR: ${profileStr || 'Non renseigné'}
+
+STATISTIQUES CLÉS:
+- Fréquence hebdomadaire (28 derniers jours) : ${stats.freq}x/sem
+- Dernière séance : ${stats.recovery ? stats.recovery.label : 'Inconnue'}
+- Stagnations détectées : ${stats.stagnating.map(s => s.name).join(', ') || 'Aucune'}
+- Progressions récentes : ${stats.progressing.map(p => `${p.name} +${p.gain}kg`).join(', ') || 'Aucune'}
+- Tonnage moyen (5 dernières) : ${stats.avgTonnage.toLocaleString('fr-FR')} kg·rep/séance
+
+5 DERNIÈRES SÉANCES:
+${JSON.stringify(last5, null, 2)}
+
+INSTRUCTIONS:
+Réponds UNIQUEMENT avec du JSON valide, sans balises markdown, dans ce format exact:
+{
+  "insights": [
+    {
+      "icon": "emoji",
+      "title": "Titre court (max 4 mots)",
+      "body": "Conseil détaillé basé sur les données (2-3 phrases, peut contenir du HTML simple: <strong>, <em>, <br>)",
+      "color": "hsl(valeur)"
+    }
+  ],
+  "summary": "Phrase de synthèse motivante personnalisée (1 phrase)",
+  "nextSessionTip": "Conseil concret pour la prochaine séance (1-2 phrases)"
+}
+
+Génère 4 à 6 insights pertinents basés sur les vraies données. 
+Couleurs suggérées: succès=hsl(145,65%,48%), avertissement=hsl(35,80%,54%), info=hsl(210,80%,58%), danger=hsl(0,65%,55%), avancé=hsl(280,72%,62%).
+Sois direct, encourageant et scientifiquement précis. Utilise le prénom si disponible.`;
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  APPEL CLAUDE API
+    // ══════════════════════════════════════════════════════════════════
+
+    async function fetchClaudeInsights(prompt) {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+        if (!response.ok) throw new Error('API error ' + response.status);
+        const data = await response.json();
+        const text = data.content.map(i => i.text || '').join('');
+        // Nettoyer les balises markdown potentielles
+        const clean = text.replace(/```json|```/g, '').trim();
+        return JSON.parse(clean);
+    }
+
+    // ══════════════════════════════════════════════════════════════════
     //  ANALYSE PRINCIPALE
     // ══════════════════════════════════════════════════════════════════
 
-    function runAnalysis() {
+    async function runAnalysis() {
         const history     = getHistory();
+        const profile     = getProfile();
         const insights    = document.getElementById('aiCoachInsights');
         const placeholder = document.getElementById('aiCoachPlaceholder');
         const btn         = document.getElementById('aiCoachGenerateBtn');
@@ -122,97 +202,65 @@
 
         btn.disabled        = true;
         btnIcon.textContent = '⏳';
-        btnText.textContent = 'Analyse en cours…';
+        btnText.textContent = 'Analyse IA en cours…';
 
-        setTimeout(() => {
-            if (!history.length) {
-                placeholder?.classList.remove('hidden');
-                insights.classList.add('hidden');
-                btn.disabled        = false;
-                btnIcon.textContent = '✨';
-                btnText.textContent = 'Analyser mes séances';
-                return;
-            }
+        if (!history.length) {
+            placeholder?.classList.remove('hidden');
+            insights.classList.add('hidden');
+            btn.disabled        = false;
+            btnIcon.textContent = '✨';
+            btnText.textContent = 'Analyser mes séances';
+            return;
+        }
 
-            placeholder?.classList.add('hidden');
-            insights.classList.remove('hidden');
+        // Calculs locaux pour enrichir le prompt
+        const freq        = avgWeeklyFrequency(history);
+        const stagnating  = detectStagnation(history);
+        const progressing = detectProgress(history);
+        const recovery    = recoveryScore(history);
+        const targets     = buildProgressionTargets(history);
+        const tonnage     = history.slice(-5).reduce((acc, s) =>
+            acc + (s.exercises||[]).reduce((a, ex) =>
+                a + (ex.series||[]).reduce((b, sr) => b + (sr.reps||0)*(sr.weight||0), 0), 0), 0);
+        const avgTonnage  = history.length ? Math.round(tonnage / Math.min(history.length, 5)) : 0;
 
-            const freq        = avgWeeklyFrequency(history);
-            const stagnating  = detectStagnation(history);
-            const progressing = detectProgress(history);
-            const recovery    = recoveryScore(history);
-            const targets     = buildProgressionTargets(history);
+        placeholder?.classList.add('hidden');
+        insights.classList.remove('hidden');
+
+        // Afficher un état de chargement pendant l'appel API
+        insights.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:var(--spacing-xl) 0;color:var(--color-text-subheader);">
+                <div style="font-size:2rem;animation:spin 1s linear infinite;">⚙️</div>
+                <div style="font-size:0.85rem;font-weight:600;">Claude analyse tes ${history.length} séances…</div>
+                <div style="font-size:0.75rem;opacity:0.7;">Cela prend quelques secondes</div>
+            </div>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>`;
+
+        try {
+            const prompt = buildCoachPrompt(history, profile, { freq, stagnating, progressing, recovery, avgTonnage });
+            const result = await fetchClaudeInsights(prompt);
+
             let html = '';
 
-            // Récupération
-            if (recovery) {
-                const msg = recovery.days === 0
-                    ? "Tu viens de t'entraîner. Assure-toi de bien récupérer avant la prochaine séance."
-                    : recovery.days <= 3 ? `Dernière séance il y a ${recovery.label}. Tu es bien récupéré(e).`
-                    : recovery.days <= 7 ? `${recovery.label} sans séance. Vise 3-4x/semaine pour maximiser les gains.`
-                    : `${recovery.label} sans séance. Reprends dès aujourd'hui pour maintenir tes acquis !`;
-                html += renderInsight(recovery.icon, 'Récupération', msg, recovery.color);
+            // Résumé en haut si présent
+            if (result.summary) {
+                html += `<div style="background:hsla(214,80%,58%,0.1);border:1px solid hsla(214,80%,58%,0.25);border-radius:var(--radius-base);padding:var(--spacing-md);margin-bottom:var(--spacing-md);font-size:var(--font-size-sm);color:var(--color-text-default);font-weight:600;line-height:1.5;">
+                    ✨ ${result.summary}
+                </div>`;
             }
 
-            // Fréquence
-            const freqMsg = freq < 2
-                ? `Tu t'entraînes <strong>${freq}x/semaine</strong>. Vise <strong>3x minimum</strong> — 2 stimuli/muscle/semaine sont nécessaires pour optimiser la synthèse protéique.`
-                : freq >= 4
-                ? `Excellent rythme : <strong>${freq}x/semaine</strong>. Intègre 1-2 jours de repos actif.`
-                : `Bonne fréquence : <strong>${freq}x/semaine</strong>. Continue !`;
-            html += renderInsight('📅', 'Fréquence', freqMsg, 'hsl(210,80%,58%)');
+            // Insights générés par Claude
+            (result.insights || []).forEach(ins => {
+                html += renderInsight(ins.icon, ins.title, ins.body, ins.color || 'hsl(220,80%,60%)');
+            });
 
-            // Progressions
-            if (progressing.length) {
-                html += renderInsight('📈', 'Progressions récentes',
-                    progressing.map(p => `<strong>${p.name}</strong> : +${p.gain} kg (${p.from} → ${p.to} kg)`).join('<br>'),
-                    'hsl(145,65%,48%)');
-            }
-
-            // Stagnation
-            if (stagnating.length) {
-                const inc = TS?.progressiveOverload?.weightIncrements?.upperBody ?? 2.5;
-                html += renderInsight('⚠️', 'Stagnation détectée',
-                    stagnating.map(s => `<strong>${s.name}</strong> : ${s.weight} kg sur ${s.sessions} séances`).join('<br>')
-                    + `<br><br>Applique la <em>double progression</em> : atteins le haut de ta fourchette de reps sur TOUTES les séries, puis ajoute <strong>+${inc} kg</strong>.`,
-                    'hsl(35,80%,54%)');
-            }
-
-            // Volume
-            const tonnage = history.slice(-5).reduce((acc, s) =>
-                acc + (s.exercises||[]).reduce((a, ex) =>
-                    a + (ex.series||[]).reduce((b, sr) => b + (sr.reps||0)*(sr.weight||0), 0), 0), 0);
-            if (tonnage > 0) {
-                const avg  = Math.round(tonnage / Math.min(history.length, 5));
-                const note = TS?.volume?.weeklySetRange
-                    ? ` Recommandation : <strong>${TS.volume.weeklySetRange.min}-${TS.volume.weeklySetRange.max} séries/muscle/sem.</strong> (inverted-U).`
-                    : '';
-                html += renderInsight('⚡', 'Volume moyen (5 dernières)', `<strong>${avg.toLocaleString('fr-FR')} kg·rep</strong>/séance.${note}`, 'hsl(280,72%,62%)');
-            }
-
-            // RIR
-            if (TS?.intensity?.rirRange) {
-                html += renderInsight('🎯', 'Intensité (RIR)',
-                    `Travaille à <strong>${TS.intensity.rirRange.min}-${TS.intensity.rirRange.max} RIR</strong>. L'échec total n'est pas obligatoire — 1-2 RIR donne des résultats comparables.`,
-                    'hsl(220,80%,60%)');
-            }
-
-            // Récupération / Nutrition
-            html += renderInsight('💤', 'Récupération & Nutrition',
-                '<strong>7-9h de sommeil</strong> et <strong>1.6-2.2g de protéines/kg/j</strong> pour maximiser la synthèse musculaire.',
-                'hsl(198,75%,48%)');
-
-            // Technique avancée
-            if (history.length >= 5 && TS?.advancedTechniques?.lengthened_partials) {
-                const lp = TS.advancedTechniques.lengthened_partials;
-                html += renderInsight('🔬', 'Technique avancée suggérée',
-                    `<strong>${lp.name}</strong> : ${lp.description}<br><em>${lp.usage}</em>`,
-                    'hsl(280,72%,62%)');
+            // Conseil prochaine séance
+            if (result.nextSessionTip) {
+                html += renderInsight('🎯', 'Conseil pour ta prochaine séance', result.nextSessionTip, 'hsl(280,72%,62%)');
             }
 
             // Alerte récupération depuis ProgramBuilder
             if (window.ProgramBuilder) {
-                const profile = getProfile();
                 const plannedDays = parseInt(profile.frequency) || 3;
                 const rec = window.ProgramBuilder.analyzeRecovery(plannedDays);
                 if (rec.level !== 'ok') {
@@ -232,28 +280,89 @@
 
             insights.innerHTML = html;
 
-            // Objectifs de progression
-            if (progressEl && targets.length) {
-                progressEl.innerHTML = targets.map(t =>
-                    `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--color-border-default);">
-                        <span style="font-weight:600;font-size:var(--font-size-sm);color:var(--color-text-header)">${t.name}</span>
-                        <span style="font-size:var(--font-size-xs);color:var(--color-text-subheader);">
-                            ${t.currentWeight} kg → <strong style="color:hsl(145,65%,48%)">${t.targetWeight} kg</strong>
-                        </span>
-                    </div>`
-                ).join('') + `<p style="font-size:var(--font-size-xs);color:var(--color-text-subheader);margin-top:var(--spacing-sm);margin-bottom:0;">
-                    +2.5 kg dès que tu atteins toutes les séries cibles (double progression).
-                </p>`;
-            }
+            // Badge IA en haut à droite
+            const badge = document.createElement('div');
+            badge.style.cssText = 'text-align:right;margin-bottom:8px;font-size:0.68rem;color:var(--color-text-subheader);';
+            badge.textContent = '⚡ Généré par Claude AI';
+            insights.prepend(badge);
 
-            btn.disabled        = false;
-            btnIcon.textContent = '🔄';
-            btnText.textContent = 'Réanalyser';
-        }, 600);
+        } catch (err) {
+            console.warn('[AI Coach] Fallback mode — Claude API unavailable:', err.message);
+            // Fallback : analyse locale si l'API échoue
+            _runLocalAnalysis(history, profile, { freq, stagnating, progressing, recovery, targets, tonnage, avgTonnage, insights });
+        }
+
+        // Objectifs de progression (toujours calculés localement)
+        if (progressEl && targets.length) {
+            progressEl.innerHTML = targets.map(t =>
+                `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--color-border-default);">
+                    <span style="font-weight:600;font-size:var(--font-size-sm);color:var(--color-text-header)">${t.name}</span>
+                    <span style="font-size:var(--font-size-xs);color:var(--color-text-subheader);">
+                        ${t.currentWeight} kg → <strong style="color:hsl(145,65%,48%)">${t.targetWeight} kg</strong>
+                    </span>
+                </div>`
+            ).join('') + `<p style="font-size:var(--font-size-xs);color:var(--color-text-subheader);margin-top:var(--spacing-sm);margin-bottom:0;">
+                +2.5 kg dès que tu atteins toutes les séries cibles (double progression).
+            </p>`;
+        }
+
+        btn.disabled        = false;
+        btnIcon.textContent = '🔄';
+        btnText.textContent = 'Réanalyser';
     }
 
     // ══════════════════════════════════════════════════════════════════
-    //  BADGES PROFIL (section générateur)
+    //  FALLBACK LOCAL (si API indisponible)
+    // ══════════════════════════════════════════════════════════════════
+
+    function _runLocalAnalysis(history, profile, { freq, stagnating, progressing, recovery, targets, tonnage, avgTonnage, insights }) {
+        let html = '';
+
+        if (recovery) {
+            const msg = recovery.days === 0
+                ? "Tu viens de t'entraîner. Assure-toi de bien récupérer avant la prochaine séance."
+                : recovery.days <= 3 ? `Dernière séance il y a ${recovery.label}. Tu es bien récupéré(e).`
+                : recovery.days <= 7 ? `${recovery.label} sans séance. Vise 3-4x/semaine pour maximiser les gains.`
+                : `${recovery.label} sans séance. Reprends dès aujourd'hui pour maintenir tes acquis !`;
+            html += renderInsight(recovery.icon, 'Récupération', msg, recovery.color);
+        }
+
+        const freqMsg = freq < 2
+            ? `Tu t'entraînes <strong>${freq}x/semaine</strong>. Vise <strong>3x minimum</strong>.`
+            : freq >= 4
+            ? `Excellent rythme : <strong>${freq}x/semaine</strong>.`
+            : `Bonne fréquence : <strong>${freq}x/semaine</strong>. Continue !`;
+        html += renderInsight('📅', 'Fréquence', freqMsg, 'hsl(210,80%,58%)');
+
+        if (progressing.length) {
+            html += renderInsight('📈', 'Progressions récentes',
+                progressing.map(p => `<strong>${p.name}</strong> : +${p.gain} kg (${p.from} → ${p.to} kg)`).join('<br>'),
+                'hsl(145,65%,48%)');
+        }
+
+        if (stagnating.length) {
+            const inc = TS?.progressiveOverload?.weightIncrements?.upperBody ?? 2.5;
+            html += renderInsight('⚠️', 'Stagnation détectée',
+                stagnating.map(s => `<strong>${s.name}</strong> : ${s.weight} kg sur ${s.sessions} séances`).join('<br>')
+                + `<br><br>Applique la <em>double progression</em> : atteins le haut de ta fourchette de reps, puis ajoute <strong>+${inc} kg</strong>.`,
+                'hsl(35,80%,54%)');
+        }
+
+        if (avgTonnage > 0) {
+            html += renderInsight('⚡', 'Volume moyen (5 dernières)',
+                `<strong>${avgTonnage.toLocaleString('fr-FR')} kg·rep</strong>/séance.`,
+                'hsl(280,72%,62%)');
+        }
+
+        html += renderInsight('💤', 'Récupération & Nutrition',
+            '<strong>7-9h de sommeil</strong> et <strong>1.6-2.2g de protéines/kg/j</strong>.',
+            'hsl(198,75%,48%)');
+
+        insights.innerHTML = html;
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  BADGES PROFIL
     // ══════════════════════════════════════════════════════════════════
 
     function renderProfileBadges() {
@@ -278,20 +387,14 @@
     // ══════════════════════════════════════════════════════════════════
 
     function init() {
-        // Analyse
         document.getElementById('aiCoachGenerateBtn')?.addEventListener('click', runAnalysis);
-
-        // Générateur → délègue à ProgramBuilder
         document.getElementById('aiProgramGenBtn')?.addEventListener('click', () => {
             window.ProgramBuilder?.open();
         });
-
-        // Onglet Coach
         document.getElementById('tabCoach')?.addEventListener('click', () => {
             if (getHistory().length > 0) setTimeout(runAnalysis, 100);
             renderProfileBadges();
         });
-
         renderProfileBadges();
     }
 
