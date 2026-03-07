@@ -1280,7 +1280,7 @@
                     </div>
                 </section>
 
-                <!-- Prochaine séance suggérée -->
+                <!-- Objectif de progression -->
                 <section class="dash-section" style="margin-bottom:var(--spacing-lg);">
                     <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);">
                         <div style="font-size:0.9rem;font-weight:800;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">
@@ -1288,6 +1288,33 @@
                         </div>
                         <div id="aiProgressionTarget" style="font-size:var(--font-size-sm);color:var(--color-text-subheader);">
                             Lance une analyse pour voir tes objectifs personnalisés.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Générateur de programme -->
+                <section class="dash-section" style="margin-bottom:var(--spacing-lg);">
+                    <div style="background:var(--color-surface-default);border:1.5px solid var(--color-border-default);border-radius:var(--radius-large);overflow:hidden;box-shadow:0 4px 16px var(--shadow-sm);">
+                        <!-- Header -->
+                        <div style="padding:var(--spacing-lg);border-bottom:1px solid var(--color-border-default);display:flex;align-items:center;gap:12px;">
+                            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(145,65%,48%),hsl(180,70%,45%));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🏗️</div>
+                            <div>
+                                <div style="font-weight:800;color:var(--color-text-header);font-size:var(--font-size-base);">Générateur de programme</div>
+                                <div style="font-size:var(--font-size-xs);color:var(--color-text-subheader);">Exercices S-Tier · Splits scientifiques · Jeff Nippard</div>
+                            </div>
+                        </div>
+                        <!-- Contenu -->
+                        <div style="padding:var(--spacing-lg);">
+                            <p style="font-size:var(--font-size-xs);color:var(--color-text-subheader);line-height:1.6;margin:0 0 var(--spacing-md);">
+                                Génère automatiquement un programme complet et personnalisé basé sur ton niveau, ton objectif et ta disponibilité — en utilisant les exercices <strong>S-Tier</strong> de Jeff Nippard et les règles scientifiques de <strong>TrainingScience</strong>.
+                            </p>
+                            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--spacing-md);" id="aiProgramBadges">
+                                <!-- Badges profil générés dynamiquement -->
+                            </div>
+                            <button class="btn btn-primary" id="aiProgramGenBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,hsl(145,65%,42%),hsl(180,65%,40%));">
+                                <span>🏗️</span>
+                                <span id="aiProgramGenBtnText">Générer un programme</span>
+                            </button>
                         </div>
                     </div>
                 </section>
