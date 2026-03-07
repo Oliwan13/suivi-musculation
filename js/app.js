@@ -1063,6 +1063,10 @@
             if (!session?.exercises?.[exIndex]) return;
             const ex = session.exercises[exIndex];
             if (!Array.isArray(ex.series)) ex.series = [];
+            // GUARD: ne jamais créer de série fantôme au-delà de la longueur actuelle.
+            // Sans ce guard, un input DOM avec data-serie="4" (input résiduel) déclencherait
+            // ex.series[4] = {} → 5ème série créée silencieusement dans le state.
+            if (serieIndex >= ex.series.length) return;
             // BUG FIX: les séries héritées de defaultSessions sont des strings ("4 x 5-7").
             // Une string est truthy → !ex.series[i] est false → écriture .weight/.reps silencieusement
             // perdue. On remplace explicitement tout item non-objet par un objet vide.
@@ -3619,6 +3623,13 @@
                     const weight = dom.quickEditWeight.value;
                     const reps = dom.quickEditReps.value;
                     const exerciseToUpdate = state.sessions[state.currentSessionIndex].exercises[state.quickEditIndex];
+                    // BUG FIX: si certaines séries sont encore des strings (exercice jamais tapé manuellement),
+                    // le forEach ne peut pas écrire .weight/.reps sur une primitive → série 1 reste vide.
+                    // On normalise d'abord en objets, puis on applique le quick-edit sur tous.
+                    exerciseToUpdate.series = exerciseToUpdate.series.map(s =>
+                        (s !== null && typeof s === 'object') ? s : { weight: '', reps: '' }
+                    );
+                    while (exerciseToUpdate.series.length < 4) exerciseToUpdate.series.push({ weight: '', reps: '' });
                     exerciseToUpdate.series.forEach((s, i) => {
                         exerciseToUpdate.series[i].weight = weight;
                         exerciseToUpdate.series[i].reps = reps;
