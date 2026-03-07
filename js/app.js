@@ -1063,7 +1063,12 @@
             if (!session?.exercises?.[exIndex]) return;
             const ex = session.exercises[exIndex];
             if (!Array.isArray(ex.series)) ex.series = [];
-            if (!ex.series[serieIndex]) ex.series[serieIndex] = {};
+            // BUG FIX: les séries héritées de defaultSessions sont des strings ("4 x 5-7").
+            // Une string est truthy → !ex.series[i] est false → écriture .weight/.reps silencieusement
+            // perdue. On remplace explicitement tout item non-objet par un objet vide.
+            if (typeof ex.series[serieIndex] !== 'object' || ex.series[serieIndex] === null) {
+                ex.series[serieIndex] = {};
+            }
             ex.series[serieIndex][field] = value;
             // Cache invalidé : les données de la session ont changé
             invalidateNextSessionCache();
@@ -1256,6 +1261,13 @@
             exercises.forEach(ex => {
                 if (!ex.rest?.trim()) ex.rest = "1 min";
                 if (Array.isArray(ex.series)) {
+                    // BUG FIX: defaultSessions stocke les séries comme strings ("4 x 5-7").
+                    // createTable lit s.weight / s.reps → undefined sur une string → input vide,
+                    // et updateSingleSerie ne pouvait pas écraser une string (truthy guard).
+                    // On normalise ici en un seul passage : string → {weight:'', reps:''}.
+                    ex.series = ex.series.map(s =>
+                        (s !== null && typeof s === 'object') ? s : { weight: '', reps: '' }
+                    );
                     while (ex.series.length < 4) ex.series.push({ weight: '', reps: '' });
                 }
             });
