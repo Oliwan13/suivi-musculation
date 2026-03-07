@@ -3972,21 +3972,47 @@
            SYSTÈME DE BADGES
            ════════════════════════════════════════════════════════════ */
         const BADGE_DEFS = [
-            { id: 'first_session',   icon: '🎯', label: '1ère séance',    check: (h) => h.length >= 1 },
-            { id: 'sessions_5',      icon: '⭐', label: '5 séances',      check: (h) => h.length >= 5 },
-            { id: 'sessions_10',     icon: '🔟', label: '10 séances',     check: (h) => h.length >= 10 },
-            { id: 'sessions_25',     icon: '🥈', label: '25 séances',     check: (h) => h.length >= 25 },
-            { id: 'sessions_50',     icon: '🥇', label: '50 séances',     check: (h) => h.length >= 50 },
-            { id: 'sessions_100',    icon: '💎', label: '100 séances',    check: (h) => h.length >= 100 },
-            { id: 'streak_3',        icon: '🔥', label: 'Streak 3j',      check: (h) => calcStreak(h) >= 3 },
-            { id: 'streak_7',        icon: '🔥🔥', label: 'Streak 7j',   check: (h) => calcStreak(h) >= 7 },
-            { id: 'streak_30',       icon: '🌋', label: 'Streak 30j',     check: (h) => calcStreak(h) >= 30 },
-            { id: 'tonnage_1000',    icon: '💪', label: '1000 kg séance', check: (h) => h.some(s => getTonnage(s) >= 1000) },
-            { id: 'tonnage_5000',    icon: '🦍', label: '5000 kg séance', check: (h) => h.some(s => getTonnage(s) >= 5000) },
-            { id: 'early_bird',  icon: '🌅', label: 'Lève-tôt',   check: (h) => h.some(s => { const d = new Date(s.date); return d.getHours() < 7; }) },
-            { id: 'night_owl',   icon: '🦉', label: 'Noctambule', check: (h) => h.some(s => { const d = new Date(s.date); return d.getHours() >= 22; }) },
-            { id: 'consistency',     icon: '📅', label: '4 sem. consec.', check: (h) => hasConsecutiveWeeks(h, 4) },
-            { id: 'variety',         icon: '🎨', label: '5 types séances',check: (h) => new Set(h.map(s => s.sessionName)).size >= 5 },
+            // ── Séances ───────────────────────────────────────────────────────
+            { id: 'first_session',   icon: '🎯', label: '1ère séance',      check: (h) => h.length >= 1 },
+            { id: 'sessions_5',      icon: '⭐', label: '5 séances',        check: (h) => h.length >= 5 },
+            { id: 'sessions_10',     icon: '🔟', label: '10 séances',       check: (h) => h.length >= 10 },
+            { id: 'sessions_25',     icon: '🥈', label: '25 séances',       check: (h) => h.length >= 25 },
+            { id: 'sessions_50',     icon: '🥇', label: '50 séances',       check: (h) => h.length >= 50 },
+            { id: 'sessions_100',    icon: '💎', label: '100 séances',      check: (h) => h.length >= 100 },
+            { id: 'sessions_200',    icon: '👑', label: '200 séances',      check: (h) => h.length >= 200 },
+            // ── Streaks ───────────────────────────────────────────────────────
+            { id: 'streak_3',        icon: '🔥',   label: 'Streak 3j',      check: (h) => calcStreak(h) >= 3 },
+            { id: 'streak_7',        icon: '🔥🔥', label: 'Streak 7j',      check: (h) => calcStreak(h) >= 7 },
+            { id: 'streak_14',       icon: '⚡',   label: 'Streak 14j',     check: (h) => calcStreak(h) >= 14 },
+            { id: 'streak_30',       icon: '🌋',   label: 'Streak 30j',     check: (h) => calcStreak(h) >= 30 },
+            // ── Tonnage séance ────────────────────────────────────────────────
+            { id: 'tonnage_1000',    icon: '💪',  label: '1 000 kg séance', check: (h) => h.some(s => getTonnage(s) >= 1000) },
+            { id: 'tonnage_5000',    icon: '🦍',  label: '5 000 kg séance', check: (h) => h.some(s => getTonnage(s) >= 5000) },
+            { id: 'tonnage_10000',   icon: '🏔️', label: '10 000 kg séance',check: (h) => h.some(s => getTonnage(s) >= 10000) },
+            // ── Tonnage total cumulé ──────────────────────────────────────────
+            { id: 'total_100k',      icon: '🔩',  label: '100 000 kg total',check: (h) => h.reduce((t,s) => t + getTonnage(s), 0) >= 100000 },
+            { id: 'total_500k',      icon: '🏋️', label: '500 000 kg total',check: (h) => h.reduce((t,s) => t + getTonnage(s), 0) >= 500000 },
+            // ── Horaires ──────────────────────────────────────────────────────
+            { id: 'early_bird',      icon: '🌅', label: 'Lève-tôt',         check: (h) => h.some(s => { const d = new Date(s.date); return d.getHours() < 7; }) },
+            { id: 'night_owl',       icon: '🦉', label: 'Noctambule',       check: (h) => h.some(s => { const d = new Date(s.date); return d.getHours() >= 22; }) },
+            { id: 'lunch_warrior',   icon: '☀️', label: 'Warrior du midi',  check: (h) => h.some(s => { const hr = new Date(s.date).getHours(); return hr >= 11 && hr <= 13; }) },
+            // ── Régularité ────────────────────────────────────────────────────
+            { id: 'consistency',     icon: '📅', label: '4 sem. consec.',   check: (h) => hasConsecutiveWeeks(h, 4) },
+            { id: 'consistency_8',   icon: '🗓️', label: '8 sem. consec.',  check: (h) => hasConsecutiveWeeks(h, 8) },
+            { id: 'variety',         icon: '🎨', label: '5 types séances',  check: (h) => new Set(h.map(s => s.sessionName)).size >= 5 },
+            // ── Volume par séance ─────────────────────────────────────────────
+            { id: 'big_session',     icon: '💥', label: '10 exos en 1 séance', check: (h) => h.some(s => (s.exercises||[]).length >= 10) },
+            { id: 'series_master',   icon: '📋', label: '30 séries en 1 séance', check: (h) => h.some(s => (s.exercises||[]).reduce((t,ex) => t + (ex.series||[]).length, 0) >= 30) },
+            // ── Progression ───────────────────────────────────────────────────
+            { id: 'comeback',        icon: '🔄', label: 'Retour après 14j', check: (h) => {
+                for (let i = 1; i < h.length; i++) {
+                    const gap = (new Date(h[i].date) - new Date(h[i-1].date)) / 86400000;
+                    if (gap >= 14) return true;
+                }
+                return false;
+            }},
+            { id: 'monday_warrior',  icon: '🗡️', label: 'Guerrier du lundi', check: (h) => h.filter(s => new Date(s.date).getDay() === 1).length >= 4 },
+            { id: 'weekend_warrior', icon: '🏖️', label: 'Weekend Warrior',  check: (h) => h.filter(s => [0,6].includes(new Date(s.date).getDay())).length >= 5 },
         ];
 
         function getTonnage(session) {
@@ -4940,6 +4966,88 @@
             });
         }
 
+        // ══════════════════════════════════════════════════════════════════
+        //  DÉFI HEBDOMADAIRE — Challenge rotatif local
+        //  Nouveau défi chaque lundi, progression calculée sur l'historique.
+        // ══════════════════════════════════════════════════════════════════
+
+        const WEEKLY_CHALLENGES = [
+            { id: 'ch_3sessions',   icon: '🏋️', label: '3 séances cette semaine',        check: (h, wdates) => wdates.size >= 3 },
+            { id: 'ch_4sessions',   icon: '🔥', label: '4 séances cette semaine',        check: (h, wdates) => wdates.size >= 4 },
+            { id: 'ch_10k_tonnage', icon: '💪', label: '10 000 kg de volume cette semaine', check: (h, wdates, weekSessions) => weekSessions.reduce((t,s) => t + getTonnage(s), 0) >= 10000 },
+            { id: 'ch_5exercises',  icon: '🎯', label: '5 exercices différents en une séance', check: (h, wdates, ws) => ws.some(s => (s.exercises||[]).length >= 5) },
+            { id: 'ch_no_skip',     icon: '📅', label: 'T\'entraîner 3 jours non consécutifs', check: (h, wdates) => {
+                const days = [...wdates].map(k => new Date(k).getDay()).sort((a,b)=>a-b);
+                for (let i = 1; i < days.length; i++) if (days[i] - days[i-1] === 1) return days.length >= 3 && i >= 2;
+                return days.length >= 3;
+            }},
+            { id: 'ch_morning',     icon: '🌅', label: 'Une séance avant 8h cette semaine', check: (h, wdates, ws) => ws.some(s => new Date(s.date).getHours() < 8) },
+            { id: 'ch_2types',      icon: '🎨', label: '2 types de séances différents', check: (h, wdates, ws) => new Set(ws.map(s => s.sessionName)).size >= 2 },
+            { id: 'ch_series20',    icon: '📋', label: '20 séries totales en une séance',  check: (h, wdates, ws) => ws.some(s => (s.exercises||[]).reduce((t,ex) => t + (ex.series||[]).length, 0) >= 20) },
+        ];
+
+        function getCurrentWeekKey() {
+            const now = new Date();
+            const jan = new Date(now.getFullYear(), 0, 1);
+            const week = Math.ceil(((now - jan) / 86400000 + jan.getDay() + 1) / 7);
+            return now.getFullYear() + '-W' + String(week).padStart(2, '0');
+        }
+
+        function getWeeklyChallenge() {
+            const wk = getCurrentWeekKey();
+            // Défi déterministe basé sur le numéro de semaine
+            const [, w] = wk.split('-W');
+            return WEEKLY_CHALLENGES[parseInt(w, 10) % WEEKLY_CHALLENGES.length];
+        }
+
+        function renderWeeklyChallenge() {
+            const el = document.getElementById('weeklyChallengeWidget');
+            if (!el) return;
+
+            const history = getHistory();
+            const challenge = getWeeklyChallenge();
+            const wk = getCurrentWeekKey();
+
+            // Séances de la semaine en cours
+            const now = new Date(); now.setHours(0,0,0,0);
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+            const weekSessions = history.filter(s => new Date(s.date) >= monday);
+            const wdates = new Set(weekSessions.map(s => {
+                const d = new Date(s.date);
+                return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+            }));
+
+            const done = challenge.check(history, wdates, weekSessions);
+            const alreadyCompleted = StorageAPI.get('lyftiv_challenge_done') === wk && done;
+
+            // Sauvegarder si complété cette semaine
+            if (done) StorageAPI.set('lyftiv_challenge_done', wk);
+
+            const color = done ? 'hsl(145,65%,48%)' : 'hsl(214,80%,58%)';
+            const statusIcon = done ? '✅' : '🎯';
+            const statusText = done ? 'Défi relevé !' : 'En cours…';
+
+            el.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--spacing-sm);">
+                    <h3 style="font-size:0.9rem;font-weight:800;color:var(--color-text-header);margin:0;display:flex;align-items:center;gap:6px;">
+                        ${challenge.icon} Défi de la semaine
+                    </h3>
+                    <span style="font-size:0.72rem;font-weight:700;color:${color};background:${color}22;padding:3px 9px;border-radius:20px;border:1px solid ${color}44;">
+                        ${statusIcon} ${statusText}
+                    </span>
+                </div>
+                <div style="font-size:0.85rem;color:var(--color-text-default);font-weight:600;margin-bottom:var(--spacing-sm);">
+                    ${challenge.label}
+                </div>
+                <div style="background:var(--color-surface-muted);border-radius:8px;padding:6px 10px;font-size:0.75rem;color:var(--color-text-subheader);">
+                    ${weekSessions.length} séance${weekSessions.length > 1 ? 's' : ''} cette semaine · ${wdates.size} jour${wdates.size > 1 ? 's' : ''} actif${wdates.size > 1 ? 's' : ''}
+                </div>
+                ${done ? `<div style="text-align:center;margin-top:var(--spacing-sm);font-size:0.78rem;color:hsl(145,65%,48%);font-weight:700;">🏆 Nouveau défi lundi prochain !</div>` : ''}
+            `;
+            el.style.cssText = `border:1.5px solid ${done ? 'hsl(145,65%,48%)' : 'var(--color-border-default)'};border-radius:var(--radius-large);padding:var(--spacing-lg);background:var(--color-surface-default);margin-bottom:var(--spacing-lg);transition:border-color .3s;`;
+        }
+
         function initDashboard() {
             populateDashChartExercise();
             renderDashChart('1rm');
@@ -4952,6 +5060,7 @@
             renderPeriodisationWidget();
             renderQuickSummary();
             renderBadgesInProfile();
+            renderWeeklyChallenge();
 
             // Discipline Engine — Execution Rate widget
             const history = getHistory();
