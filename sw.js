@@ -39,6 +39,8 @@ const FILES_TO_CACHE = [
     `${BASE}/js/features/onboarding.js`,
     `${BASE}/js/features/program-builder.js`,
     `${BASE}/js/features/ai-coach.js`,
+    `${BASE}/js/features/fuzzy-search.js`,
+    `${BASE}/js/features/auth.js`,
 ];
 
 /* ── INSTALL : mise en cache de tous les assets ────────────────── */
