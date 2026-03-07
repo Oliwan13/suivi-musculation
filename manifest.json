@@ -1,0 +1,11 @@
+{
+    "name": "Lyftiv",
+    "short_name": "Lyftiv",
+    "description": "Votre progression, notre science.",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#eef4fb",
+    "theme_color": "#4a7fc1",
+    "orientation": "portrait",
+    "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+}

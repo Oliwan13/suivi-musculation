@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- PWA : manifest inline via data URI -->
+    <link rel="manifest" href="manifest.json">
+    <!-- PWA iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Lyftiv">
+    <meta name="theme-color" content="#4a7fc1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Lyftiv – Votre progression, notre science.</title>
+    
+    <!-- Google Fonts — chargement non-bloquant -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'; this.onload=null;">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"></noscript>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         ONBOARDING OVERLAY v13
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="onboardingOverlay" class="hidden">
+        <div class="onb-card">
+            <!-- Barre de progression -->
+            <div class="onb-progress-bar" id="onbProgressBar">
+                <div class="onb-progress-dot active" data-step="0"></div>
+                <div class="onb-progress-dot" data-step="1"></div>
+                <div class="onb-progress-dot" data-step="2"></div>
+                <div class="onb-progress-dot" data-step="3"></div>
+                <div class="onb-progress-dot" data-step="4"></div>
+                <div class="onb-progress-dot" data-step="5"></div>
+                <div class="onb-progress-dot" data-step="6"></div>
+            </div>
+
+            <!-- STEP 0 : Welcome -->
+            <div class="onb-step active" data-step="0">
+                <span class="onb-icon">🏋️</span>
+                <h1 class="onb-title">Bienvenue sur Lyftiv</h1>
+                <p class="onb-subtitle">La science du progrès. En 30 secondes, on configure votre programme personnalisé.</p>
+                <button class="onb-btn-primary" onclick="onbNext()">Commencer →</button>
+                <button class="onb-btn-skip" onclick="onbSkip()">Passer l'onboarding</button>
+            </div>
+
+            <!-- STEP 1 : Objectif -->
+            <div class="onb-step" data-step="1">
+                <span class="onb-icon">🎯</span>
+                <h2 class="onb-title">Quel est votre objectif ?</h2>
+                <p class="onb-subtitle">On adaptera votre programme et vos recommandations nutritionnelles.</p>
+                <div class="onb-choices" id="onbGoalChoices">
+                    <button class="onb-choice-btn" data-value="prise" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">💪</span>
+                        <span class="onb-choice-label">
+                            Prise de masse
+                            <span class="onb-choice-sub">Construire du muscle, volume maximum</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="force" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">🏋️</span>
+                        <span class="onb-choice-label">
+                            Force
+                            <span class="onb-choice-sub">Progresser sur les charges lourdes</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="seche" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">🔥</span>
+                        <span class="onb-choice-label">
+                            Sèche / Définition
+                            <span class="onb-choice-sub">Perdre du gras tout en gardant le muscle</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="recompo" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">⚡</span>
+                        <span class="onb-choice-label">
+                            Recomposition
+                            <span class="onb-choice-sub">Équilibre entre prise de muscle et perte de gras</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="sante" onclick="onbSelect(this,'goal')">
+                        <span class="onb-choice-icon">❤️</span>
+                        <span class="onb-choice-label">
+                            Santé & Bien-être
+                            <span class="onb-choice-sub">Rester actif, améliorer sa condition physique</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbGoalNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 2 : Niveau -->
+            <div class="onb-step" data-step="2">
+                <span class="onb-icon">📊</span>
+                <h2 class="onb-title">Votre niveau actuel ?</h2>
+                <p class="onb-subtitle">Pour calibrer les charges et la progression de votre programme.</p>
+                <div class="onb-choices">
+                    <button class="onb-choice-btn" data-value="debutant" onclick="onbSelect(this,'level')">
+                        <span class="onb-choice-icon">🌱</span>
+                        <span class="onb-choice-label">
+                            Débutant
+                            <span class="onb-choice-sub">Moins de 1 an d'entraînement régulier</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="intermediaire" onclick="onbSelect(this,'level')">
+                        <span class="onb-choice-icon">🔥</span>
+                        <span class="onb-choice-label">
+                            Intermédiaire
+                            <span class="onb-choice-sub">1 à 3 ans de pratique, bases solides</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="avance" onclick="onbSelect(this,'level')">
+                        <span class="onb-choice-icon">⚡</span>
+                        <span class="onb-choice-label">
+                            Avancé
+                            <span class="onb-choice-sub">Plus de 3 ans, progressions stagnantes</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbLevelNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 3 : Profil -->
+            <div class="onb-step" data-step="3">
+                <span class="onb-icon">⚖️</span>
+                <h2 class="onb-title">Votre profil</h2>
+                <p class="onb-subtitle">Nécessaire pour calculer vos besoins caloriques et vos charges optimales.</p>
+                <div class="onb-input-group">
+                    <div class="onb-input-row">
+                        <div class="onb-field">
+                            <label>Prénom</label>
+                            <input type="text" id="onbName" placeholder="Alex" maxlength="30" autocomplete="given-name">
+                        </div>
+                        <div class="onb-field">
+                            <label>Genre</label>
+                            <select id="onbGender">
+                                <option value="male">Homme</option>
+                                <option value="female">Femme</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="onb-input-row">
+                        <div class="onb-field">
+                            <label>Âge</label>
+                            <input type="number" id="onbAge" placeholder="28" min="15" max="90" inputmode="numeric">
+                        </div>
+                        <div class="onb-field">
+                            <label>Poids (kg)</label>
+                            <input type="number" id="onbWeight" placeholder="80" min="30" max="300" inputmode="decimal">
+                        </div>
+                        <div class="onb-field">
+                            <label>Taille (cm)</label>
+                            <input type="number" id="onbHeight" placeholder="178" min="130" max="230" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()">Continuer →</button>
+                <button class="onb-btn-skip" onclick="onbNext()">Passer cette étape</button>
+            </div>
+
+            <!-- STEP 4 : Fréquence -->
+            <div class="onb-step" data-step="4">
+                <span class="onb-icon">📅</span>
+                <h2 class="onb-title">Fréquence d'entraînement ?</h2>
+                <p class="onb-subtitle">Combien de séances par semaine pouvez-vous réaliser ?</p>
+                <div class="onb-choices">
+                    <button class="onb-choice-btn" data-value="2" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">📅</span>
+                        <span class="onb-choice-label">
+                            2x par semaine
+                            <span class="onb-choice-sub">Corps entier, récupération maximale</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="3" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">🗓️</span>
+                        <span class="onb-choice-label">
+                            3x par semaine
+                            <span class="onb-choice-sub">Programme Push/Pull/Legs ou Full Body</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="4" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">⚡</span>
+                        <span class="onb-choice-label">
+                            4x par semaine
+                            <span class="onb-choice-sub">Split Upper/Lower, optimal masse/force</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="5" onclick="onbSelect(this,'frequency')">
+                        <span class="onb-choice-icon">🔥</span>
+                        <span class="onb-choice-label">
+                            5x+ par semaine
+                            <span class="onb-choice-sub">Split avancé, volume élevé</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbFreqNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 5 : Équipement -->
+            <div class="onb-step" data-step="5">
+                <span class="onb-icon">🏗️</span>
+                <h2 class="onb-title">Votre environnement ?</h2>
+                <p class="onb-subtitle">Pour adapter les exercices de votre programme.</p>
+                <div class="onb-choices">
+                    <button class="onb-choice-btn" data-value="gym" onclick="onbSelect(this,'equipment')">
+                        <span class="onb-choice-icon">🏋️</span>
+                        <span class="onb-choice-label">
+                            Salle de sport complète
+                            <span class="onb-choice-sub">Machines, barres, haltères, câbles</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="home" onclick="onbSelect(this,'equipment')">
+                        <span class="onb-choice-icon">🏠</span>
+                        <span class="onb-choice-label">
+                            Home gym
+                            <span class="onb-choice-sub">Équipement limité à la maison</span>
+                        </span>
+                    </button>
+                    <button class="onb-choice-btn" data-value="minimal" onclick="onbSelect(this,'equipment')">
+                        <span class="onb-choice-icon">🎽</span>
+                        <span class="onb-choice-label">
+                            Poids du corps
+                            <span class="onb-choice-sub">Sans matériel ou presque</span>
+                        </span>
+                    </button>
+                </div>
+                <button class="onb-btn-primary" onclick="onbNext()" id="onbEquipNext" disabled>Continuer →</button>
+            </div>
+
+            <!-- STEP 6 : Analyse -->
+            <div class="onb-step" data-step="6">
+                <div class="onb-analysis-wrap">
+                    <div class="onb-analysis-ring" id="onbAnalysisRing">
+                        <svg width="90" height="90" viewBox="0 0 90 90">
+                            <circle class="onb-analysis-ring-track" cx="45" cy="45" r="40"/>
+                            <circle class="onb-analysis-ring-fill" id="onbRingFill" cx="45" cy="45" r="40"/>
+                        </svg>
+                        <div class="onb-analysis-pct" id="onbAnalysisPct">0%</div>
+                    </div>
+                    <h2 class="onb-title" style="margin-bottom:8px;">Analyse du profil…</h2>
+                    <p class="onb-subtitle" style="margin-bottom:20px;">Génération de votre programme personnalisé</p>
+                    <div class="onb-analysis-steps" id="onbAnalysisSteps">
+                        <div class="onb-analysis-step" data-idx="0"><span class="onb-analysis-step-icon">⏳</span> Calcul des besoins caloriques…</div>
+                        <div class="onb-analysis-step" data-idx="1"><span class="onb-analysis-step-icon">⏳</span> Calibration des charges initiales…</div>
+                        <div class="onb-analysis-step" data-idx="2"><span class="onb-analysis-step-icon">⏳</span> Sélection du programme optimal…</div>
+                        <div class="onb-analysis-step" data-idx="3"><span class="onb-analysis-step-icon">⏳</span> Configuration des alertes sécurité…</div>
+                    </div>
+                </div>
+                <!-- Bouton caché, déclenché automatiquement après animation -->
+                <button class="onb-btn-primary hidden" id="onbFinishBtn" onclick="onbFinish()">🚀 Lancer Lyftiv !</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         PAGE D'ACCUEIL LYFTIV
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="landing" class="landing-container">
+        <div class="landing-topbar-actions">
+            <button id="landingThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème" style="font-size:1.1rem;">🌓</button>
+        </div>
+        <div class="landing-content">
+
+            <!-- Hero -->
+            <header class="landing-hero">
+                <svg class="landing-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="landingLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="hsl(200, 80%, 85%)" />
+                            <stop offset="100%" stop-color="hsl(260, 60%, 85%)" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#landingLogoGrad)"/>
+                    <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220, 60%, 55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <circle cx="25" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
+                </svg>
+                <h1 class="landing-title">Lyftiv</h1>
+                <p class="landing-slogan">Suivez, analysez, progressez.</p>
+                
+                <button id="landingStartBtn" class="landing-cta-btn">
+                    ▶ Démarrer maintenant
+                </button>
+            </header>
+
+            <!-- 3 pills features — minimal, lisible au premier coup d'œil -->
+            <div class="landing-pills" aria-label="Fonctionnalités clés">
+                <span class="landing-pill">📊 Progression</span>
+                <span class="landing-pill">🥗 Nutrition</span>
+                <span class="landing-pill">🔄 Récupération</span>
+            </div>
+
+            <!-- landingStartBtn2 préservé pour listener JS —— masqué car redondant -->
+            <button id="landingStartBtn2" class="landing-cta-btn" style="display:none" data-action="start-app">▶ Démarrer maintenant</button>
+
+
+
+        </div>
+    </div>
+
+
+    <div id="dashboard" class="dashboard-container hidden">
+        <div class="dashboard-content">
+            <header class="dashboard-topbar">
+                <div class="dashboard-topbar-brand">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;flex-shrink:0;">
+                        <defs><linearGradient id="dtbLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="hsl(200,80%,85%)"/><stop offset="100%" stop-color="hsl(260,60%,85%)"/></linearGradient></defs>
+                        <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#dtbLogoGrad)"/>
+                        <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220,60%,55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                        <circle cx="25" cy="50" r="10" stroke="hsl(220,60%,55%)" stroke-width="2" fill="none"/>
+                        <circle cx="75" cy="50" r="10" stroke="hsl(220,60%,55%)" stroke-width="2" fill="none"/>
+                        <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
+                    </svg>
+                    <span class="dashboard-topbar-name">Lyftiv</span>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <button id="dashThemeBtn" class="icon-btn" title="Mode sombre" aria-label="Changer de thème" style="font-size:1.1rem;">🌓</button>
+                    <button id="dashHomeBtn" class="icon-btn" title="Accueil" aria-label="Retour à l'accueil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+                </div>
+            </header>
+
+            <!-- ── ONGLETS DASHBOARD ──────────────────────────── -->
+            <div class="dash-tab-nav" role="tablist" aria-label="Sections Lyftiv">
+                <button class="dash-tab-btn active" id="tabTraining" data-tab="panelTraining" role="tab" aria-selected="true" aria-controls="panelTraining">
+                    <span class="tab-icon">🏋️</span>
+                    <span class="tab-label">
+                        <span class="tab-title">Entraînement</span>
+
+                    </span>
+                </button>
+                <button class="dash-tab-btn" id="tabNutrition" data-tab="panelNutrition" role="tab" aria-selected="false" aria-controls="panelNutrition">
+                    <span class="tab-icon">🥗</span>
+                    <span class="tab-label">
+                        <span class="tab-title">Nutrition</span>
+
+                    </span>
+                </button>
+                <button class="dash-tab-btn" id="tabProfile" data-tab="panelProfile" role="tab" aria-selected="false" aria-controls="panelProfile">
+                    <span class="tab-icon">👤</span>
+                    <span class="tab-label">
+                        <span class="tab-title">Profil</span>
+
+                    </span>
+                </button>
+            </div>
+
+            <div id="panelTraining" class="dash-tab-panel" role="tabpanel" aria-labelledby="tabTraining">
+
+            <!-- ═══ RÉSUMÉ RAPIDE ═══════════════════════════════════ -->
+            <!-- ═══ TITRE PAGE ══════════════════════════════════════ -->
+            <div class="dash-page-title" id="dashPageTitle">
+                <div>
+                    <h1>📊 Tableau de bord</h1>
+                    <div class="dash-greeting" id="dashGreeting">Bienvenue !</div>
+                </div>
+            </div>
+
+            <div id="dashQuickSummary" class="dash-quick-summary" style="margin-bottom:var(--spacing-lg);">
+                <div class="dqs-item">
+                    <span class="dqs-icon">📅</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsWeekSessions">0</div>
+                        <div class="dqs-label">séance<span id="dqsWeekPlural"></span> cette semaine</div>
+                    </div>
+                </div>
+                <div class="dqs-divider"></div>
+                <div class="dqs-item">
+                    <span class="dqs-icon">🔥</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsStreak">0</div>
+                        <div class="dqs-label">jours de streak</div>
+                    </div>
+                </div>
+                <div class="dqs-divider"></div>
+                <div class="dqs-item">
+                    <span class="dqs-icon">🎯</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsGoalRatio">0/3</div>
+                        <div class="dqs-label">objectif semaine</div>
+                    </div>
+                </div>
+                <div class="dqs-divider"></div>
+                <div class="dqs-item">
+                    <span class="dqs-icon">⚡</span>
+                    <div class="dqs-content">
+                        <div class="dqs-value" id="dqsTotal">0</div>
+                        <div class="dqs-label">séances au total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ PROCHAINE ACTION ═════════════════════════════════ -->
+            <section id="nextActionCard" aria-label="Prochaine action recommandée" style="margin-bottom:var(--spacing-xl);">
+                <div id="nextActionInner" class="next-action-card">
+                    <div class="next-action-label">PROCHAINE ACTION</div>
+                    <div class="next-action-session" id="naSessionName">Chargement…</div>
+                    <div class="next-action-meta" id="naSessionMeta"></div>
+                    <div class="next-action-recovery" id="naRecovery"></div>
+                    <button class="next-action-cta" id="naExecuteBtn" aria-label="Démarrer le protocole">
+                        ▶ EXECUTE PROTOCOL
+                    </button>
+                </div>
+            </section>
+
+            <!-- ═══ MES SÉANCES ══════════════════════════════════════ -->
+            <section class="session-selector" aria-labelledby="session-selector-title" style="margin-bottom:var(--spacing-xl);">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 id="session-selector-title" class="dash-section-title">🗂 Mes séances</h2>
+                        <p class="dash-section-sub">Choisissez une séance pour démarrer</p>
+                    </div>
+                </div>
+                <div class="session-selector-grid" id="sessionSelectorGrid"></div>
+            </section>
+
+            <!-- ═══ SECTION 1 : PROGRESSION ═════════════════════════ -->
+            <div class="dash-section-block">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 class="dash-section-title">📈 Progression</h2>
+                        <p class="dash-section-sub">Analyse de tes performances dans le temps</p>
+                    </div>
+                </div>
+
+                <!-- Graphique progression -->
+                <section id="dashChartsSection" style="margin-bottom:var(--spacing-md)">
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <div id="dashChartStats" style="display:flex;flex-wrap:wrap;gap:var(--spacing-sm);margin-bottom:var(--spacing-md);"></div>
+                        <div id="dashChartTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--spacing-sm);">
+                            <button class="dash-chart-tab active" data-dchart="1rm">
+                                1RM <span class="dash-tooltip-icon" data-tip="Charge maximale estimée pour 1 répétition, calculée depuis tes séries.">ⓘ</span>
+                            </button>
+                            <button class="dash-chart-tab" data-dchart="tonnage">
+                                Tonnage <span class="dash-tooltip-icon" data-tip="Volume total soulevé : poids × répétitions × séries.">ⓘ</span>
+                            </button>
+                            <button class="dash-chart-tab" data-dchart="volume">
+                                Volume <span class="dash-tooltip-icon" data-tip="Nombre total de répétitions effectuées par séance.">ⓘ</span>
+                            </button>
+                            <button class="dash-chart-tab" data-dchart="frequency">
+                                Fréquence <span class="dash-tooltip-icon" data-tip="Nombre de séances par semaine sur les 12 dernières semaines.">ⓘ</span>
+                            </button>
+                        </div>
+                        <select id="dashChartExercise" style="width:100%;padding:6px 10px;border-radius:var(--radius-base);border:1px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);font-size:var(--font-size-sm);margin-bottom:var(--spacing-sm);display:none;" aria-label="Exercice"></select>
+                        <div style="position:relative;height:220px;">
+                            <canvas id="dashProgressCanvas"></canvas>
+                        </div>
+                        <div id="dashChartEmpty" style="display:none;text-align:center;color:var(--color-text-subheader);padding:var(--spacing-xl);font-size:var(--font-size-sm);">
+                            📊 Enregistre au moins 2 séances pour voir ta progression ici.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Objectif hebdomadaire — dans la section Progression -->
+                <section id="weeklyGoalSection" style="margin-bottom:var(--spacing-md)">
+                    <div class="weekly-goal-wrap">
+                        <div class="weekly-goal-header">
+                            <div>
+                                <div id="weeklyGoalStatus" style="font-weight:700;color:var(--color-text-header);font-size:0.95rem;"></div>
+                                <div id="weeklyGoalSub" style="font-size:0.75rem;color:var(--color-text-subheader);margin-top:2px;"></div>
+                            </div>
+                            <div class="weekly-goal-controls" title="Modifier l'objectif hebdomadaire">
+                                <button class="wg-count-btn" id="wgDecBtn" aria-label="Réduire l'objectif">&#8722;</button>
+                                <span class="wg-count-display" id="wgCountDisplay">3&#160;/ sem.</span>
+                                <button class="wg-count-btn" id="wgIncBtn" aria-label="Augmenter l'objectif">&#43;</button>
+                            </div>
+                        </div>
+                        <div class="weekly-goal-dots" id="weeklyGoalDots"></div>
+                        <div class="weekly-goal-bar"><div class="weekly-goal-bar-fill" id="weeklyGoalBarFill" style="width:0%"></div></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══ SECTION 2 : ACTIVITÉ ═════════════════════════════ -->
+            <div class="dash-section-block">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 class="dash-section-title">📅 Activité</h2>
+                        <p class="dash-section-sub">Ton historique d'entraînement sur 12 mois</p>
+                    </div>
+                </div>
+
+                <!-- Heatmap -->
+                <section id="dashHeatmapSection" style="margin-bottom:var(--spacing-md)">
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <div id="heatmapMonths" class="heatmap-months"></div>
+                        <div id="heatmapGrid" class="heatmap-grid"></div>
+                        <div class="heatmap-legend">
+                            <span>Moins</span>
+                            <div class="heatmap-legend-cell"></div>
+                            <div class="heatmap-legend-cell l1"></div>
+                            <div class="heatmap-legend-cell l2"></div>
+                            <div class="heatmap-legend-cell l3"></div>
+                            <div class="heatmap-legend-cell l4"></div>
+                            <span>Plus</span>
+                        </div>
+                        <div id="heatmapSummary" style="margin-top:var(--spacing-md);display:flex;flex-wrap:wrap;gap:var(--spacing-sm);"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══ SECTION 3 : PROGRAMME ════════════════════════════ -->
+            <div class="dash-section-block">
+                <div class="dash-section-header">
+                    <div>
+                        <h2 class="dash-section-title">🧬 Programme</h2>
+                        <p class="dash-section-sub">Récupération, cycle et respect du protocole</p>
+                    </div>
+                </div>
+
+                <!-- Récupération & Cycle -->
+                <section id="dashDeloadSection" style="margin-bottom:var(--spacing-md)">
+                    <div class="dash-subsection-label">🔄 Récupération & Cycle d'entraînement</div>
+                    <div id="dashDeloadWidget" style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <p style="text-align:center;color:var(--color-text-subheader);font-size:var(--font-size-sm);">Enregistre ta première séance pour activer l'analyse automatique.</p>
+                    </div>
+                </section>
+
+                <!-- Adhérence — renommé clairement -->
+                <section style="margin-bottom:var(--spacing-md);">
+                    <div class="dash-subsection-label">
+                        📋 Respect du programme
+                        <span class="dash-tooltip-icon" data-tip="Mesure la régularité de tes entraînements par rapport au programme défini. Plus ton taux est élevé, plus tu respectes la fréquence prévue.">ⓘ</span>
+                    </div>
+                    <div id="disciplineWidget" style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <p style="text-align:center;color:var(--color-text-subheader);font-size:var(--font-size-sm);">Enregistre ta première séance pour activer le suivi.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Badges déplacés dans le profil (voir panelProfile) -->
+            <!-- On garde l'ID pour compatibilité JS mais on masque la section dans le training panel -->
+            <section id="dashBadgesSection" style="display:none">
+                <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);">
+                    <div class="badge-grid" id="badgeGrid"></div>
+                </div>
+            </section>
+
+            </div><!-- /panelTraining -->
+
+            <!-- ── PANNEAU NUTRITION ──────────────────────────── -->
+            <div id="panelNutrition" class="dash-tab-panel hidden" role="tabpanel" aria-labelledby="tabNutrition">
+
+    <!-- ── MENU NUTRITION (ordre logique : calcul → composition → protocole → info) ── -->
+    <nav id="nutritionMenu" class="nutrition-menu" aria-label="Menu Nutrition">
+        <button class="nutri-menu-btn active" data-nutri="tdeeSection" aria-pressed="true">
+            <span class="nutri-menu-icon">🔥</span>
+            <span class="nutri-menu-label">Calories<br><small>& Macros</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="bfSection" aria-pressed="false">
+            <span class="nutri-menu-icon">📏</span>
+            <span class="nutri-menu-label">Composition<br><small>Corporelle</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="fastingSection" aria-pressed="false">
+            <span class="nutri-menu-icon">⏱️</span>
+            <span class="nutri-menu-label">Jeûne<br><small>Intermittent</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="supplSection" aria-pressed="false">
+            <span class="nutri-menu-icon">💊</span>
+            <span class="nutri-menu-label">Compléments<br><small>Alimentaires</small></span>
+        </button>
+        <button class="nutri-menu-btn" data-nutri="principesSection" aria-pressed="false">
+            <span class="nutri-menu-icon">🥗</span>
+            <span class="nutri-menu-label">Principes<br><small>Nutrition</small></span>
+        </button>
+    </nav>
+
+    <!-- ── SECTIONS CONTENU ───────────────────────────────────── -->
+    
+<div class="nutri-section-wrap" id="tdeeSection-wrap">
+        <section style="margin-bottom:var(--spacing-xl);">
+                    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🔥 Calculateur de métabolisme (TDEE)</h2>
+                    <p style="font-size:var(--font-size-sm);color:var(--color-text-subheader);margin-bottom:var(--spacing-lg);">Basé sur les formules Mifflin-St Jeor et Katch-McArdle. Entrez vos données pour connaître votre dépense calorique journalière totale et vos macros.</p>
+
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+
+                        <!-- Formulaire -->
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+
+                            <div>
+                                <label style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Sexe</label>
+                                <div style="display:flex;gap:var(--spacing-sm);">
+                                    <label class="tdee-radio-label"><input type="radio" name="tdee_gender" id="tdee_male" value="male" checked> Homme</label>
+                                    <label class="tdee-radio-label"><input type="radio" name="tdee_gender" id="tdee_female" value="female"> Femme</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="tdee_age" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Âge (ans)</label>
+                                <input type="number" id="tdee_age" min="15" max="90" placeholder="ex: 28" class="tdee-input">
+                            </div>
+
+                            <div>
+                                <label for="tdee_weight" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Poids (kg)</label>
+                                <input type="number" id="tdee_weight" min="30" max="300" placeholder="ex: 80" class="tdee-input">
+                            </div>
+
+                            <div>
+                                <label for="tdee_height" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Taille (cm)</label>
+                                <input type="number" id="tdee_height" min="130" max="230" placeholder="ex: 178" class="tdee-input">
+                            </div>
+
+                            <div>
+                                <label for="tdee_bf" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">% Graisse corporelle <span style="font-weight:400;opacity:0.7;">(optionnel)</span></label>
+                                <input type="number" id="tdee_bf" min="5" max="60" placeholder="ex: 18" class="tdee-input">
+                                <small style="color:var(--color-text-subheader);font-size:0.72rem;">Active Katch-McArdle (plus précis)</small>
+                            </div>
+
+                            <div>
+                                <label for="tdee_activity" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Niveau d'activité</label>
+                                <select id="tdee_activity" class="tdee-select">
+                                    <option value="1.2">🪑 Sédentaire (bureau)</option>
+                                    <option value="1.375">🚶 Légèrement actif (1–2j/sem)</option>
+                                    <option value="1.55" selected>🏃 Modérément actif (3–5j/sem)</option>
+                                    <option value="1.725">💪 Très actif (6–7j/sem)</option>
+                                    <option value="1.9">🏆 Athlète (2x/jour)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="tdee_goal" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Objectif</label>
+                                <select id="tdee_goal" class="tdee-select">
+                                    <option value="cut">📉 Perte de graisse</option>
+                                    <option value="recomp" selected>⚖️ Recomposition</option>
+                                    <option value="bulk">📈 Prise de masse</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <button id="tdee_calc_btn" style="width:100%;padding:var(--spacing-md);border-radius:var(--radius-button);border:none;background:var(--color-primary-default);color:white;font-weight:700;font-size:var(--font-size-base);cursor:pointer;transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+                            🔥 Calculer mon TDEE et mes macros
+                        </button>
+
+                        <!-- Résultats -->
+                        <div id="tdee_results" style="display:none;margin-top:var(--spacing-xl);">
+
+                            <!-- Métabolisme -->
+                            <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-sm);margin-bottom:var(--spacing-lg);">
+                                <div class="tdee-stat-card tdee-main">
+                                    <div class="tsc-label">TDEE (dépense totale)</div>
+                                    <div class="tsc-value" id="res_tdee">—</div>
+                                    <div class="tsc-sub">kcal/jour</div>
+                                </div>
+                                <div class="tdee-stat-card">
+                                    <div class="tsc-label">BMR (métabolisme basal)</div>
+                                    <div class="tsc-value" id="res_bmr">—</div>
+                                    <div class="tsc-sub">kcal/jour au repos</div>
+                                </div>
+                                <div class="tdee-stat-card">
+                                    <div class="tsc-label">Formule utilisée</div>
+                                    <div class="tsc-value" id="res_formula" style="font-size:0.85rem;">—</div>
+                                    <div class="tsc-sub" id="res_formula_sub"></div>
+                                </div>
+                            </div>
+
+                            <!-- Cible calorique selon objectif -->
+                            <div id="res_goal_banner" style="padding:var(--spacing-md) var(--spacing-lg);border-radius:var(--radius-base);margin-bottom:var(--spacing-lg);font-size:var(--font-size-sm);">
+                                <strong id="res_goal_title" style="display:block;margin-bottom:4px;font-size:var(--font-size-base);"></strong>
+                                <span id="res_goal_desc"></span>
+                            </div>
+
+                            <!-- Macros -->
+                            <h3 style="font-size:var(--font-size-base);font-weight:700;margin-bottom:var(--spacing-md);">🍽️ Macronutriments recommandés</h3>
+                            <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-sm);margin-bottom:var(--spacing-lg);">
+                                <div class="tdee-macro-card" style="border-top:3px solid hsl(0,65%,58%);">
+                                    <div class="tmc-emoji">🥩</div>
+                                    <div class="tmc-label">Protéines</div>
+                                    <div class="tmc-value" id="res_protein">—</div>
+                                    <div class="tmc-kcal" id="res_protein_kcal"></div>
+                                </div>
+                                <div class="tdee-macro-card" style="border-top:3px solid hsl(40,80%,55%);">
+                                    <div class="tmc-emoji">🍞</div>
+                                    <div class="tmc-label">Glucides</div>
+                                    <div class="tmc-value" id="res_carbs">—</div>
+                                    <div class="tmc-kcal" id="res_carbs_kcal"></div>
+                                </div>
+                                <div class="tdee-macro-card" style="border-top:3px solid hsl(140,50%,45%);">
+                                    <div class="tmc-emoji">🥑</div>
+                                    <div class="tmc-label">Lipides</div>
+                                    <div class="tmc-value" id="res_fat">—</div>
+                                    <div class="tmc-kcal" id="res_fat_kcal"></div>
+                                </div>
+                            </div>
+
+                            <!-- Barres macros -->
+                            <div id="macro_bar_container" style="background:var(--color-surface-muted);border-radius:var(--radius-button);height:14px;overflow:hidden;display:flex;margin-bottom:var(--spacing-sm);">
+                                <div id="bar_protein" style="background:hsl(0,65%,58%);height:100%;transition:width 0.5s ease;"></div>
+                                <div id="bar_carbs" style="background:hsl(40,80%,55%);height:100%;transition:width 0.5s ease;"></div>
+                                <div id="bar_fat" style="background:hsl(140,50%,45%);height:100%;transition:width 0.5s ease;"></div>
+                            </div>
+                            <div style="display:flex;gap:var(--spacing-md);font-size:0.72rem;color:var(--color-text-subheader);margin-bottom:var(--spacing-xl);">
+                                <span>🥩 <span id="bar_protein_pct">—</span>%</span>
+                                <span>🍞 <span id="bar_carbs_pct">—</span>%</span>
+                                <span>🥑 <span id="bar_fat_pct">—</span>%</span>
+                            </div>
+
+                            <!-- Conseils nutrition -->
+                            <div id="res_tips" style="background:var(--color-surface-muted);border-radius:var(--radius-base);padding:var(--spacing-md) var(--spacing-lg);font-size:var(--font-size-sm);border:1px solid var(--color-border-default);">
+                                <strong style="display:block;margin-bottom:8px;">💡 Conseils pratiques</strong>
+                                <ul id="res_tips_list" style="margin:0;padding-left:18px;line-height:1.8;color:var(--color-text-subheader);"></ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+    </div>
+<div class="nutri-section-wrap nutri-section-hidden" id="bfSection-wrap">
+        <section style="margin-bottom:var(--spacing-xl);">
+                    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">📏 Calculateur de masse grasse</h2>
+                    <p style="font-size:var(--font-size-sm);color:var(--color-text-subheader);margin-bottom:var(--spacing-lg);">Méthode U.S. Navy — entrez vos mensurations pour estimer votre composition corporelle.</p>
+
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+
+                            <div>
+                                <label style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Sexe</label>
+                                <div style="display:flex;gap:var(--spacing-sm);">
+                                    <label class="tdee-radio-label"><input type="radio" name="bf_gender" id="bf_male" value="male" checked onchange="toggleHipField(this)"> Homme</label>
+                                    <label class="tdee-radio-label"><input type="radio" name="bf_gender" id="bf_female" value="female" onchange="toggleHipField(this)"> Femme</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="bf_age" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Âge (ans)</label>
+                                <input type="number" id="bf_age" min="15" max="80" placeholder="ex: 28" class="tdee-input">
+                            </div>
+
+                            <div>
+                                <label for="bf_weight" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Poids (kg)</label>
+                                <input type="number" id="bf_weight" min="30" max="300" placeholder="ex: 80" class="tdee-input">
+                            </div>
+
+                            <div>
+                                <label for="bf_height" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Taille (cm)</label>
+                                <input type="number" id="bf_height" min="130" max="230" placeholder="ex: 178" class="tdee-input">
+                            </div>
+
+                            <div>
+                                <label for="bf_neck" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Tour de cou (cm)</label>
+                                <input type="number" id="bf_neck" min="20" max="70" placeholder="ex: 38" class="tdee-input">
+                                <small style="color:var(--color-text-subheader);font-size:0.72rem;">Sous le larynx (pomme d'Adam)</small>
+                            </div>
+
+                            <div>
+                                <label for="bf_waist" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Tour de taille (cm)</label>
+                                <input type="number" id="bf_waist" min="40" max="200" placeholder="ex: 84" class="tdee-input">
+                                <small style="color:var(--color-text-subheader);font-size:0.72rem;">Au niveau du nombril, sans rentrer le ventre</small>
+                            </div>
+
+                            <div id="bf_hip_field" style="display:none;">
+                                <label for="bf_hip" style="font-size:var(--font-size-sm);font-weight:600;display:block;margin-bottom:4px;">Tour de hanches (cm)</label>
+                                <input type="number" id="bf_hip" min="50" max="200" placeholder="ex: 98" class="tdee-input">
+                                <small style="color:var(--color-text-subheader);font-size:0.72rem;">Au plus large des hanches</small>
+                            </div>
+
+                        </div>
+
+                        <button id="bf_calc_btn" style="width:100%;padding:var(--spacing-md);border-radius:var(--radius-button);border:none;background:var(--color-primary-default);color:white;font-weight:700;font-size:var(--font-size-base);cursor:pointer;transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+                            📏 Calculer ma masse grasse
+                        </button>
+
+                        <!-- Résultats -->
+                        <div id="bf_results" style="display:none;margin-top:var(--spacing-xl);">
+
+                            <!-- Métriques principales -->
+                            <div style="display:flex;flex-wrap:wrap;gap:var(--spacing-sm);margin-bottom:var(--spacing-lg);">
+                                <div class="tdee-stat-card tdee-main">
+                                    <div class="tsc-label">% Graisse corporelle</div>
+                                    <div class="tsc-value" id="bf_res_pct">—</div>
+                                    <div class="tsc-sub">Méthode U.S. Navy</div>
+                                </div>
+                                <div class="tdee-stat-card">
+                                    <div class="tsc-label">Catégorie ACE</div>
+                                    <div class="tsc-value" id="bf_res_cat" style="font-size:1rem;">—</div>
+                                    <div class="tsc-sub" id="bf_res_cat_sub"></div>
+                                </div>
+                                <div class="tdee-stat-card">
+                                    <div class="tsc-label">Masse grasse</div>
+                                    <div class="tsc-value" id="bf_res_fm">—</div>
+                                    <div class="tsc-sub">kg</div>
+                                </div>
+                                <div class="tdee-stat-card">
+                                    <div class="tsc-label">Masse maigre (LBM)</div>
+                                    <div class="tsc-value" id="bf_res_lbm">—</div>
+                                    <div class="tsc-sub">kg</div>
+                                </div>
+                            </div>
+
+                            <!-- Jauge visuelle -->
+                            <div style="margin-bottom:var(--spacing-lg);">
+                                <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--color-text-subheader);margin-bottom:4px;">
+                                    <span>Essentiel</span><span>Athlète</span><span>Fitness</span><span>Moyen</span><span>Obèse</span>
+                                </div>
+                                <div style="background:linear-gradient(to right,hsl(200,70%,55%),hsl(140,55%,50%),hsl(60,70%,50%),hsl(30,80%,55%),hsl(0,65%,55%));border-radius:20px;height:12px;position:relative;margin-bottom:4px;">
+                                    <div id="bf_gauge_marker" style="position:absolute;top:-4px;width:4px;height:20px;background:var(--color-text-header);border-radius:2px;transform:translateX(-50%);transition:left 0.5s ease;left:50%;"></div>
+                                </div>
+                                <div style="text-align:center;font-size:var(--font-size-sm);font-weight:600;" id="bf_ideal_text"></div>
+                            </div>
+
+                            <!-- Tableau catégories ACE -->
+                            <div style="overflow-x:auto;margin-bottom:var(--spacing-lg);">
+                                <table id="bf_ace_table" style="width:100%;border-collapse:collapse;font-size:var(--font-size-sm);">
+                                    <thead>
+                                        <tr style="background:var(--color-surface-muted);">
+                                            <th style="padding:8px 12px;text-align:left;border:1px solid var(--color-border-default);font-weight:700;">Catégorie ACE</th>
+                                            <th style="padding:8px 12px;text-align:center;border:1px solid var(--color-border-default);font-weight:700;">Hommes</th>
+                                            <th style="padding:8px 12px;text-align:center;border:1px solid var(--color-border-default);font-weight:700;">Femmes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bf_ace_body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Objectif idéal J&P -->
+                            <div id="bf_jp_block" style="background:var(--color-surface-muted);border:1px solid var(--color-border-default);border-radius:var(--radius-base);padding:var(--spacing-md) var(--spacing-lg);font-size:var(--font-size-sm);">
+                                <strong style="display:block;margin-bottom:6px;">🎯 % Idéal pour votre âge (Jackson & Pollock)</strong>
+                                <span id="bf_jp_text" style="color:var(--color-text-subheader);"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+    </div>
+<div class="nutri-section-wrap nutri-section-hidden" id="fastingSection-wrap">
+        <section id="fastingSection" style="margin-bottom:var(--spacing-xl);">
+                    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">⏱️ Jeûne intermittent</h2>
+
+                    <div id="fastingWidget" style="background:var(--color-surface-default);border:1.5px solid var(--color-border-default);border-radius:var(--radius-large);overflow:hidden;box-shadow:0 4px 16px var(--shadow-sm);">
+
+                        <!-- Header avec protocole selector -->
+                        <div id="fastingHeader" style="padding:var(--spacing-lg);border-bottom:1px solid var(--color-border-default);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--spacing-sm);">
+                            <div>
+                                <div style="font-weight:800;font-size:1.05rem;color:var(--color-text-header);">Protocole de jeûne</div>
+                                <div style="font-size:var(--font-size-sm);color:var(--color-text-subheader);margin-top:2px;" id="fastingProtocolDesc">16h de jeûne · 8h de fenêtre alimentaire</div>
+                            </div>
+                            <div style="display:flex;gap:var(--spacing-xs);">
+                                <button class="fasting-proto-btn active" data-fast="16" data-eat="8">16/8</button>
+                                <button class="fasting-proto-btn" data-fast="18" data-eat="6">18/6</button>
+                                <button class="fasting-proto-btn" data-fast="20" data-eat="4">20/4</button>
+                            </div>
+                        </div>
+
+                        <!-- Timer circulaire + état -->
+                        <div style="padding:var(--spacing-xl) var(--spacing-lg);display:flex;flex-direction:column;align-items:center;gap:var(--spacing-lg);">
+
+                            <!-- Arc SVG timer -->
+                            <div style="position:relative;width:200px;height:200px;flex-shrink:0;">
+                                <svg viewBox="0 0 200 200" style="width:200px;height:200px;transform:rotate(-90deg);">
+                                    <!-- Track -->
+                                    <circle cx="100" cy="100" r="84" fill="none" stroke="var(--color-border-default)" stroke-width="12"/>
+                                    <!-- Progress arc -->
+                                    <circle id="fastingArc" cx="100" cy="100" r="84" fill="none"
+                                        stroke="url(#fastingGrad)" stroke-width="12"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="527.8"
+                                        stroke-dashoffset="527.8"
+                                        style="transition:stroke-dashoffset 1s ease, stroke 0.5s ease;"/>
+                                    <defs>
+                                        <linearGradient id="fastingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="hsl(198,75%,48%)"/>
+                                            <stop offset="100%" stop-color="hsl(234,78%,65%)"/>
+                                        </linearGradient>
+                                        <linearGradient id="fastingGradEat" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="hsl(145,62%,52%)"/>
+                                            <stop offset="100%" stop-color="hsl(162,68%,46%)"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <!-- Centre du cercle -->
+                                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+                                    <div id="fastingEmoji" style="font-size:1.8rem;line-height:1;">⏳</div>
+                                    <div id="fastingTimeDisplay" style="font-family:var(--font-mono);font-size:1.6rem;font-weight:800;color:var(--color-text-header);letter-spacing:-0.02em;line-height:1.1;">00:00:00</div>
+                                    <div id="fastingPhaseLabel" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-subheader);">En attente</div>
+                                </div>
+                            </div>
+
+                            <!-- Statut + barre de progression -->
+                            <div style="width:100%;max-width:360px;">
+                                <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--color-text-subheader);margin-bottom:6px;">
+                                    <span id="fastingStartLabel">Début jeûne</span>
+                                    <span id="fastingProgressPct" style="font-weight:700;color:var(--color-primary-default);">0%</span>
+                                    <span id="fastingEndLabel">Fin jeûne</span>
+                                </div>
+                                <div style="height:8px;background:var(--color-border-default);border-radius:4px;overflow:hidden;">
+                                    <div id="fastingProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,hsl(198,75%,48%),hsl(234,78%,65%));border-radius:4px;transition:width 1s ease;"></div>
+                                </div>
+                                <div id="fastingEndTime" style="text-align:center;margin-top:8px;font-size:var(--font-size-sm);color:var(--color-text-subheader);">
+                                    Lance le jeûne pour voir l'heure de fin
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div style="display:flex;gap:var(--spacing-sm);flex-wrap:wrap;justify-content:center;width:100%;">
+                                <button id="fastingStartBtn" class="btn btn-primary" style="flex:1;min-width:130px;max-width:200px;">
+                                    ▶ Démarrer le jeûne
+                                </button>
+                                <button id="fastingStopBtn" class="btn btn-danger fasting-btn-hidden" style="flex:1;min-width:130px;max-width:200px;">
+                                    ⏹ Arrêter le jeûne
+                                </button>
+                                <button id="fastingEatBtn" class="btn btn-success fasting-btn-hidden" style="flex:1;min-width:130px;max-width:200px;">
+                                    🍽 Commencer à manger
+                                </button>
+                            </div>
+
+                            <!-- Alerte hydratation — toujours visible -->
+                            <div style="width:100%;max-width:360px;display:flex;align-items:flex-start;gap:12px;background:linear-gradient(135deg,hsl(198,70%,95%),hsl(214,60%,97%));border:1px solid hsl(198,50%,80%);border-left:4px solid hsl(198,75%,48%);border-radius:var(--radius-base);padding:var(--spacing-md);">
+                                <span style="font-size:1.4rem;flex-shrink:0;line-height:1;">💧</span>
+                                <div>
+                                    <strong style="display:block;font-size:var(--font-size-sm);color:hsl(198,60%,28%);margin-bottom:3px;">L'hydratation ne s'arrête jamais</strong>
+                                    <span style="font-size:var(--font-size-sm);color:hsl(198,40%,38%);line-height:1.5;">Eau, thé, café noir et tisanes autorisés. Buvez régulièrement — la déshydratation amplifie la sensation de faim.</span>
+                                </div>
+                            </div>
+                            <div id="fastingHydroReminder" style="display:none;width:100%;max-width:360px;padding:var(--spacing-sm) var(--spacing-md);background:hsla(198,70%,95%,0.6);border-radius:var(--radius-base);text-align:center;font-size:var(--font-size-sm);color:hsl(198,60%,30%);font-weight:600;">
+                                💧 Rappel hydratation — Avez-vous bu de l'eau récemment ?
+                            </div>
+                        </div>
+
+                        <!-- Principes du jeûne intermittent (accordion) -->
+                        <div style="border-top:1px solid var(--color-border-default);padding:var(--spacing-lg);">
+                            <div style="font-weight:700;font-size:0.88rem;color:var(--color-text-header);margin-bottom:var(--spacing-md);text-transform:uppercase;letter-spacing:0.05em;">📚 Principes scientifiques</div>
+                            <div class="app-guide-accordion" style="gap:var(--spacing-sm);">
+                                <details>
+                                    <summary><strong>🔬 Comment fonctionne le jeûne intermittent ?</strong></summary>
+                                    <div>
+                                        <p>Après <strong>12–16h de jeûne</strong>, les réserves de glycogène hépatique s'épuisent. Le corps bascule en <strong>lipolyse</strong> : il oxyde les acides gras et produit des corps cétoniques comme source d'énergie alternative.</p>
+                                        <p>Cette transition métabolique — appelée <strong>flexibilité métabolique</strong> — améliore la sensibilité à l'insuline, réduit l'inflammation chronique et active l'autophagie (nettoyage cellulaire). Référence : Mattson et al., <em>New England Journal of Medicine</em>, 2019.</p>
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary><strong>⏰ Quelle fenêtre alimentaire choisir ?</strong></summary>
+                                    <div>
+                                        <p><strong>16/8</strong> (Leangains) — Le protocole le plus étudié et le plus compatible avec la musculation. Idéal pour débuter. Fenêtre alimentaire typique : 12h–20h.</p>
+                                        <p><strong>18/6</strong> — Amplifie les bénéfices métaboliques. Convient aux pratiquants expérimentés. Nécessite de concentrer ses repas sur 6h.</p>
+                                        <p><strong>20/4</strong> (Warrior Diet) — Réservé aux pratiquants avancés. Un seul grand repas le soir + collation légère en journée.</p>
+
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary><strong>💪 Jeûne intermittent & Musculation — compatible ?</strong></summary>
+                                    <div>
+                                        <p>Oui, à condition de <strong>préserver les apports protéiques</strong> (1.8–2.2 g/kg/jour) et de placer l'entraînement intelligemment. Deux approches validées :</p>
+                                        <p>• <strong>Entraîner pendant le jeûne</strong> (fin de fenêtre de jeûne) : maximise la lipolyse et la sensibilité hormonale à l'insuline post-workout.</p>
+                                        <p>• <strong>Entraîner au début de la fenêtre alimentaire</strong> : permet d'ingérer les protéines immédiatement après l'effort pour optimiser la synthèse protéique.</p>
+                                        <p>Étude Moro et al. (2016) : le groupe 16/8 a maintenu sa masse musculaire tout en perdant significativement plus de masse grasse qu'un groupe en alimentation normale isocalorique.</p>
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary><strong>💧 Hydratation pendant le jeûne — les règles absolues</strong></summary>
+                                    <div>
+                                        <p><strong>Autorisés :</strong> Eau plate ou gazeuse · Café noir (sans sucre ni lait) · Thé vert ou noir · Tisanes · Bouillon de légumes (avec modération).</p>
+                                        <p><strong>Interdits pendant le jeûne :</strong> Tout apport calorique, même minimal. Le lait, le jus, les sodas, l'alcool, les boissons sucrées interrompent le jeûne immédiatement en déclenchant une réponse insulinique.</p>
+                                        <p><strong>Pourquoi c'est critique :</strong> La déshydratation pendant le jeûne provoque fatigue, maux de tête, et est souvent confondue avec la faim. Elle amplifie les effets secondaires des premiers jours d'adaptation. Boire régulièrement réduit aussi la sensation de faim.</p>
+                                        <p><strong>Objectif :</strong> Au moins <strong>2–3L d'eau</strong> par jour (plus par temps chaud ou si entraînement).</p>
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary><strong>⚠️ Contre-indications &amp; précautions</strong></summary>
+                                    <div>
+                                        <p>Le jeûne intermittent est <strong>déconseillé</strong> pour : les femmes enceintes ou allaitantes · les personnes diabétiques de type 1 · les individus ayant des antécédents de troubles du comportement alimentaire · les adolescents en croissance · les personnes sous traitements hypoglycémiants.</p>
+                                        <p>Si vous ressentez des vertiges importants, hypoglycémie sévère ou malaise, interrompez le jeûne. Consultez un médecin avant de commencer si vous avez une pathologie chronique.</p>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+    </div>
+<div class="nutri-section-wrap nutri-section-hidden" id="supplSection-wrap">
+        <section id="dashSupplSection" style="margin-bottom:var(--spacing-xl)">
+                <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">💊 Compléments alimentaires</h2>
+
+                <!-- Disclaimer fondamental -->
+                <div class="suppl-disclaimer" style="
+                    display:flex; gap:14px; align-items:flex-start;
+                    background:linear-gradient(135deg,hsl(220,40%,96%),hsl(200,40%,97%));
+                    border:1px solid hsl(220,30%,82%);
+                    border-left:4px solid hsl(220,60%,55%);
+                    border-radius:var(--radius-base);
+                    padding:var(--spacing-md) var(--spacing-lg);
+                    margin-bottom:var(--spacing-lg);
+                    font-size:var(--font-size-sm);
+                    color:var(--color-text-default);
+                ">
+                    <span style="font-size:1.6rem;flex-shrink:0;line-height:1;">🥗</span>
+                    <div>
+                        <strong style="display:block;margin-bottom:4px;font-size:var(--font-size-base);color:var(--color-text-header);">Une alimentation saine et un sommeil de qualité resteront toujours supérieurs aux compléments.</strong>
+                        <span style="color:var(--color-text-subheader);line-height:1.5;">Les compléments alimentaires ne compensent pas une mauvaise hygiène de vie — ils ne font qu'optimiser une base déjà solide. Dormez 7–9h, mangez des aliments vrais, gérez votre stress : c'est là que se jouent 90% de vos résultats.</span>
+                    </div>
+                </div>
+                <p style="color:var(--color-text-subheader);font-size:var(--font-size-sm);margin-bottom:var(--spacing-md);">Base scientifique validée · Références : études cliniques & méta-analyses</p>
+                <!-- Alerte sécurité dynamique -->
+                <div id="safetyAlertBanner" role="alert" aria-live="polite">
+                    <span class="safety-alert-icon">🚨</span>
+                    <div class="safety-alert-content">
+                        <div class="safety-alert-title" id="safetyAlertTitle">Interaction détectée</div>
+                        <div class="safety-alert-msg" id="safetyAlertMsg"></div>
+                    </div>
+                    <button class="safety-alert-close" onclick="document.getElementById('safetyAlertBanner').classList.remove('show')" aria-label="Fermer l'alerte">✕</button>
+                </div>
+                <input type="text" id="dashSupplSearch" placeholder="🔍 Rechercher un complément..." aria-label="Rechercher"
+                    style="width:100%;padding:8px 14px;border:1px solid var(--color-border-default);border-radius:var(--radius-base);font-size:var(--font-size-sm);background:var(--color-surface-input);color:var(--color-text-default);margin-bottom:var(--spacing-md);box-sizing:border-box;">
+                <div id="dashSupplGrid" class="suppl-grid" ></div>
+            </section>
+    </div>
+<div class="nutri-section-wrap nutri-section-hidden" id="principesSection-wrap">
+        <!-- Principes nutrition -->
+                <section style="margin-bottom:var(--spacing-xl);">
+                    <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-text-header);margin-bottom:var(--spacing-md);display:flex;align-items:center;gap:8px;">🥗 Principes fondamentaux</h2>
+                    <div style="background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-large);padding:var(--spacing-lg);box-shadow:0 4px 12px var(--shadow-sm);">
+                        <!-- Disclaimer -->
+                        <div style="display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,hsl(220,40%,96%),hsl(200,40%,97%));border:1px solid hsl(220,30%,82%);border-left:4px solid hsl(220,60%,55%);border-radius:var(--radius-base);padding:var(--spacing-md) var(--spacing-lg);margin-bottom:var(--spacing-lg);font-size:var(--font-size-sm);">
+                            <span style="font-size:1.6rem;flex-shrink:0;">🥗</span>
+                            <div>
+                                <strong style="display:block;margin-bottom:4px;font-size:var(--font-size-base);">Une alimentation saine et un sommeil de qualité resteront toujours supérieurs aux compléments.</strong>
+                                <span style="color:var(--color-text-subheader);">Dormez 7–9h, mangez des aliments vrais, gérez votre stress : c'est là que se jouent 90% de vos résultats.</span>
+                            </div>
+                        </div>
+                        <div class="app-guide-accordion">
+                            <details>
+                                <summary><strong>🥩 Protéines — la priorité absolue</strong></summary>
+                                <div>
+                                    <p><strong>1.6–2.2 g/kg de poids corporel/jour</strong> est la plage optimale pour la prise et la préservation musculaire, validée par la méta-analyse de Morton et al. (2018).</p>
+                                    <p>Sources prioritaires : poulet, œufs, poisson, bœuf maigre, cottage cheese, yaourt grec, légumineuses (végétaliens). La répartition en 3–4 prises de 20–40 g maximise la synthèse protéique musculaire.</p>
+                                </div>
+                            </details>
+                            <details>
+                                <summary><strong>🍞 Glucides — carburant de la performance</strong></summary>
+                                <div>
+                                    <p>Les glucides sont le carburant principal des efforts intenses (musculation, HIIT). Ne pas les éliminer si vous vous entraînez — ils soutiennent la performance et la récupération glycogénique.</p>
+                                    <p>Privilégier les sources complexes : riz, pâtes, patate douce, avoine, légumineuses.</p>
+                                </div>
+                            </details>
+                            <details>
+                                <summary><strong>🥑 Lipides — essentiels aux hormones</strong></summary>
+                                <div>
+                                    <p>Les lipides sont indispensables à la production hormonale (testostérone, cortisol), à l'absorption des vitamines liposolubles (A, D, E, K) et à la santé cellulaire. Ne jamais descendre sous 0.6–0.8 g/kg/j.</p>
+                                    <p>Sources qualitatives : huile d'olive, avocats, noix, amandes, poissons gras, œufs entiers. Limiter les graisses trans et les huiles végétales ultra-transformées.</p>
+                                </div>
+                            </details>
+                            <details>
+                                <summary><strong>💧 Hydratation</strong></summary>
+                                <div>
+                                    <p><strong>2.5–3.5 L/jour</strong> selon le poids et l'intensité d'entraînement. La déshydratation de seulement 2% du poids corporel réduit significativement la force et l'endurance.</p>
+                                </div>
+                            </details>
+                            <details>
+                                <summary><strong>😴 Sommeil — le complément gratuit le plus puissant</strong></summary>
+                                <div>
+                                    <p>La majorité de la synthèse protéique musculaire et de la récupération se produit pendant le sommeil profond. <strong>7–9h de sommeil</strong> est non-négociable pour progresser.</p>
+                                    <p>Le manque de sommeil chronique élève le cortisol (hormone catabolique), réduit la testostérone, augmente l'appétit et diminue la sensibilité à l'insuline. Aucun complément ne compense un sommeil insuffisant.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </section>
+    </div>
+
+
+</div><!-- /panelNutrition -->
+
+            <!-- ── PANEL PROFIL ──────────────────────────────────── -->
+            <div id="panelProfile" class="dash-tab-panel hidden" role="tabpanel" aria-labelledby="tabProfile">
+
+            <!-- Score & Identité -->
+            <section class="profile-card" style="text-align:center;">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <div class="profile-name-display" id="profileNameDisplay">Athlète</div>
+                <div class="profile-goal-display" id="profileGoalDisplay">Objectif non défini</div>
+                <div class="profile-stats-grid">
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="profileStatWeight">—</div>
+                        <div class="profile-stat-label">kg</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="profileStatHeight">—</div>
+                        <div class="profile-stat-label">cm</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="profileStatAge">—</div>
+                        <div class="profile-stat-label">ans</div>
+                    </div>
+                </div>
+                <div class="profile-score-ring">
+                    <div class="profile-score-number" id="profileScore">—</div>
+                    <div class="profile-score-label">Lyftiv Score</div>
+                    <div class="profile-score-league" id="profileLeague"></div>
+                </div>
+            </section>
+
+            <!-- Mes informations -->
+            <section class="profile-card">
+                <div class="profile-card-title">📋 Identité</div>
+
+                <div class="profile-field" style="margin-bottom:var(--spacing-sm);">
+                    <label for="profileName">Prénom ou pseudo</label>
+                    <input type="text" id="profileName" placeholder="ex : Alex" maxlength="30" autocomplete="given-name">
+                </div>
+
+                <div class="profile-card-title" style="margin-top:var(--spacing-md);">⚖️ Mensurations</div>
+                <div class="profile-field-row">
+                    <div class="profile-field">
+                        <label for="profileGender">Sexe</label>
+                        <select id="profileGender">
+                            <option value="male">Homme</option>
+                            <option value="female">Femme</option>
+                        </select>
+                    </div>
+                    <div class="profile-field">
+                        <label for="profileAge">Âge</label>
+                        <input type="number" id="profileAge" min="15" max="90" placeholder="28" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="profile-field-row">
+                    <div class="profile-field">
+                        <label for="profileWeight">Poids (kg)</label>
+                        <input type="number" id="profileWeight" min="30" max="300" placeholder="80" inputmode="decimal">
+                    </div>
+                    <div class="profile-field">
+                        <label for="profileHeight">Taille (cm)</label>
+                        <input type="number" id="profileHeight" min="130" max="230" placeholder="178" inputmode="numeric">
+                    </div>
+                </div>
+
+                <div class="profile-card-title" style="margin-top:var(--spacing-md);">🎯 Objectif</div>
+                <div class="profile-goal-grid" id="profileGoalGrid">
+                    <button class="profile-goal-btn" data-goal="prise" type="button">💪 Prise de masse</button>
+                    <button class="profile-goal-btn" data-goal="seche" type="button">🔥 Sèche</button>
+                    <button class="profile-goal-btn" data-goal="recompo" type="button">⚡ Recomposition</button>
+                    <button class="profile-goal-btn" data-goal="force" type="button">🏋️ Force</button>
+                    <button class="profile-goal-btn" data-goal="sante" type="button">❤️ Santé</button>
+                </div>
+
+                <button class="profile-save-btn" id="profileSaveBtn" type="button">Enregistrer le profil</button>
+                <div class="profile-save-confirm" id="profileSaveConfirm"></div>
+            </section>
+
+            <!-- Paramètres -->
+            <section class="profile-card">
+                <div class="profile-card-title">⚙️ Paramètres</div>
+
+                <div class="theme-toggle-row">
+                    <div>
+                        <div class="theme-toggle-label">Mode sombre</div>
+                        <div class="theme-toggle-sub">Interface optimisée pour la salle</div>
+                    </div>
+                    <label class="toggle-switch" aria-label="Mode sombre">
+                        <input type="checkbox" id="profileThemeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="theme-toggle-row">
+                    <div>
+                        <div class="theme-toggle-label">Notifications</div>
+                        <div class="theme-toggle-sub">Rappels repos et hydratation</div>
+                    </div>
+                    <label class="toggle-switch" aria-label="Notifications">
+                        <input type="checkbox" id="profileNotifsToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <!-- Panneau de paramétrage notifications -->
+                <div class="notif-settings-panel" id="notifSettingsPanel">
+                    <div style="font-size:0.82rem;font-weight:700;color:var(--color-text-subheader);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">⚙️ Paramétrer les rappels</div>
+                    <div class="notif-setting-row">
+                        <div>
+                            <div class="notif-setting-label">💪 Rappel séance</div>
+                            <div class="notif-setting-sub">Heure d'entraînement quotidienne</div>
+                        </div>
+                        <input type="time" id="notifTimeWorkout" value="18:00" style="background:var(--color-surface-muted);border:1.5px solid var(--color-border-default);border-radius:8px;padding:4px 8px;color:var(--color-text-default);font-family:inherit;font-size:0.85rem;">
+                    </div>
+                    <div class="notif-setting-row">
+                        <div>
+                            <div class="notif-setting-label">💧 Rappel hydratation</div>
+                            <div class="notif-setting-sub">Toutes les 2h pendant l'éveil</div>
+                        </div>
+                        <label class="toggle-switch" style="transform:scale(0.85);">
+                            <input type="checkbox" id="notifHydroToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="notif-setting-row">
+                        <div>
+                            <div class="notif-setting-label">🍽️ Fin de jeûne</div>
+                            <div class="notif-setting-sub">Alerte quand le jeûne est terminé</div>
+                        </div>
+                        <label class="toggle-switch" style="transform:scale(0.85);">
+                            <input type="checkbox" id="notifFastToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button onclick="saveNotifSettings()" style="background:var(--color-primary-default);color:white;border:none;border-radius:10px;padding:10px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;">💾 Enregistrer les rappels</button>
+                </div>
+            </section>
+
+            <!-- ═══ BADGES ══════════════════════════════════════════ -->
+            <section class="profile-card profile-badges-section">
+                <div class="profile-card-title">🏅 Mes badges
+                    <span style="font-size:0.7rem;font-weight:500;color:var(--color-text-subheader);margin-left:auto;">Débloqués par tes performances</span>
+                </div>
+                <div class="badge-grid" id="badgeGridProfile" style="margin-top:var(--spacing-sm);"></div>
+                <p id="badgeGridProfileEmpty" style="text-align:center;color:var(--color-text-subheader);font-size:0.8rem;padding:var(--spacing-md) 0;display:none;">
+                    Enregistre des séances pour débloquer tes premiers badges.
+                </p>
+            </section>
+
+            <!-- Données & Confidentialité -->
+            <section class="profile-card">
+                <div class="profile-card-title">🗂 Stockage</div>
+                <p style="font-size:0.82rem;color:var(--color-text-subheader);line-height:1.6;margin:0 0 var(--spacing-md);">
+                    Toutes vos données sont stockées localement sur cet appareil. Aucun serveur, aucun compte requis.
+                </p>
+                <div style="display:flex;gap:var(--spacing-sm);flex-wrap:wrap;">
+                    <button class="btn" id="profileExportBtn" type="button" style="flex:1;min-width:140px;font-size:0.85rem;background:var(--color-surface-muted);border:1px solid var(--color-border-default);color:var(--color-text-default);">
+                        📤 Exporter mes données
+                    </button>
+                    <button class="btn" id="profileResetBtn" type="button" style="flex:1;min-width:140px;font-size:0.85rem;background:var(--color-surface-muted);border:1px solid var(--color-border-default);color:var(--color-danger-default);">
+                        🗑 Réinitialiser
+                    </button>
+                </div>
+            </section>
+
+            </div><!-- /panelProfile -->
+
+            <footer class="dashboard-footer">
+                <p>⚗️ Conçu par <strong>Olivio JAONINA</strong>, pharmacien &amp; ingénieur numérique · <em>Lyftiv – Votre progression, notre science.</em></p>
+            </footer>
+
+        </div>
+    </div>
+    
+    <div id="app-container" class="hidden">
+        <main class="main-container">
+            <div class="theme-switcher">
+                <button id="homeBtn" class="icon-btn" aria-label="Retourner à l'accueil" title="Accueil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+                <button id="dashMenuBtn" class="icon-btn" aria-label="Menu Entraînement" title="Menu Entraînement" style="font-size:1.2rem;">☰</button>
+                <button id="themeToggleBtn" class="icon-btn" aria-label="Changer de thème" title="Mode sombre" style="font-size:1.1rem;">🌓</button>
+                <span id="appModeIndicator" aria-live="polite" aria-label="Mode actuel">● PLAN</span>
+            </div>
+            <h2>
+                <svg class="lyftiv-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="lyftivLogoGradientMain" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="hsl(200, 80%, 85%)" />
+                            <stop offset="100%" stop-color="hsl(260, 60%, 85%)" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="url(#lyftivLogoGradientMain)"/>
+                    <path d="M 15 50 C 15 35 30 30 50 30 C 70 30 85 35 85 50 C 85 65 70 70 50 70 C 30 70 15 65 15 50 Z M 25 50 L 75 50 M 25 35 L 25 65 M 75 35 L 75 65" stroke="hsl(220, 60%, 55%)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <circle cx="25" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="25" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="14" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="10" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <circle cx="75" cy="50" r="6" stroke="hsl(220, 60%, 55%)" stroke-width="2" fill="none"/>
+                    <rect x="35" y="48.5" width="30" height="3" rx="1.5" ry="1.5" fill="white"/>
+                </svg>
+                Lyftiv
+            </h2>
+
+            <div class="premium-teaser-banner" role="note" aria-label="Fonctionnalités Premium">
+                👑
+                <span><strong>Premium à venir :</strong> Générateur IA de programme · Sync Cloud · Gamification &amp; Ligues · Lyftiv Pro Coachs</span>
+            </div>
+
+            <div class="controls">
+              <label for="sessionSelect"><strong>Séance:</strong></label>
+              <select id="sessionSelect" aria-label="Sélectionner une séance d'entraînement">
+                </select>
+              <button class="btn btn-outline" id="createNewSessionTypeBtn" aria-label="Créer une nouvelle séance">Nouvelle séance</button>
+              <button class="btn btn-danger" id="deleteCurrentSessionBtn" aria-label="Supprimer la séance actuelle" title="Supprimer la séance actuelle (personnalisée)">Supprimer la séance</button>
+              <button class="btn btn-secondary" id="resetCurrentSessionBtn" aria-label="Réinitialiser les données de la séance actuelle" title="Vider toutes les données (poids et reps) de la séance">Réinitialiser</button>
+              </div>
+            
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar" aria-label="Progression de la séance">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <!-- Widget progression séance v13 — positionné sous la barre native, avant les exercices -->
+            <div class="session-progress-wrap" id="sessionProgressWrap" style="padding:8px var(--spacing-md) 2px;margin-bottom:4px;">
+                <span style="font-size:0.72rem;font-weight:700;color:var(--color-text-subheader);text-transform:uppercase;letter-spacing:0.06em;min-width:56px;">Séance</span>
+                <div class="session-progress-track" style="flex:1;">
+                    <div class="session-progress-fill" id="sessionProgressFill"></div>
+                </div>
+                <div class="session-progress-label" id="sessionProgressLabel">0%</div>
+            </div>
+            <div id="sessionExerciseCount" aria-live="polite"></div>
+            
+            <div id="exerciseListContainer" class="exercise-list-container">
+                </div>
+            
+            <section class="controls add-exercise-section" id="addExerciseSection" aria-labelledby="addExerciseTitle">
+                <h2 id="addExerciseTitle" class="sr-only">Ajouter un exercice</h2>
+                <div class="input-group">
+                    <input type="text" id="customExercise" placeholder="Ajouter un exercice" aria-label="Nom de l'exercice personnalisé">
+                    <button class="btn btn-success" id="addExerciseBtn" aria-label="Ajouter l'exercice"> Ajouter</button>
+                </div>
+            </section>
+    
+            <section class="summary-section" aria-labelledby="summarySectionTitle">
+                <h2 id="summarySectionTitle" class="sr-only">Résumé de la séance</h2>
+                <div class="summary-card">
+                    <span class="card-icon" aria-hidden="true">🎯</span>
+                    <h3>Total kg/rép</h3> <div class="value" id="totalKgRep">0 kg/rep</div><span id="totalKgRepA11y" class="sr-only" aria-live="polite" aria-atomic="true"></span> </div>
+                <div class="summary-card">
+                    <span class="card-icon" aria-hidden="true">📅</span>
+                    <h3>Semaine précédente</h3>
+                    <input type="text" inputmode="decimal" id="previousWeek" placeholder="kg/rep" aria-label="Performance de la semaine précédente">
+                </div>
+                <div class="summary-card">
+                    <span class="card-icon" aria-hidden="true">📈</span>
+                    <h3>Progression</h3>
+                    <div class="value" id="delta">0 kg</div><span id="deltaA11y" class="sr-only" aria-live="polite" aria-atomic="true"></span>
+                </div>
+                <div class="summary-card">
+                    <span class="card-icon" aria-hidden="true">⏱️</span>
+                    <h3>Temps total</h3>
+                    <div class="value" id="totalTime" aria-live="polite">00:00:00</div>
+                    <div class="timer-controls">
+                        <button id="toggleWorkoutTimerBtn" class="btn btn-secondary" aria-label="Mettre en pause ou reprendre le minuteur">
+                            <span id="timerPlayPauseIcon" aria-hidden="true">▶️</span>
+                            <span id="timerPlayPauseText">Démarrer</span>
+                        </button>
+                        <button id="resetWorkoutTimerBtn" class="btn btn-danger" aria-label="Réinitialiser le minuteur">
+                            ↺
+                            <span>Réinitialiser</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+    
+            <section class="controls session-notes-section" id="sessionNotesSection" aria-labelledby="sessionNotesTitle">
+                <h2 id="sessionNotesTitle" class="sr-only">Notes de séance</h2>
+                <label for="sessionNotes"><strong>Notes de séance:</strong></label>
+                <textarea id="sessionNotes" placeholder="Ajouter des notes sur la séance..." aria-label="Notes de séance"></textarea>
+            </section>
+            
+            <section class="action-buttons action-primary" aria-labelledby="actionButtonsTitle">
+                <h2 id="actionButtonsTitle" class="sr-only">Actions principales</h2>
+                <button class="btn btn-success btn-action-primary" id="finishSessionBtn" aria-label="Terminer et Sauvegarder la séance">
+                    <span class="btn-icon" aria-hidden="true">✓</span>Terminer
+                </button>
+                <button class="btn btn-primary btn-action-primary" id="viewHistoryBtn" aria-label="Voir l'historique">
+                    <span class="btn-icon" aria-hidden="true">📋</span>Historique
+                </button>
+                <button class="btn btn-secondary btn-action-primary" id="nextSessionBtn" aria-label="Calculer la prochaine séance" title="Calcule les charges recommandées pour ta prochaine séance">
+                    <span class="btn-icon" aria-hidden="true">📈</span>Prochaine
+                </button>
+            </section>
+
+            <!-- ── OUTILS — tiroir collapsible (garder tous les IDs JS) ── -->
+            <details class="tools-drawer" id="toolsDrawer">
+                <summary class="tools-drawer-toggle" aria-label="Ouvrir les outils avancés">
+                    <span class="tools-toggle-icon" aria-hidden="true">⚙️</span>
+                    <span class="tools-toggle-label">Outils</span>
+                    <span class="tools-toggle-chevron" aria-hidden="true">›</span>
+                </summary>
+                <div class="tools-drawer-body">
+                    <h2 id="dataManagementTitle" class="sr-only">Outils et gestion des données</h2>
+                    <div class="tools-grid">
+                        <button class="btn btn-tool" id="plateCalculatorBtn" aria-label="Ouvrir les calculateurs">
+                            <span class="btn-icon" aria-hidden="true">🧮</span>Calculs
+                        </button>
+                        <button class="btn btn-tool" id="globalEmomBtn" aria-label="Mode EMOM">
+                            <span class="btn-icon" aria-hidden="true">⏱</span>EMOM
+                        </button>
+                        <button class="btn btn-tool" id="globalAmrapBtn" aria-label="Mode AMRAP">
+                            <span class="btn-icon" aria-hidden="true">🔁</span>AMRAP
+                        </button>
+                        <button class="btn btn-tool" id="globalCircuitBtn" aria-label="Créer un Circuit">
+                            <span class="btn-icon" aria-hidden="true">🔗</span>Circuit
+                        </button>
+                        <button class="btn btn-tool" id="exportBtn" aria-label="Exporter l'historique en CSV">
+                            <span class="btn-icon" aria-hidden="true">📤</span>CSV
+                        </button>
+                        <button class="btn btn-tool" id="exportJsonBtn" aria-label="Sauvegarder une copie JSON de toutes vos données">
+                            <span class="btn-icon" aria-hidden="true">💾</span>Backup
+                        </button>
+                        <button class="btn btn-tool" id="importBtn" aria-label="Importer des données">
+                            <span class="btn-icon" aria-hidden="true">📥</span>Import
+                        </button>
+                    </div>
+                </div>
+            </details>
+            <input type="file" id="importFile" class="hidden" accept=".json,.csv" multiple aria-label="Fichier d'importation">
+        </main> 
+    </div>
+    
+    <div id="notification-container" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="autoSaveIndicator" aria-live="polite" aria-label="Sauvegarde automatique">
+        Sauvegardé
+    </div>
+    
+    <div id="pwaInstallPrompt" class="hidden" role="dialog" aria-modal="true" aria-labelledby="pwaInstallTitle">
+        <span id="pwaInstallTitle" style="font-weight: 600;">Ajoutez Lyftiv à votre écran d'accueil !</span>
+        <button id="installPwaBtn" aria-label="Installer l'application">Installer</button>
+        <button id="closePwaPrompt" class="close-btn" aria-label="Fermer le message d'installation">&times;</button>
+    </div>
+
+
+    <!-- ── MODAL PROCHAINE SÉANCE ─────────────────────────────── -->
+    <div id="nextSessionModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="nextSessionModalTitle">
+        <div class="modal-content">
+            <button id="closeNextSessionModal" class="modal-close-btn" aria-label="Fermer">&times;</button>
+            <div class="nsp-header">
+                <h2 id="nextSessionModalTitle">📈 Prochaine séance — <span id="nspSessionName" class="nsp-session-name"></span></h2>
+                <p>Charges recommandées basées sur tes séries actuelles et l'historique</p>
+            </div>
+            <div id="nspExerciseList" class="nsp-exercise-list"></div>
+            <p class="nsp-disclaimer">
+                ⚗️ <strong>Méthode :</strong> 1RM estimé par moyenne de 5 formules (Epley, Brzycki, Mayhew, Lander, Lombardi) ·
+                Zone détectée selon reps moyennes · Progression +2.5 kg si fourchette haute atteinte · Arrondi au 0.25 kg le plus proche.
+            </p>
+            <div class="nsp-actions">
+                <button id="nspConfirmBtn" class="nsp-confirm-btn">✅ Pré-remplir les poids</button>
+                <button id="nspCancelBtn" class="nsp-cancel-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+    <div id="historyModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+      <div class="modal-content">
+          <button id="closeHistoryModal" class="modal-close-btn" aria-label="Fermer le modal historique">&times;</button>
+          <h2 id="historyModalTitle">Historique des séances</h2>
+          <div id="historyList" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div id="newSessionModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="newSessionModalTitle">
+        <div class="modal-content">
+            <button id="closeNewSessionModal" class="modal-close-btn" aria-label="Fermer le modal de nouvelle séance">&times;</button>
+            <h2 id="newSessionModalTitle">Créer une nouvelle séance</h2>
+            <div class="input-group-modal">
+                <input type="text" id="newSessionNameInput" placeholder="Nom de la nouvelle séance" aria-label="Nom de la nouvelle séance">
+                <div id="newSessionNameError" class="error-message"></div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                <button class="btn btn-outline" id="cancelNewSessionBtn"> Annuler</button>
+                <button class="btn btn-success" id="createNewSessionBtn"> Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadOptionsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="loadOptionsModalTitle">
+      <div class="modal-content">
+          <button id="closeLoadOptionsModal" class="modal-close-btn" aria-label="Fermer le modal d'options de chargement">&times;</button>
+          <h2 id="loadOptionsModalTitle">Options de chargement</h2>
+          <p>Comment utiliser la séance "<strong id="loadSessionName"></strong>" ?</p>
+          <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+              <button class="btn btn-primary" id="openNewSessionBtn">Ouvrir (remplace la séance actuelle)</button>
+              <button class="btn btn-secondary" id="appendToCurrentSessionBtn">Ajouter à la séance actuelle</button>
+          </div>
+      </div>
+    </div>
+
+    <div id="plateCalculatorModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="plateCalcModalTitle">
+        <div class="modal-content">
+            <button id="closePlateCalculatorModal" class="modal-close-btn" aria-label="Fermer le modal du calculateur">&times;</button>
+            <div class="modal-tabs" role="tablist">
+                <button class="modal-tab-btn active" id="goalCalcTab" aria-controls="goalCalcContent" role="tab" aria-selected="true">Objectifs d'entraînement</button>
+                <button class="modal-tab-btn" id="plateCalcTab" aria-controls="plateCalcContent" role="tab" aria-selected="false">Calculateur de plaques</button>
+            </div>
+            
+            <div id="plateCalcContent" class="modal-tab-content hidden" role="tabpanel" aria-labelledby="plateCalcTab">
+                <h2 id="plateCalcModalTitle">Calculateur de plaques</h2>
+                <div class="controls">
+                    <div class="input-group-modal">
+                        <input type="text" inputmode="decimal" id="targetWeightInput" placeholder="Poids cible (kg)" aria-label="Poids cible">
+                        <div id="targetWeightError" class="error-message"></div>
+                    </div>
+                    <div class="input-group-modal">
+                        <input type="text" inputmode="decimal" id="barbellWeightInput" placeholder="Poids barre (kg)" aria-label="Poids de la barre">
+                        <div id="barbellWeightError" class="error-message"></div>
+                    </div>
+                </div>
+                <div id="platesResult" style="text-align: left; margin-top: var(--spacing-lg);"></div>
+            </div>
+
+            <div id="goalCalcContent" class="modal-tab-content" role="tabpanel" aria-labelledby="goalCalcTab">
+                <h2>Objectifs d'entraînement</h2>
+                <div class="controls">
+                    <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                        <label>
+                            <input type="radio" name="oneRmInputMode" value="manual" checked> Saisie Manuelle
+                        </label>
+                        <label>
+                            <input type="radio" name="oneRmInputMode" value="select"> Sélection d'Exercice
+                        </label>
+                    </div>
+
+                    <div id="oneRmManualInput" class="input-group-modal">
+                        <input type="text" inputmode="decimal" id="oneRmInput" placeholder="Votre 1RM (kg)" aria-label="Votre 1RM">
+                        <div id="oneRmError" class="error-message"></div>
+                    </div>
+
+                    <div id="oneRmSelectInput" class="input-group-modal hidden">
+                        <select id="oneRmExerciseSelect" aria-label="Sélectionner un exercice pour le 1RM">
+                            <option value="">-- Sélectionner un exercice --</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="goalResultsContainer"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="quickEditModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="quickEditModalTitle">
+      <div class="modal-content">
+          <button id="closeQuickEditModal" class="modal-close-btn" aria-label="Fermer le modal d'édition rapide">&times;</button>
+          <h2 id="quickEditModalTitle">Édition rapide</h2>
+          <p>Appliquer à toutes les séries de : <strong id="quickEditExerciseName"></strong></p>
+          <div class="controls">
+              <div class="input-group-modal">
+                  <input type="text" inputmode="decimal" id="quickEditWeight" placeholder="Poids (kg)" aria-label="Poids pour édition rapide">
+                  <div id="quickEditWeightError" class="error-message"></div>
+              </div>
+              <div class="input-group-modal">
+                  <input type="text" inputmode="decimal" id="quickEditReps" placeholder="Reps" aria-label="Répétitions pour édition rapide">
+                  <div id="quickEditRepsError" class="error-message"></div>
+              </div>
+          </div>
+          <button class="btn btn-success" id="applyQuickEditBtn" style="width: 100%; margin-top: var(--spacing-md);"> Appliquer</button>
+      </div>
+    </div>
+
+    </div>
+
+    <nav class="bottom-navigation" aria-label="Navigation principale">
+        <button class="btn" id="bottomAddExerciseBtn" aria-label="Ajouter un exercice">
+            <span class="nav-icon">&#10133;</span>
+            <span>Exercice</span>
+        </button>
+        <button class="btn" id="bottomNotesBtn" aria-label="Notes de s&#233;ance">
+            <span class="nav-icon">&#128203;</span>
+            <span>Notes</span>
+        </button>
+        <button class="btn" id="bottomViewHistoryBtn" aria-label="Historique">
+            <span class="nav-icon">&#128336;</span>
+            <span>Historique</span>
+        </button>
+        <button class="btn" id="bottomPlateCalculatorBtn" aria-label="Calculateurs">
+            <span class="nav-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4" y="2" width="16" height="20" rx="2"/>
+                    <line x1="8" y1="6" x2="16" y2="6"/>
+                    <line x1="8" y1="10" x2="16" y2="10"/>
+                    <line x1="8" y1="14" x2="12" y2="14"/>
+                    <line x1="8" y1="18" x2="10" y2="18"/>
+                </svg>
+            </span>
+            <span>Calculs</span>
+        </button>
+        <button class="btn" id="bottomRestTimerBtn" aria-label="Timer de repos" title="D&#233;marrer le timer de repos">
+            <span class="nav-icon" id="restNavIcon">&#9203;</span>
+            <span id="restNavLabel">Repos</span>
+        </button>
+        <button class="btn" id="bottomScrollBtn" aria-label="Faire d&#233;filer la page">
+            <span class="nav-icon">&#8597;</span>
+            <span>D&#233;filer</span>
+        </button>
+    </nav>
+
+
+    <!-- REST TIMER BAR -->
+    <div id="restTimerBar" role="progressbar" aria-label="Temps de repos"></div>
+
+    <!-- REST TIMER OVERLAY -->
+    <div id="restTimerOverlay" aria-live="assertive">
+        <span id="restTimerLabel">Repos</span>
+        <span id="restTimerCountdown">1:00</span>
+        <button id="restTimerSkip" title="Passer le repos">✕</button>
+    </div>
+
+    <!-- BADGE TOAST -->
+    <div id="badgeToast" role="alert" aria-live="assertive">
+        <span id="badgeToastIcon">🏆</span>
+        <span id="badgeToastText">Badge débloqué !</span>
+    </div>
+
+    <!-- MODAL RÉSUMÉ SÉANCE -->
+    <div id="sessionSummaryModal" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+        <div class="summary-sheet">
+            <div class="summary-confetti-line">🎉</div>
+            <div class="summary-title" id="summaryTitle">Séance terminée !</div>
+            <div class="summary-subtitle" id="summarySubtitle"></div>
+            <div class="summary-stats-grid" id="summaryStatsGrid"></div>
+            <div id="summaryNewBadges" class="summary-badge-row" style="display:none"></div>
+            <div class="summary-actions">
+                <button class="btn btn-primary" id="summaryShareBtn" style="width:100%">&#128279; Copier le résumé</button>
+                <button class="btn btn-ghost" id="summaryPrintBtn" style="width:100%">&#128438; Imprimer / Enregistrer PDF</button>
+                <button class="btn btn-ghost" id="summaryCloseBtn" style="width:100%">Continuer</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SCRIPTS — Ordre de chargement critique (sans modules ES)
+         1. DATA       — aucune dépendance
+         2. CORE       — dépend uniquement de window natif
+         3. FITNESS    — calculs purs, dépend storage + training-zones
+         4. APP        — IIFE principale (state, Store, Router, WodEngine…)
+         5. FEATURES   — dépendent de window.showDashboard + DOM initialisé
+    ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- 1. DATA — aucune dépendance -->
+    <script src="js/data/training-zones.js"></script>
+    <script src="js/data/default-sessions.js"></script>
+    <script src="js/data/supplement-db.js"></script>
+
+    <!-- 2. CORE — dépend uniquement de window natif -->
+    <script src="js/core/feature-flags.js"></script>
+    <script src="js/core/storage.js"></script>
+    <script src="js/core/render-scheduler.js"></script>
+    <script src="js/core/state.js"></script>
+
+    <!-- 3. FITNESS PURE — dépend storage + training-zones, AUCUN DOM -->
+    <script src="js/fitness/physio-compute.js"></script>
+    <script src="js/fitness/discipline-engine.js"></script>
+
+    <!-- 4. APP — IIFE principale (ModalManager, WodEngine, Router, Actions…) -->
+    <script src="js/app.js"></script>
+
+    <!-- 5. FEATURES — dépendent de window.showDashboard et du DOM initialisé -->
+    <script src="js/features/global-nav.js"></script>
+    <script src="js/features/plan-panel.js"></script>
+    <script src="js/features/profile.js"></script>
+    <script src="js/features/onboarding.js"></script>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SERVICE WORKER — Enregistrement (inline, spécifique au déploiement)
+    ══════════════════════════════════════════════════════════════════ -->
+    <script>
+    // Enregistrement du Service Worker — uniquement en production
+    // (désactivé sur les previews comme claudeusercontent.com)
+    const _swAllowed = ['localhost', '127.0.0.1'].includes(location.hostname)
+        || (!location.hostname.includes('claudeusercontent.com') && location.protocol === 'https:');
+
+    if ('serviceWorker' in navigator && _swAllowed) {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then(reg => {
+                reg.update();
+
+                // ── Détection mise à jour SW ─────────────────────────────────
+                // Affiche une bannière si une nouvelle version est en attente.
+                function showUpdateBanner() {
+                    if (document.getElementById('swUpdateBanner')) return;
+                    const banner = document.createElement('div');
+                    banner.id = 'swUpdateBanner';
+                    banner.setAttribute('role', 'alert');
+                    banner.style.cssText = [
+                        'position:fixed',
+                        'bottom:calc(var(--nav-height,68px) + env(safe-area-inset-bottom,0px) + 12px)',
+                        'left:50%',
+                        'transform:translateX(-50%)',
+                        'background:var(--color-accent-primary,#50af82)',
+                        'color:#fff',
+                        'border-radius:16px',
+                        'padding:12px 18px',
+                        'box-shadow:0 8px 24px rgba(0,0,0,0.25)',
+                        'z-index:var(--z-notification,1100)',
+                        'display:flex',
+                        'align-items:center',
+                        'gap:12px',
+                        'max-width:340px',
+                        'width:90%',
+                        'font-size:0.85rem',
+                        'font-family:inherit'
+                    ].join(';');
+                    banner.innerHTML = `
+                        <span style="font-size:1.3rem">⬆️</span>
+                        <span style="flex:1;font-weight:500;">Nouvelle version disponible !</span>
+                        <button id="swReloadBtn" style="background:#fff;color:var(--color-accent-primary,#50af82);border:none;border-radius:10px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.82rem;white-space:nowrap;">Recharger</button>
+                        <button id="swDismissBtn" style="background:transparent;color:rgba(255,255,255,0.8);border:none;cursor:pointer;font-size:1.2rem;line-height:1;padding:2px;" aria-label="Ignorer la mise à jour">×</button>
+                    `;
+                    document.body.appendChild(banner);
+                    banner.querySelector('#swReloadBtn').addEventListener('click', () => {
+                        reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                    });
+                    banner.querySelector('#swDismissBtn').addEventListener('click', () => banner.remove());
+                }
+
+                // Vérifier si un SW est déjà en attente au chargement
+                if (reg.waiting) showUpdateBanner();
+
+                // Écouter les futures mises à jour
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker?.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateBanner();
+                        }
+                    });
+                });
+
+                if ('periodicSync' in reg) {
+                    reg.periodicSync.register('lyftiv-daily-reminder', { minInterval: 24 * 60 * 60 * 1000 })
+                        .catch(() => {});
+                }
+            })
+            .catch(() => {}); // Silencieux hors prod
+
+        // Recharger automatiquement quand le SW prend le contrôle
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) { refreshing = true; window.location.reload(); }
+        });
+    }
+
+    // ── Gestion des notifications locales PWA ────────────────────────────
+    (function initPushNotifications() {
+        if (!('Notification' in window)) return;
+
+        // Demander permission après 30s (UX : pas de popup immédiate)
+        const notifAsked = StorageAPI.getRaw('lyftiv_notif_asked');
+        if (!notifAsked && Notification.permission === 'default') {
+            setTimeout(() => {
+                // Afficher une bannière douce avant de demander la permission
+                const banner = document.createElement('div');
+                banner.id = 'notifBanner';
+                banner.style.cssText = 'position:fixed;bottom:calc(var(--nav-height,68px) + env(safe-area-inset-bottom,0px) + 12px);left:50%;transform:translateX(-50%);background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:16px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:var(--z-notif-banner);display:flex;align-items:center;gap:12px;max-width:340px;width:90%;font-size:0.85rem;';
+                banner.innerHTML = `
+                    <span style="font-size:1.4rem">🔔</span>
+                    <div style="flex:1;">
+                        <strong style="color:var(--color-text-header);display:block;margin-bottom:2px;">Rappels d'entraînement</strong>
+                        <span style="color:var(--color-text-subheader);font-size:0.78rem;">Reçois des rappels pour maintenir ton streak</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                        <button id="btnEnableNotif" class="btn btn-primary" style="padding:5px 10px;font-size:0.75rem;font-weight:700;">Activer</button>
+                        <button id="btnDismissNotif" class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;">Plus tard</button>
+                    </div>`;
+                document.body.appendChild(banner);
+                document.getElementById('btnEnableNotif').addEventListener('click', enableNotifications);
+                document.getElementById('btnDismissNotif').addEventListener('click', dismissNotifBanner);
+            }, 30000);
+        }
+
+        // Rappel local quotidien — vérifié à chaque ouverture de l'app
+        scheduleLocalReminders();
+    })();
+
+    window.enableNotifications = async function() {
+        const banner = document.getElementById('notifBanner');
+        if (banner) banner.remove();
+        StorageAPI.setRaw('lyftiv_notif_asked', 'true');
+        try {
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') {
+                StorageAPI.setRaw('lyftiv_notif_enabled', 'true');
+                showNotification('🔔 Notifications activées ! Tu recevras des rappels d\'entraînement.', 'success', 4000);
+                scheduleLocalReminders();
+            } else {
+                showNotification('Notifications refusées — tu peux les activer dans les paramètres du navigateur.', 'info', 4000);
+            }
+        } catch(e) {}
+    };
+
+    window.dismissNotifBanner = function() {
+        const banner = document.getElementById('notifBanner');
+        if (banner) banner.remove();
+        StorageAPI.setRaw('lyftiv_notif_asked', 'true');
+    };
+
+    function scheduleLocalReminders() {
+        if (Notification.permission !== 'granted') return;
+        if (!('serviceWorker' in navigator)) return;
+
+        const history = StorageAPI.get('workoutHistory', []);
+        if (history.length === 0) return;
+
+        const lastSession = history.sort((a,b) => new Date(b.date) - new Date(a.date))[0];
+        const daysSinceLast = Math.floor((Date.now() - new Date(lastSession.date).getTime()) / 86400000);
+
+        // Calculer le streak
+        const goal = parseInt(StorageAPI.getRaw('weeklyGoal') || '3');
+        const weekSessions = history.filter(s => Date.now() - new Date(s.date).getTime() < 7*24*3600*1000).length;
+
+        // Si inactif depuis 2+ jours et objectif hebdo non atteint → rappel planifié
+        if (daysSinceLast >= 2 && weekSessions < goal) {
+            const now = new Date();
+            const reminderHour = 18; // 18h par défaut
+            const delay = (reminderHour - now.getHours()) * 3600000 - now.getMinutes() * 60000;
+            if (delay > 0 && delay < 8 * 3600000) { // Seulement si dans les 8h
+                setTimeout(() => {
+                    if (Notification.permission !== 'granted') return;
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification('💪 Lyftiv — C\'est l\'heure de t\'entraîner !', {
+                            body: `${weekSessions}/${goal} séances cette semaine · ${daysSinceLast}j sans entraînement 🔥`,
+                            icon: './icon-192.png',
+                            badge: './icon-192.png',
+                            tag: 'lyftiv-reminder',
+                            vibrate: [200, 100, 200],
+                            data: { url: './' }
+                        });
+                    }).catch(() => {});
+                }, Math.max(delay, 5000));
+            }
+        }
+    }
+    </script>
+
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TEMPLATES HTML — Clonés par createTable() au lieu de
+         générer des chaînes de caractères. Protection XSS native,
+         ~3x plus rapide sur mobile, maintenable séparément du JS.
+    ═══════════════════════════════════════════════════════════ -->
+
+    <!-- Template : ligne desktop -->
+    <template id="tpl-exercise-row">
+        <tr class="exercise-row" role="row">
+            <td class="actions-col" data-label="Actions" role="cell">
+                <button class="quick-edit-btn" data-action="quick-edit" aria-label="Édition rapide">
+                    ✏️
+                </button>
+
+
+                <button class="btn-ghost" data-action="add-series" aria-label="Ajouter une série">
+                    ➕
+                </button>
+            </td>
+            <td class="exercise-col" data-label="Exercice" role="cell">
+                <span class="ex-name"></span>
+            </td>
+            <!-- Les colonnes série sont injectées dynamiquement -->
+            <td data-label="Kg/Rép" class="ex-kgrep" role="cell">0</td>
+            <td data-label="1RM" class="ex-onerm" role="cell">0</td>
+            <td data-label="Repos" class="ex-rest" role="cell"></td>
+            <td role="cell">
+                <div class="timer-container">
+                    <div class="timer-display ex-timer" aria-live="polite"></div>
+                    <button class="timer-btn" data-timer-action="start">▶</button>
+                    <button class="timer-btn hidden" data-timer-action="stop">⏸</button>
+                    <button class="timer-btn" data-timer-action="reset">↺</button>
+                </div>
+            </td>
+            <td role="cell">
+                <button class="btn-ghost" data-action="remove">
+                    🗑️
+                </button>
+            </td>
+        </tr>
+    </template>
+
+    <!-- Template : cellule série desktop -->
+    <template id="tpl-serie-cell">
+        <td role="cell">
+            <div class="serie-input">
+                <input type="text" inputmode="decimal" pattern="[0-9.,+]*" class="weight" placeholder="kg">
+                <input type="text" inputmode="decimal" pattern="[0-9.,+]*" class="reps" placeholder="Reps">
+                <button class="serie-input-delete">&times;</button>
+            </div>
+        </td>
+    </template>
+
+    <!-- Template : carte mobile -->
+    <template id="tpl-exercise-card">
+        <div class="exercise-card" role="listitem">
+            <div class="card-header-row">
+                <h4 class="ex-name"></h4>
+                <button class="btn-ghost" data-action="remove" >
+                    🗑️
+                </button>
+            </div>
+            <div class="series-group">
+                <!-- Séries injectées dynamiquement -->
+                <button class="btn btn-outline ex-add-series" data-action="add-series" style="width:100%;margin-top:var(--spacing-sm);">
+                    ➕ Ajouter une série
+                </button>
+            </div>
+            <div class="card-stats">
+                <div class="card-stat-item">
+                    <span class="card-stat-label">Kg/Rép</span>
+                    <span class="card-stat-value ex-kgrep">0</span>
+                </div>
+                <div class="card-stat-item">
+                    <span class="card-stat-label">1RM Moy</span>
+                    <span class="card-stat-value ex-onerm">0</span>
+                </div>
+                <div class="card-stat-item">
+                    <span class="card-stat-label">Repos</span>
+                    <span class="card-stat-value ex-rest"></span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn btn-info" data-action="quick-edit">✏️ Éditer</button>
+
+
+                <div class="timer-container">
+                    <div class="timer-display ex-timer" aria-live="polite"></div>
+                    <button class="timer-btn" data-timer-action="start">▶</button>
+                    <button class="timer-btn hidden" data-timer-action="stop">⏸</button>
+                    <button class="timer-btn" data-timer-action="reset">↺</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template : ligne série mobile -->
+    <template id="tpl-serie-row">
+        <div class="series-row">
+            <span class="serie-label"></span>
+            <div class="series-input-group">
+                <input type="text" inputmode="decimal" pattern="[0-9.,+]*" class="weight" placeholder="kg">
+                <input type="text" inputmode="decimal" pattern="[0-9.,+]*" class="reps" placeholder="Reps">
+                <button class="serie-input-delete">&times;</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MODE REVIEW — overlay plein écran fin de séance
+    ══════════════════════════════════════════════════════════════════ -->
+    <div id="reviewOverlay" role="dialog" aria-modal="true" aria-label="Résumé de séance">
+        <div class="review-header">
+            <div class="review-emoji">🏆</div>
+            <h2 class="review-title" id="reviewTitle">Séance terminée !</h2>
+            <p class="review-subtitle" id="reviewSubtitle"></p>
+        </div>
+
+        <div class="review-score-ring" role="img" aria-labelledby="reviewScoreDesc">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+                <circle cx="18" cy="18" r="15.9155" fill="none"
+                    stroke="var(--color-border-default)" stroke-width="2.5"/>
+                <circle id="reviewScoreArc" cx="18" cy="18" r="15.9155" fill="none"
+                    stroke="var(--color-primary-default)" stroke-width="2.5"
+                    stroke-linecap="round" stroke-dasharray="0 100"
+                    style="transition: stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1) 0.3s;"/>
+            </svg>
+            <div class="review-score-inner">
+                <div class="review-score-value" id="reviewScoreValue">—</div>
+                <div class="review-score-label" id="reviewScoreDesc">Lyftiv Score</div>
+            </div>
+        </div>
+
+        <div class="review-stats-grid" id="reviewStatsGrid"></div>
+        <div class="review-badges-row" id="reviewBadgesRow"></div>
+
+        <div class="review-actions">
+            <button class="review-btn-cta" id="reviewPlanBtn">Planifier la prochaine →</button>
+            <button class="review-btn-ghost" id="reviewShareBtn">📋 Copier le résumé</button>
+            <button class="review-btn-ghost" id="reviewCloseBtn">Retour à l'entraînement</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MODE PLAN — panneau latéral stratégie
+    ══════════════════════════════════════════════════════════════════ -->
+    <div id="planBackdrop" aria-hidden="true"></div>
+    <aside id="planPanel" role="dialog" aria-modal="true" aria-label="Planification">
+        <div class="plan-inner">
+            <div class="plan-header">
+                <span class="plan-title">⚡ Plan</span>
+                <button class="icon-btn" id="planCloseBtn" aria-label="Fermer le panneau">✕</button>
+            </div>
+
+            <div>
+                <div class="plan-section-label">Changer de séance</div>
+                <div class="plan-session-list" id="planSessionList">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+
+            <div>
+                <div class="plan-section-label">Actions rapides</div>
+                <div class="plan-quick-actions">
+                    <button class="plan-action-btn" id="planViewHistory">
+                        📊 Historique des séances
+                    </button>
+                    <button class="plan-action-btn" id="planViewCalculator">
+                        🧮 Calculateurs
+                    </button>
+                    <button class="plan-action-btn" id="planNextSession">
+                        📈 Prochaine séance recommandée
+                    </button>
+                    <button class="plan-action-btn" id="planNewSession">
+                        ➕ Créer une nouvelle séance
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="plan-section-label">Discipline Engine</div>
+                <div id="planDisciplineWidget" style="border:1px solid hsl(240,6%,20%);border-radius:var(--radius-base);padding:var(--spacing-md);background:hsl(240,8%,8%);color:hsl(0,0%,98%);">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bouton flottant discret pour ouvrir le mode PLAN -->
+    <!-- Poignée swipe bord droit — ouvre le panneau Plan en mode execute -->
+    <div id="planEdgeTab" role="button" aria-label="Ouvrir le panneau Plan" title="Glisser ou cliquer pour ouvrir le Plan">
+        <span style="font-size:1rem;line-height:1;">⚡</span>
+    </div>
+
+    <button id="planTriggerBtn" aria-label="Ouvrir le plan d'entraînement" title="Plan & stratégie">
+        ⚡
+    </button>
+
+    <!-- SESSION CLOSED OVERLAY — fermeture émotionnelle / Dopamine Closure -->
+    <div id="sessionClosedOverlay" role="dialog" aria-modal="true" aria-label="Séance terminée">
+        <div class="session-closed-card">
+            <div class="scc-icon">🏁</div>
+            <div class="scc-title">SESSION CLOSED</div>
+            <div class="scc-score" id="sccScore">—</div>
+            <div class="scc-league" id="sccLeague"></div>
+            <div class="scc-items" id="sccItems"></div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         NAVIGATION GLOBALE MOBILE — v3 AUDIT CORRIGÉ
+         Point 1 : Pas de .click() sur boutons existants (évite effets de bord Router)
+         Point 2 : Visibilité gérée en CSS via sélecteur sibling (app-container.hidden)
+         Point 3 : S'affiche uniquement sur dashboard (pas sur app-container)
+    ══════════════════════════════════════════════════════════════════ -->
+    <nav id="global-mobile-nav" aria-label="Navigation globale">
+        <button id="gnav-home" class="gnav-active" aria-label="Dashboard Entraînement">
+            <span class="gnav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+        <button id="gnav-train" aria-label="Lancer une séance">
+            <span class="gnav-icon">▶️</span>
+            <span>Train</span>
+        </button>
+        <button id="gnav-stats" aria-label="Nutrition et Stats">
+            <span class="gnav-icon">🥗</span>
+            <span>Nutrition</span>
+        </button>
+        <button id="gnav-profile" aria-label="Mon profil">
+            <span class="gnav-icon">👤</span>
+            <span>Profil</span>
+        </button>
+    </nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     GLOBAL WOD MODAL — EMOM / AMRAP v2
+════════════════════════════════════════════════════════════════ -->
+<div id="globalWodModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="wodModalTitle">
+    <div class="modal-content" style="max-width:500px;width:95%;max-height:90vh;display:flex;flex-direction:column;">
+        <button id="closeWodModalBtn" class="modal-close-btn" aria-label="Fermer">✕</button>
+        <h2 id="wodModalTitle" style="font-size:1.5rem;margin-bottom:var(--spacing-lg);">Configuration</h2>
+
+        <div id="wodSetupPhase" style="flex:1;overflow-y:auto;">
+            <p style="font-size:0.9rem;color:var(--color-text-subheader);margin-bottom:10px;">1. Cochez les exercices inclus :</p>
+            <div id="wodExerciseSelection" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;background:var(--color-surface-muted);padding:10px;border-radius:var(--radius-base);"></div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+                <label style="display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--color-text-header);">
+                    <span id="wodSetupTimeLabel">Durée (sec) :</span>
+                    <input type="number" id="wodSetupTimeInput" value="60" min="1" style="width:80px;height:44px;text-align:center;border-radius:8px;border:1.5px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);">
+                </label>
+                <label id="wodSetupRoundsLabel" style="display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--color-text-header);">
+                    <span>Nombre de Rounds :</span>
+                    <input type="number" id="wodSetupRoundsInput" value="10" min="1" style="width:80px;height:44px;text-align:center;border-radius:8px;border:1.5px solid var(--color-border-default);background:var(--color-surface-input);color:var(--color-text-default);">
+                </label>
+            </div>
+
+            <button id="startWodBtn" class="btn btn-primary" style="width:100%;height:56px;font-size:1.1rem;font-weight:900;">▶ DÉMARRER</button>
+        </div>
+
+        <div id="wodExecutionPhase" class="hidden" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="text-align:center;padding:10px 0 20px;border-bottom:1px solid var(--color-border-default);">
+                <div id="wodTimerDisplay" style="font-size:4.5rem;font-weight:900;font-family:var(--font-mono);color:var(--color-primary-default);line-height:1;">00:00</div>
+                <div id="wodRoundDisplay" style="font-size:1.2rem;font-weight:800;color:var(--color-text-subheader);margin-top:5px;">Round 1</div>
+            </div>
+            <div id="wodActiveExercises" style="flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:15px;"></div>
+            <div style="padding-top:15px;display:flex;gap:10px;">
+                <button id="logWodRoundBtn" class="btn btn-success" style="flex:2;height:56px;font-size:1.1rem;font-weight:800;">✔ Valider le Round</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CIRCUIT MODAL — Sélection multi-exercices
+════════════════════════════════════════════════════════════ -->
+<div id="globalCircuitModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="circuitModalTitle">
+    <div class="modal-content" style="max-width:460px;width:95%;max-height:85vh;display:flex;flex-direction:column;">
+        <button id="closeCircuitModalBtn" class="modal-close-btn" aria-label="Fermer">✕</button>
+        <h2 id="circuitModalTitle" style="font-size:1.4rem;margin-bottom:8px;">🔗 Créer un Circuit</h2>
+        <p style="font-size:0.85rem;color:var(--color-text-subheader);margin-bottom:var(--spacing-md);">Cochez les exercices à regrouper (2 minimum). Ils seront automatiquement rapprochés.</p>
+        <div id="circuitExerciseList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:var(--spacing-md);"></div>
+        <button id="confirmCircuitBtn" class="btn btn-primary" style="height:52px;font-size:1rem;font-weight:800;">🔗 Créer le Circuit</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PHASE 1 — v13 JAVASCRIPT
+     1. Onboarding système complet
+     2. Notifications locales activables
+     3. Alertes sécurité suppléments
+     4. UX améliorations (PR badge, progress séance)
+════════════════════════════════════════════════════════════════ -->
+
+</body>
+</html>
