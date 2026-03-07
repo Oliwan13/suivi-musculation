@@ -3996,31 +3996,35 @@
                 t + (ex.series || []).reduce((s, sr) => s + (sr.reps || 0) * (sr.weight || 0), 0), 0);
         }
 
+        // ── Streak Intelligent — Règle des 72h ──────────────────────────────
+        // Le repos stratégique (1-2 jours) ne brise PAS le streak.
+        // Seul un abandon de plus de 3 jours remet le compteur à zéro.
+        // Physiologie : le muscle se construit pendant le repos, pas contre lui.
         function calcStreak(history) {
-            if (!history.length) return 0;
-            const toKey = d => {
-                // Utiliser la date locale (pas UTC) pour éviter les décalages de fuseau
-                const dd = new Date(d);
-                return dd.getFullYear() + '-' +
-                    String(dd.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(dd.getDate()).padStart(2, '0');
-            };
-            const today = new Date(); today.setHours(0,0,0,0);
-            const dateSet = new Set(history.map(s => toKey(s.date)));
-            const todayKey = toKey(today);
+            if (!history || !history.length) return 0;
 
-            // Grace period : si pas de séance aujourd'hui mais une hier,
-            // on commence le compte depuis hier (streak non brisé avant minuit)
-            let check = new Date(today);
-            if (!dateSet.has(todayKey)) {
-                check.setDate(check.getDate() - 1);
-                if (!dateSet.has(toKey(check))) return 0;
-            }
+            // Dédupliquer par jour (minuit) et trier du plus récent au plus ancien
+            const toMidnight = d => { const dd = new Date(d); dd.setHours(0,0,0,0); return dd; };
+            const uniqueDays = [...new Map(
+                history.map(s => [toMidnight(s.date).getTime(), toMidnight(s.date)])
+            ).values()].sort((a, b) => b - a); // décroissant
 
-            let streak = 0;
-            while (dateSet.has(toKey(check))) {
-                streak++;
-                check.setDate(check.getDate() - 1);
+            if (!uniqueDays.length) return 0;
+
+            const now = new Date(); now.setHours(0,0,0,0);
+
+            // Si la séance la plus récente date de plus de 3 jours → streak mort
+            const daysSinceLast = (now - uniqueDays[0]) / (1000 * 60 * 60 * 24);
+            if (daysSinceLast > 3) return 0;
+
+            let streak = 1;
+            for (let i = 1; i < uniqueDays.length; i++) {
+                const gap = (uniqueDays[i - 1] - uniqueDays[i]) / (1000 * 60 * 60 * 24);
+                if (gap <= 3) {
+                    streak++; // repos ≤ 72h = régularité maintenue
+                } else {
+                    break;    // écart > 72h = chaîne brisée
+                }
             }
             return streak;
         }
@@ -5169,7 +5173,7 @@
             let totalActive = 0;
             let currentStreak = 0;
             let longestStreak = 0;
-            let tempStreak = 0;
+
             let monthPositions = {}; // week index -> month label
 
             const allDays = [];
@@ -5189,30 +5193,34 @@
                 }
             }
 
-            // Calculer streaks (jours consécutifs avec séance)
+            // Compter totalActive (jours avec au moins 1 séance)
             const sortedDays = [...allDays].sort((a, b) => a.date - b.date);
             for (let i = 0; i < sortedDays.length; i++) {
-                if (sortedDays[i].count > 0) {
-                    totalActive++;
-                    tempStreak++;
-                    if (tempStreak > longestStreak) longestStreak = tempStreak;
-                    // Streak courant (depuis la fin)
-                } else {
-                    tempStreak = 0;
+                if (sortedDays[i].count > 0) totalActive++;
+            }
+
+            // currentStreak et longestStreak — règle des 72h (cohérence avec calcStreak)
+            const _heatHistory = getHistory();
+            currentStreak = calcStreak(_heatHistory);
+
+            // longestStreak : meilleure série de séances avec écart ≤ 3 jours
+            {
+                const _toMid = d => { const dd = new Date(d); dd.setHours(0,0,0,0); return dd; };
+                const _days = [...new Map(
+                    _heatHistory.map(s => [_toMid(s.date).getTime(), _toMid(s.date)])
+                ).values()].sort((a, b) => a - b); // chronologique
+
+                if (_days.length > 0) {
+                    let best = 1, cur = 1;
+                    for (let i = 1; i < _days.length; i++) {
+                        const gap = (_days[i] - _days[i-1]) / (1000 * 60 * 60 * 24);
+                        if (gap <= 3) { cur++; if (cur > best) best = cur; }
+                        else cur = 1;
+                    }
+                    longestStreak = best;
                 }
             }
-            // Calculer streak courant à rebours depuis aujourd'hui
             const todayKey = today.toISOString().slice(0, 10);
-            let checkDate = new Date(today);
-            while (true) {
-                const k = checkDate.toISOString().slice(0, 10);
-                if (counts[k]) {
-                    currentStreak++;
-                    checkDate.setDate(checkDate.getDate() - 1);
-                } else {
-                    break;
-                }
-            }
 
             // Labels des mois au-dessus
             for (let w = 0; w < WEEKS; w++) {
@@ -5263,7 +5271,7 @@
             summary.innerHTML = `
                 <div class="dash-stat-pill"><div class="dsp-label">Total séances</div><div class="dsp-value">${totalActive}</div></div>
                 <div class="dash-stat-pill"><div class="dsp-label">30 derniers jours</div><div class="dsp-value">${last30}</div></div>
-                <div class="dash-stat-pill"><div class="dsp-label">Streak actuel</div><div class="dsp-value">${currentStreak > 0 ? '🔥 ' + currentStreak + 'j' : '—'}</div></div>
+                <div class="dash-stat-pill"><div class="dsp-label">Régularité 🔥</div><div class="dsp-value">${currentStreak > 0 ? '🔥 ' + currentStreak + 'j' : '—'}</div></div>
                 <div class="dash-stat-pill"><div class="dsp-label">Meilleur streak</div><div class="dsp-value">${longestStreak > 0 ? longestStreak + 'j' : '—'}</div></div>
             `;
         }
@@ -5304,7 +5312,7 @@
             grid.innerHTML = `
                 <div class="dash-stat-pill"><div class="dsp-label">Séances</div><div class="dsp-value">${total}</div></div>
                 <div class="dash-stat-pill"><div class="dsp-label">Record kg/rép</div><div class="dsp-value">${maxKgRep} kg</div></div>
-                <div class="dash-stat-pill"><div class="dsp-label">Streak actuel</div><div class="dsp-value">${streakDisplay}</div></div>
+                <div class="dash-stat-pill"><div class="dsp-label">Régularité 🔥</div><div class="dsp-value">${streakDisplay}</div></div>
                 <div class="dash-stat-pill"><div class="dsp-label">Évolution</div><div class="dsp-value" style="color:${delta>=0?'var(--color-success-default)':'var(--color-danger-default)'}">${delta>=0?'+':''}${delta} kg</div></div>
                 <div class="dash-stat-pill"><div class="dsp-label">Tendance</div><div class="dsp-value">${scoreEmoji} ${scoreLabel}</div></div>
             `;
