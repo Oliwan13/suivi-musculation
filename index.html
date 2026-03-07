@@ -9330,16 +9330,28 @@ body.dark-mode .superset-header {
             const list = document.getElementById('circuitExerciseList');
             if (!list) return;
             list.innerHTML = '';
+            const confirmBtn = document.getElementById('confirmCircuitBtn');
+
             if (!session?.exercises?.length) {
                 list.innerHTML = '<p style="color:var(--color-danger-default);">Ajoutez d\'abord des exercices à votre séance.</p>';
+                if (confirmBtn) confirmBtn.disabled = true;
             } else {
+                let availableCount = 0;
                 session.exercises.forEach((ex, idx) => {
-                    const isGrouped = ex.groupId ? ' (déjà en circuit)' : '';
+                    // Barrière : exclure les exercices déjà dans un circuit (évite les doublons/corruption)
+                    if (ex.groupId) return;
+                    availableCount++;
                     list.innerHTML += `<label style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--color-surface-default);border:1px solid var(--color-border-default);border-radius:var(--radius-base);cursor:pointer;">
-                        <input type="checkbox" value="${idx}" class="circuit-ex-cb" style="width:22px;height:22px;accent-color:hsl(240,60%,60%);" ${ex.groupId ? 'checked' : ''}>
-                        <span style="font-weight:700;color:var(--color-text-header);">${escapeHTML(ex.name)}<span style="font-weight:400;font-size:0.8rem;color:var(--color-text-subheader);"> ${isGrouped}</span></span>
+                        <input type="checkbox" value="${idx}" class="circuit-ex-cb" style="width:22px;height:22px;accent-color:hsl(240,60%,60%);">
+                        <span style="font-weight:700;color:var(--color-text-header);">${escapeHTML(ex.name)}</span>
                     </label>`;
                 });
+                if (availableCount < 2) {
+                    list.innerHTML += '<p style="color:var(--color-text-subheader);font-style:italic;margin-top:8px;">Pas assez d\'exercices libres. Déliez d\'abord un circuit existant.</p>';
+                    if (confirmBtn) confirmBtn.disabled = true;
+                } else {
+                    if (confirmBtn) confirmBtn.disabled = false;
+                }
             }
             const modal = document.getElementById('globalCircuitModal');
             ModalManager.open(modal, modal.querySelector('button'));
@@ -9354,87 +9366,30 @@ body.dark-mode .superset-header {
             }
             const newGroupId = 'circuit-' + Date.now();
 
-            // Donner le même groupId à chaque exercice sélectionné
-            selectedIndexes.forEach(idx => {
-                session.exercises[idx].groupId = newGroupId;
-            });
+            // 1. Snapshot des exercices à grouper (AVANT tout splice pour figer les références)
+            const groupedExercises = [...selectedIndexes]
+                .sort((a, b) => a - b)
+                .map(idx => {
+                    session.exercises[idx].groupId = newGroupId;
+                    return session.exercises[idx];
+                });
 
-            // Extraire les exercices dans l'ordre sélectionné
-            const groupedExercises = selectedIndexes.sort((a, b) => a - b).map(idx => session.exercises[idx]);
-
-            // Retirer de leur position (en partant de la fin pour éviter les décalages)
+            // 2. CORRECTION CRITIQUE : supprimer du plus grand au plus petit index
+            // → évite le décalage d'index causé par les suppressions successives
             [...selectedIndexes].sort((a, b) => b - a).forEach(idx => {
                 session.exercises.splice(idx, 1);
             });
 
-            // Réinsérer groupés à la position du premier sélectionné
+            // 3. Réinsérer le bloc complet à la position du premier exercice sélectionné
             const insertAt = Math.min(...selectedIndexes);
             session.exercises.splice(insertAt, 0, ...groupedExercises);
 
-            saveCurrentState(true);
+            ModalManager.close(document.getElementById('globalCircuitModal'));
+            saveCurrentState(true, true); // skipDomSync : state déjà à jour, pas de lecture DOM
             createTable();
             showNotification(`🔗 Circuit créé (${groupedExercises.length} exercices) !`, "success");
         }
 
-        /* ── formatSupersetsUI — post-processing visuel superset ── */
-        function formatSupersetsUI() {
-            const session = state.sessions[state.currentSessionIndex];
-            if (!session?.exercises) return;
-            const container = document.getElementById('exerciseListContainer') ||
-                              document.querySelector('.mobile-cards') ||
-                              document.getElementById('exerciseList');
-            if (!container) return;
-
-            const cards = Array.from(container.querySelectorAll('.exercise-card'));
-            if (!cards.length) return;
-
-            let currentGroupId = null;
-            let wrapper = null;
-            let mainCounter = 1;
-            let letterCode = 65; // 'A'
-
-            cards.forEach((card, idx) => {
-                const ex = session.exercises[idx];
-                if (!ex) return;
-                const titleEl = card.querySelector('.ex-name, h3, h4');
-
-                if (ex.groupId) {
-                    if (ex.groupId !== currentGroupId) {
-                        wrapper = document.createElement('div');
-                        wrapper.className = 'superset-wrapper';
-                        wrapper.innerHTML = '<div class="superset-header">🔗 Circuit / Superset</div><div class="superset-body"></div>';
-                        card.parentNode.insertBefore(wrapper, card);
-                        currentGroupId = ex.groupId;
-                        letterCode = 65;
-                    }
-                    wrapper.querySelector('.superset-body').appendChild(card);
-                    if (titleEl) titleEl.textContent = `${mainCounter}${String.fromCharCode(letterCode)} – ${ex.name}`;
-                    letterCode++;
-
-                    // Masquer timer repos si pas le dernier du groupe
-                    const isLast = (idx === session.exercises.length - 1) || (session.exercises[idx + 1]?.groupId !== ex.groupId);
-                    const restBtn = card.querySelector('[data-timer-action="start"]');
-                    const timerContainer = card.querySelector('.timer-container');
-                    if (!isLast) {
-                        if (restBtn) restBtn.style.display = 'none';
-                        if (timerContainer) timerContainer.style.opacity = '0.3';
-                    }
-                    if (isLast) mainCounter++;
-
-                    // Bouton lier → délier
-                    const linkBtn = card.querySelector('[data-action="link-superset"]');
-                    if (linkBtn) {
-                        linkBtn.innerHTML = '✂️';
-                        linkBtn.setAttribute('aria-label', 'Délier du superset');
-                        linkBtn.style.color = 'var(--color-danger-default)';
-                    }
-                } else {
-                    currentGroupId = null;
-                    if (titleEl) titleEl.textContent = `${mainCounter} – ${ex.name}`;
-                    mainCounter++;
-                }
-            });
-        }
 
         function createTable() {
             if (!state.isInitialized) return;
@@ -9563,6 +9518,8 @@ body.dark-mode .superset-header {
                 container.className = 'mobile-cards';
                 container.setAttribute('role', 'list');
                 const mobileFrag = document.createDocumentFragment();
+                let mainCounter = 1;  // numérotation exercices (circuits: 1A/1B, isolés: 1, 2…)
+                let letterCode  = 65; // code ASCII 'A'
 
                 exercises.forEach((ex, idx) => {
                     if (!ex || !Array.isArray(ex.series)) return;
@@ -9630,11 +9587,31 @@ body.dark-mode .superset-header {
                             wrapper = document.createElement('div');
                             wrapper.className = 'superset-wrapper';
                             wrapper.dataset.group = ex.groupId;
+                            wrapper.dataset.counter = mainCounter; // stocker le numéro du groupe
                             wrapper.innerHTML = '<div class="superset-header">🔗 Circuit / Superset</div><div class="superset-body"></div>';
                             mobileFrag.appendChild(wrapper);
+                            letterCode = 65; // reset 'A' à chaque nouveau groupe
                         }
+                        // Numérotation 1A, 1B, 2A…
+                        const titleEl = card.querySelector('.ex-name, h4');
+                        if (titleEl) titleEl.textContent = `${wrapper.dataset.counter}${String.fromCharCode(letterCode)} – ${ex.name}`;
+                        letterCode++;
                         wrapper.querySelector('.superset-body').appendChild(card);
+                        // Masquer timer repos si pas le dernier du groupe
+                        const isLast = (idx === exercises.length - 1) || (exercises[idx + 1]?.groupId !== ex.groupId);
+                        const restBtn = card.querySelector('[data-timer-action="start"]');
+                        const timerContainer = card.querySelector('.timer-container');
+                        if (!isLast) {
+                            if (restBtn) restBtn.style.display = 'none';
+                            if (timerContainer) timerContainer.style.opacity = '0.3';
+                        } else {
+                            mainCounter++; // incrémenter après le dernier du groupe
+                        }
                     } else {
+                        // Exercice normal : numérotation simple
+                        const titleEl = card.querySelector('.ex-name, h4');
+                        if (titleEl) titleEl.textContent = `${mainCounter} – ${ex.name}`;
+                        mainCounter++;
                         mobileFrag.appendChild(card);
                     }
                 });
@@ -9647,8 +9624,6 @@ body.dark-mode .superset-header {
             updateAllTotals();
             updateDeleteSessionButtonState();
         
-            formatSupersetsUI();
-
             // Restauration des timers actifs après reconstruction DOM
             Object.entries(_activeTimerSnapshot).forEach(([idxStr, snap]) => {
                 const idx = parseInt(idxStr);
@@ -9931,7 +9906,7 @@ body.dark-mode .superset-header {
             }
         };
 
-        function saveCurrentState(silent = false, skipDomSync = false) {
+        function saveCurrentState(silent = false, skipDomSync = true) {
             const currentSession = state.sessions[state.currentSessionIndex];
             if (!currentSession) return;
             // skipDomSync=true : on sauvegarde l'état mémoire tel quel, sans lire le DOM
@@ -11881,21 +11856,18 @@ body.dark-mode .superset-header {
             // ── SAUVEGARDE AUTOMATIQUE ROBUSTE ─────────────────────────
             // 1. Fermeture d'onglet / navigation (desktop)
             window.addEventListener('beforeunload', () => {
-                updateStateFromTable();
-                saveCurrentState(true); // silencieux
+                saveCurrentState(true, true); // skipDomSync: state déjà à jour
             });
 
             // 2. Mise en arrière-plan sur mobile (iOS/Android — pagehide est plus fiable que beforeunload sur mobile)
             window.addEventListener('pagehide', () => {
-                updateStateFromTable();
-                saveCurrentState(true); // silencieux
+                saveCurrentState(true, true); // skipDomSync: state déjà à jour
             });
 
             // 3. Passage en arrière-plan (app PWA minimisée, écran verrouillé)
             // Flush immédiat de SaveQueue avant fermeture / mise en background
         window.addEventListener('beforeunload', () => {
             if (state.isInitialized) {
-                updateStateFromTable();
                 // Construire le payload inline pour un flush synchrone
                 const sess = state.sessions[state.currentSessionIndex];
                 if (sess) {
@@ -11916,16 +11888,14 @@ body.dark-mode .superset-header {
 
         document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') {
-                    updateStateFromTable();
-                    saveCurrentState(true); // silencieux
+                    saveCurrentState(true, true); // skipDomSync: state déjà à jour
                 }
             });
 
             // 4. Sauvegarde périodique toutes les 30 secondes (uniquement si séance active)
             setInterval(() => {
                 if (state.isInitialized && state.workoutStartTime) {
-                    updateStateFromTable();
-                    saveCurrentState(true);
+                    saveCurrentState(true, true); // skipDomSync: state déjà à jour
                 }
             }, 30000);
 
@@ -12648,8 +12618,7 @@ body.dark-mode .superset-header {
                 document.getElementById('closeCircuitModalBtn')?.addEventListener('click', () => ModalManager.close(document.getElementById('globalCircuitModal')));
                 document.getElementById('confirmCircuitBtn')?.addEventListener('click', () => {
                     const checked = Array.from(document.querySelectorAll('.circuit-ex-cb:checked')).map(cb => parseInt(cb.value));
-                    buildCircuit(checked);
-                    ModalManager.close(document.getElementById('globalCircuitModal'));
+                    buildCircuit(checked); // buildCircuit gère maintenant la fermeture du modal
                 });
             },
 
@@ -13955,7 +13924,6 @@ body.dark-mode .superset-header {
         function roundToQuarter(kg)  { return PhysioCompute.roundToPlate(kg); }
 
         function computeNextSessionData() {
-            updateStateFromTable();
             const session = state.sessions[state.currentSessionIndex];
             if (!session) return null;
 
@@ -14087,7 +14055,6 @@ body.dark-mode .superset-header {
 
         // Listener bouton principal
         document.getElementById('nextSessionBtn').addEventListener('click', () => {
-            updateStateFromTable();
             const data = computeNextSessionData();
             renderNextSessionModal(data);
         });
