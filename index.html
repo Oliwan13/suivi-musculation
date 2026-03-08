@@ -1741,38 +1741,39 @@
     ═══════════════════════════════════════════════════════════════════ -->
 
     <!-- 1. DATA — aucune dépendance -->
-    <script src="js/data/training-zones.js"></script>
-    <script src="js/data/training-science.js"></script>
-    <script src="js/data/default-sessions.js"></script>
-    <script src="js/data/supplement-db.js"></script>
+    <script src="js/data/training-zones.js" defer></script>
+    <script src="js/data/training-science.js" defer></script>
+    <script src="js/data/default-sessions.js" defer></script>
+    <script src="js/data/supplement-db.js" defer></script>
 
     <!-- 2. CORE — dépend uniquement de window natif -->
-    <script src="js/core/feature-flags.js"></script>
-    <script src="js/core/storage.js"></script>
-    <script src="js/core/render-scheduler.js"></script>
-    <script src="js/core/state.js"></script>
+    <script src="js/core/feature-flags.js" defer></script>
+    <script src="js/core/storage.js" defer></script>
+    <script src="js/core/render-scheduler.js" defer></script>
+    <script src="js/core/state.js" defer></script>
 
     <!-- 3. FITNESS PURE — dépend storage + training-zones, AUCUN DOM -->
-    <script src="js/fitness/physio-compute.js"></script>
-    <script src="js/fitness/discipline-engine.js"></script>
+    <script src="js/fitness/physio-compute.js" defer></script>
+    <script src="js/fitness/discipline-engine.js" defer></script>
 
     <!-- 4. APP — IIFE principale (ModalManager, WodEngine, Router, Actions…) -->
-    <script src="js/app.js"></script>
+    <script src="js/app.js" defer></script>
 
     <!-- 5. FEATURES — dépendent de window.showDashboard et du DOM initialisé -->
-    <script src="js/features/global-nav.js"></script>
-    <script src="js/features/plan-panel.js"></script>
-    <script src="js/features/profile.js"></script>
-    <script src="js/features/onboarding.js"></script>
-    <script src="js/features/ai-coach.js"></script>
-    <script src="js/features/program-builder.js"></script>
-    <script src="js/features/fuzzy-search.js"></script>
-    <script src="js/features/supabase-sync.js"></script>
-    <script src="js/features/gamification.js"></script>
-    <script src="js/features/pro-coach.js"></script>
-    <script>
+    <script src="js/features/global-nav.js" defer></script>
+    <script src="js/features/plan-panel.js" defer></script>
+    <script src="js/features/profile.js" defer></script>
+    <script src="js/features/onboarding.js" defer></script>
+    <script src="js/features/ai-coach.js" defer></script>
+    <script src="js/features/program-builder.js" defer></script>
+    <script src="js/features/fuzzy-search.js" defer></script>
+    <script src="js/features/supabase-sync.js" defer></script>
+    <script src="js/features/gamification.js" defer></script>
+    <script src="js/features/pro-coach.js" defer></script>
+    <script defer>
     // Init Ligues + Pro panels via tab clicks
-    window.addEventListener('load', () => {
+    // Utilise DOMContentLoaded pour garantir l'exécution après les scripts defer
+    document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tabLigues')?.addEventListener('click', () => {
             window.LyftivGamification?.renderLeaguePanel('panelLiguesContent');
         });
