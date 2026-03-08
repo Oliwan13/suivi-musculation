@@ -4,7 +4,7 @@
    ⚠️  Incrémenter CACHE_NAME à chaque déploiement pour forcer le refresh
 ═══════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'lyftiv-v19';
+const CACHE_NAME = 'lyftiv-v20';
 const BASE = '/suivi-musculation';
 
 const FILES_TO_CACHE = [
@@ -43,8 +43,6 @@ const FILES_TO_CACHE = [
     `${BASE}/js/features/supabase-sync.js`,
     `${BASE}/js/features/gamification.js`,
     `${BASE}/js/features/pro-coach.js`,
-    `${BASE}/js/features/fuzzy-search.js`,
-    `${BASE}/js/features/auth.js`,
 ];
 
 /* ── INSTALL : mise en cache de tous les assets ────────────────── */
