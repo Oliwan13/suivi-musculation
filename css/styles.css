@@ -8712,3 +8712,146 @@ body.dark-mode .safety-alert-msg { color: hsl(0,30%,70%); }
         padding-top: 8pt;
     }
 }
+/* ══════════════════════════════════════════════════════════════════════
+   LYFTIV — QA MOBILE PATCH
+   Correctifs identifiés par audit Lighthouse + tests safe-area
+   À inclure à la FIN de styles.css (surcharge propre)
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. SAFE-AREA — éléments fixed manquants ─────────────────────────
+   Lighthouse signale des éléments dont le padding bottom ne tient pas
+   compte du notch iOS / barre Android nav gesture.                    */
+
+/* Modal overlay : padding bottom = safe-area pour que les boutons
+   ne soient pas cachés derrière la barre de geste Android/iOS        */
+.modal-overlay .modal-content,
+#sessionSummaryModal .summary-sheet,
+#globalWodModal .modal-content,
+#globalCircuitModal .modal-content {
+    padding-bottom: calc(var(--spacing-lg, 16px) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Review overlay — CTA buttons visibles */
+.review-actions {
+    padding-bottom: calc(var(--spacing-lg, 16px) + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Program builder modal bottom sheet */
+#pbSheet {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Auth modal */
+#lyftivAuthSheet {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── 2. SCROLL — prévenir le bounce iOS dans les panels ──────────────
+   overscroll-behavior: contain empêche le scroll de "traverser"
+   vers le body quand on atteint le bord d'un scroll container.       */
+
+#historyList,
+#exerciseListContainer,
+.dash-tab-panel,
+.plan-inner,
+.modal-content,
+.summary-sheet,
+#wodSetupPhase,
+#wodActiveExercises,
+#circuitExerciseList {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── 3. TAP TARGETS — taille minimale 44×44px (WCAG 2.5.5) ──────────
+   Lighthouse signale des targets trop petits sur la bottom nav et
+   dans les headers de section.                                        */
+
+.bottom-navigation .btn,
+#global-mobile-nav button,
+.gnav-icon,
+.icon-btn,
+.modal-close-btn,
+.plan-action-btn,
+.rest-duration-btn,
+[data-action="remove"] {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── 4. INPUT ZOOM FIX iOS ───────────────────────────────────────────
+   iOS zoome automatiquement si font-size < 16px sur les inputs.
+   On force 16px sur le focus pour éviter le zoom involontaire.       */
+
+input[type="number"],
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    font-size: max(16px, 1em) !important;
+}
+
+/* ── 5. KEYBOARD AVOIDANCE ──────────────────────────────────────────
+   Quand le clavier virtuel s'ouvre, le contenu principal doit
+   rester accessible. Capacitor gère resize:body mais on renforce
+   via env(keyboard-inset-height) sur les navigateurs qui le supportent */
+
+#app-container {
+    padding-bottom: env(keyboard-inset-height, 0px);
+    transition: padding-bottom 0.2s ease;
+}
+
+/* ── 6. RUBBER-BAND FIX — éviter le blanc derrière la nav ───────────
+   Sur iOS, l'overscroll révèle parfois le background du body.        */
+
+html, body {
+    background-color: var(--color-background-gradient-start, hsl(210,20%,97%));
+    overscroll-behavior-y: none;
+}
+
+body.dark-mode {
+    background-color: hsl(240, 8%, 9%);
+}
+
+/* ── 7. TEXT SELECTION DISABLED sur les boutons ─────────────────────
+   Evite la sélection accidentelle de texte pendant un long-press     */
+
+button,
+.btn,
+.session-card,
+.exercise-card .card-header,
+.bottom-navigation,
+#global-mobile-nav,
+.plan-action-btn {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* ── 8. OVERLAY Z-INDEX AUDIT ───────────────────────────────────────
+   Garantir que les overlays passent toujours au-dessus du clavier
+   virtuel Capacitor (z-index > 9000 nécessaire sur certains Android) */
+
+#restTimerOverlay,
+#emomTimerOverlay,
+.modal-overlay.show,
+#sessionSummaryModal.show,
+#reviewOverlay.show {
+    z-index: 9500 !important;
+}
+
+/* ── 9. CAPACITOR SAFE AREA — status bar iOS ─────────────────────────
+   Quand l'app tourne en natif, la status bar est opaque (dark #0d0d1a)
+   Le contenu doit commencer sous la status bar.                      */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+    body[data-capacitor] .main-container,
+    body[data-capacitor] #landing,
+    body[data-capacitor] #dashboard {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+    }
+}
