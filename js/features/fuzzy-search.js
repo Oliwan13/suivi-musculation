@@ -23,6 +23,11 @@
         hamstrings:          'Ischios',
         glutes:              'Fessiers',
         calves:              'Mollets',
+        abs:                 'Core / Abdominaux',
+        traps:               'Trapèzes',
+        forearms:            'Avant-bras',
+        lower_back:          'Lombaires',
+        hip_abductors:       'Abducteurs',
     };
 
     const TIER_COLOR = {
