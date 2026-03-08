@@ -1,0 +1,35 @@
+{
+  "name": "lyftiv",
+  "version": "1.0.0",
+  "description": "Lyftiv — Suivi musculation science-based",
+  "type": "module",
+  "scripts": {
+    "build":              "node build.js",
+    "predeploy":          "node bump-cache.js && node build.js",
+    "deploy":             "gh-pages -d dist",
+    "deploy:src":         "gh-pages -d .",
+    "cap:sync":           "npx cap sync",
+    "cap:open:ios":       "npx cap open ios",
+    "cap:open:android":   "npx cap open android",
+    "cap:build:ios":      "npx cap sync ios && npx cap open ios",
+    "cap:build:android":  "npx cap sync android && npx cap open android",
+    "native":             "node build.js && npx cap sync",
+    "icons":              "node gen-icons-pure.mjs"
+  },
+  "dependencies": {
+    "@capacitor/core":               "^6.0.0",
+    "@capacitor/app":                "^6.0.0",
+    "@capacitor/haptics":            "^6.0.0",
+    "@capacitor/keyboard":           "^6.0.0",
+    "@capacitor/status-bar":         "^6.0.0",
+    "@capacitor/splash-screen":      "^6.0.0",
+    "@capacitor/push-notifications": "^6.0.0",
+    "@capacitor/local-notifications":"^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "gh-pages": "^6.0.0"
+  }
+}
