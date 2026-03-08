@@ -10,10 +10,10 @@
     //  ⚙️  CONFIG — À remplacer avec tes valeurs Supabase
     //  https://app.supabase.com → Settings → API
     // ══════════════════════════════════════════════════════════════════
-    const SUPABASE_URL  = 'https://VOTRE_PROJET.supabase.co';
-    const SUPABASE_ANON = 'VOTRE_ANON_KEY';
+    const SUPABASE_URL  = window.LyftivConfig?.SUPABASE_URL  || 'https://VOTRE_PROJET.supabase.co';
+    const SUPABASE_ANON = window.LyftivConfig?.SUPABASE_ANON || 'VOTRE_ANON_KEY';
 
-    const IS_CONFIGURED = !SUPABASE_URL.includes('VOTRE_PROJET');
+    const IS_CONFIGURED = window.LyftivConfig?.IS_CONFIGURED ?? !SUPABASE_URL.includes('VOTRE_PROJET');
 
     // ══════════════════════════════════════════════════════════════════
     //  STORAGE KEYS
