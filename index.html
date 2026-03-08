@@ -1740,6 +1740,10 @@
          5. FEATURES   — dépendent de window.showDashboard + DOM initialisé
     ═══════════════════════════════════════════════════════════════════ -->
 
+    <!-- 0. CONFIG CENTRALE — chargé en premier, synchrone intentionnellement -->
+    <!-- ⚙️  Édite lyftiv-config.js pour configurer Supabase -->
+    <script src="lyftiv-config.js"></script>
+
     <!-- 1. DATA — aucune dépendance -->
     <script src="js/data/training-zones.js" defer></script>
     <script src="js/data/training-science.js" defer></script>
