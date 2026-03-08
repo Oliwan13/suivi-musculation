@@ -145,7 +145,7 @@
         { id: 'fc_tonnage',   label: 'Défi Tonnage',   desc: 'Qui accumule le plus de kg en 7 jours ?', icon: '⚖️' },
         { id: 'fc_sessions',  label: 'Défi Assiduité', desc: 'Qui fait le plus de séances en 7 jours ?', icon: '📅' },
         { id: 'fc_streak',    label: 'Défi Streak',    desc: 'Qui maintient le plus grand streak ?', icon: '🔥' },
-        { id: 'fc_exercises', label: 'Défi Variété',   desc: 'Qui utilise le plus d'exercices différents ?', icon: '🎨' },
+        { id: 'fc_exercises', label: 'Défi Variété',   desc: "Qui utilise le plus d'exercices différents ?", icon: '🎨' },
     ];
 
     function generateChallengLink(challengeId) {
