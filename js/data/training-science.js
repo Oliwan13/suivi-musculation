@@ -101,77 +101,132 @@ const TrainingScience = Object.freeze({
     //  S = optimal | A = très efficace | B = acceptable | F = éviter
     // ══════════════════════════════════════════════════════════════════
     exerciseTiers: {
+        // ── CHEST ──────────────────────────────────────────────────────────
         chest: {
-            S: ['Chest Press machine', 'Cable Pec Flye assis', 'Dips (lestés)'],
-            A: ['Développé couché barre', 'Développé incliné haltères', 'Développé couché haltères', 'Pec Deck', 'Cable Press-Around', 'Dips', 'Déficit Pushups'],
-            B: ['Développé couché prise serrée', 'Pushups standard'],
+            S: ['Chest Press Machine', 'Cable Pec Flye', 'Weighted Dips'],
+            A: ['Barbell Bench Press', 'Incline Dumbbell Press', 'Dumbbell Bench Press', 'Pec Deck',
+                'Cable Press-Around', 'Dips', 'Deficit Push-ups', 'Floor Press', 'Decline Dumbbell Press'],
+            B: ['Standard Push-ups', 'Archer Push-ups'],
             rationale: 'Stabilité + tension en position étirée (Cable Flye). Potentiel de surcharge (Presses).',
         },
+        // ── BACK — WIDTH ───────────────────────────────────────────────────
         back_lats: {
-            S: ['Tirage vertical prise large', 'Tirage vertical prise neutre', 'Tirage unilatéral poulie'],
-            A: ['Tractions prise large', 'Tractions prise neutre', 'Pullover câble', 'Pullover haltère', 'Cable Cross-body Lat Pull-Around'],
-            B: ['Tirage horizontal prise large', 'Rowing barre prise pronation'],
+            S: ['Wide-Grip Lat Pulldown', 'Neutral-Grip Lat Pulldown', 'Unilateral Cable Pulldown'],
+            A: ['Wide-Grip Pull-ups', 'Neutral-Grip Pull-ups', 'Cable Pullover', 'Dumbbell Pullover',
+                'Cable Cross-body Lat Pull-Around', 'High Lat Pull-In', 'Assisted Pull-up'],
+            B: ['Wide-Grip Seated Row', 'Overhand Barbell Row', 'Straight-Arm Pushdown'],
             rationale: 'Stabilité (tirage machine), tension en position étirée (pullovers), potentiel de surcharge.',
         },
+        // ── BACK — THICKNESS ───────────────────────────────────────────────
         back_upper: {
-            S: ['Rowing soutenu poitrine (chest-supported)', 'Meadows Row', 'Rowing câble'],
-            A: ['Rowing haltère unilatéral', 'Deficit Pendlay Row', 'Kroc Row'],
-            B: ['Rowing barre penché', 'Rowing TRX'],
+            S: ['Chest-Supported Row', 'Meadows Row', 'Cable Row'],
+            A: ['One-Arm Dumbbell Row', 'Deficit Pendlay Row', 'Kroc Row', 'Inverted Row',
+                'Chest-Supported T-Bar Row', 'Yates Row', 'Divergent Row Machine'],
+            B: ['Bent-Over Barbell Row', 'TRX Row', 'Uneven Row'],
             rationale: 'Stabilité élevée sur chest-supported (fatigue systémique réduite). Charge unilatérale.',
         },
+        // ── SHOULDERS — LATERAL ────────────────────────────────────────────
         shoulders_lateral: {
-            S: ['Élévations latérales câble', 'Cable Y-Raise', 'Élévations latérales câble derrière le dos'],
-            A: ['Élévations latérales haltères penchées (Lean-in)', 'Machine élévations latérales', 'Side Lying Raise'],
-            B: ['Élévations latérales haltères debout standard'],
+            S: ['Cable Lateral Raise', 'Cable Y-Raise', 'Behind-the-Back Cable Lateral Raise'],
+            A: ['Lean-Away Dumbbell Lateral Raise', 'Machine Lateral Raise', 'Side-Lying Lateral Raise', 'Lu Raise'],
+            B: ['Standing Dumbbell Lateral Raise', 'Band Lateral Raise'],
             rationale: 'Les câbles fournissent une tension en position étirée contrairement aux haltères.',
         },
+        // ── SHOULDERS — ANTERIOR ───────────────────────────────────────────
         shoulders_anterior: {
-            S: ['Développé épaules machine'],
-            A: ['Développé épaules haltères assis', 'Développé militaire barre debout'],
-            B: ['Élévations frontales haltères'],
+            S: ['Shoulder Press Machine'],
+            A: ['Seated Dumbbell Shoulder Press', 'Standing Barbell Overhead Press', 'Landmine Press',
+                'Landmine Squeeze Press', 'Push Press'],
+            B: ['Dumbbell Front Raise', 'Pike Press', 'Explosive Overhead Press'],
             rationale: 'Machine = stabilité + tension directe. Haltères = amplitude + stabilisateurs.',
         },
+        // ── SHOULDERS — POSTERIOR ──────────────────────────────────────────
         shoulders_posterior: {
             S: ['Reverse Pec Deck', 'Reverse Cable Crossover'],
-            A: ['Face Pull corde', 'Reverse Fly haltères penché'],
-            B: ['Oiseau machine convergente'],
+            A: ['Face Pull', 'Bent-Over Reverse Fly', 'L-Fly Cable', 'Facepull Rings'],
+            B: ['Rear Delt Machine', 'Band Reverse Fly', 'L-Fly Band'],
             rationale: 'Isolation et stabilité (Reverse Pec Deck). Tension constante (câbles).',
         },
+        // ── BICEPS ─────────────────────────────────────────────────────────
         biceps: {
-            S: ['Curl pupitre haltère', 'Curl pupitre machine', 'Preacher Hammer Curl'],
-            A: ['Curl barre EZ', 'Curl incliné haltères', 'Bayesian Cable Curl', 'Hammer Curl'],
-            B: ['Curl barre droite debout', 'Curl concentré'],
+            S: ['Dumbbell Preacher Curl', 'Machine Preacher Curl', 'Preacher Hammer Curl'],
+            A: ['EZ-Bar Curl', 'Incline Dumbbell Curl', 'Bayesian Cable Curl', 'Hammer Curl', 'Pelican Curl'],
+            B: ['Straight Bar Curl', 'Concentration Curl', 'Band Curl'],
             rationale: 'Tension pic en position courte + stabilité (Preacher). Tension en position étirée (Incliné, Bayesian).',
         },
+        // ── TRICEPS ────────────────────────────────────────────────────────
         triceps: {
-            S: ['Extension triceps overhead câble (corde)', 'Extension triceps overhead câble (barre)', 'Katana Extension', 'Cable Kickback'],
-            A: ['Développé couché prise serrée', 'Skullcrusher haltères', 'Dips', 'JM Press Smith Machine'],
-            B: ['Pushdown corde', 'Extension triceps unilatéral haltère'],
-            rationale: 'Tension en position étirée sur le chef long (Overhead Extensions). Potentiel de surcharge (Presses/Dips).',
+            S: ['Overhead Cable Triceps Extension (rope)', 'Overhead Cable Triceps Extension (bar)',
+                'Katana Extension', 'Cable Triceps Kickback'],
+            A: ['Close-Grip Bench Press', 'Dumbbell Skull Crusher', 'JM Press Smith Machine',
+                'Overhead Dumbbell Triceps Extension', 'Overhead Triceps Extension (rings)'],
+            B: ['Rope Pushdown', 'Single-Arm Dumbbell Triceps Extension', 'Triceps Pushdown', 'Sphinx Push-up'],
+            rationale: 'Tension en position étirée sur le chef long (Overhead Extensions). Potentiel de surcharge (Presses).',
         },
+        // ── QUADRICEPS ─────────────────────────────────────────────────────
         quads: {
-            S: ['Hack Squat', 'Pendulum Squat', 'Squat barre', 'Squat Smith Machine'],
-            A: ['Squat avant', 'Leg Press', 'Leg Extension', 'Bulgarian Split Squat'],
-            B: ['Fentes marchées', 'Step-up'],
+            S: ['Hack Squat', 'Pendulum Squat', 'Barbell Back Squat', 'Smith Machine Squat'],
+            A: ['Front Squat', 'Leg Press', 'Leg Extension', 'Bulgarian Split Squat', 'Belt Squat', 'ATG Split Squat'],
+            B: ['Walking Lunges', 'Step-Up', 'Sissy Squat', 'Jump Squat', 'Band-Assisted Reverse Nordic'],
             rationale: 'Stabilité + surcharge (machines). Développement global (Squat). Isolation (Leg Extension).',
         },
+        // ── HAMSTRINGS ─────────────────────────────────────────────────────
         hamstrings: {
-            S: ['Leg Curl assis (Seated Leg Curl)'],
-            A: ['Soulevé de terre roumain (RDL)', 'Leg Curl allongé', 'Glute-Ham Raise'],
-            B: ['Good Morning', 'Leg Curl debout'],
+            S: ['Seated Leg Curl'],
+            A: ['Romanian Deadlift (RDL)', 'Lying Leg Curl', 'Glute-Ham Raise', 'Nordic Hamstring Curl',
+                'Deficit Romanian Deadlift'],
+            B: ['Good Morning', 'Standing Leg Curl', 'Single-Leg Stiff-Leg Deadlift', 'Sliding Hamstrings'],
             rationale: 'Seated Curl = position étirée supérieure pour l\'hypertrophie. RDL = charge en hip-hinge.',
         },
+        // ── GLUTES ─────────────────────────────────────────────────────────
         glutes: {
-            S: ['Hip Thrust', 'Bulgarian Split Squat', 'RDL'],
-            A: ['Squat barre', 'Cable Kickback', 'Machine Kickback', 'Fentes'],
-            B: ['Abduction machine', 'Donkey Kick'],
-            rationale: 'Charge directe en position raccourcie (Hip Thrust). Étirement profond + unilatéral (Split Squat).',
+            S: ['Hip Thrust', 'Deficit Hip Thrust', 'Single-Leg Hip Thrust'],
+            A: ['Glute Bridge', 'Cable Glute Kickback', 'Machine Glute Kickback',
+                'Reverse Hyper', 'Single-Leg Glute Bridge'],
+            B: ['45° Glute Kickback', 'Band Glute Kickback', 'Donkey Kick'],
+            rationale: 'Charge directe en position raccourcie (Hip Thrust). Étirement profond + unilatéral.',
         },
+        // ── CALVES ─────────────────────────────────────────────────────────
         calves: {
-            S: ['Mollets assis (Seated Calf Raise)'],
-            A: ['Mollets debout (Standing Calf Raise)', 'Leg Press Calf Raise'],
-            B: ['Mollets sur marche poids du corps'],
+            S: ['Seated Calf Raise'],
+            A: ['Standing Calf Raise', 'Leg Press Calf Raise', 'Incline Standing Calf Raise'],
+            B: ['Bodyweight Calf Raise on Step', 'Tibialis Raise'],
             rationale: 'Seated = soléaire en position étirée. Standing = gastrocnémiens.',
+        },
+        // ── ABS / CORE ─────────────────────────────────────────────────────
+        abs: {
+            S: ['Cable Crunch', 'Hanging Leg Raise', 'Ab Wheel Rollout'],
+            A: ['Decline Crunch', 'Dragon Flag', 'Toes-to-Bar', 'Dead Bug', 'GHD Crunch'],
+            B: ['Standard Crunch', 'Mountain Climbers', 'Plank', 'Superman'],
+            rationale: 'Résistance externe (câble) = surcharge progressive. Position étirée (Dragon Flag).',
+        },
+        // ── TRAPEZIUS ──────────────────────────────────────────────────────
+        traps: {
+            S: ['Barbell Shrugs', 'Dead Hang'],
+            A: ['Dumbbell Shrugs', 'Scapular Pull-ups', 'Cable Shrugs'],
+            B: ["Rack Pull", "Farmer's Walk"],
+            rationale: 'Charge maximale (Shrugs). Temps sous tension (Dead Hang). Surcharge fonctionnelle.',
+        },
+        // ── FOREARMS ───────────────────────────────────────────────────────
+        forearms: {
+            S: ['Wrist Curl (Supination)', 'Wrist Extension (Pronation)'],
+            A: ['Bar Hang', 'Reverse Curl', 'Wrist Roller'],
+            B: ['Pinch Hold', 'Towel Pull-up'],
+            rationale: 'Isolation directe (Wrist Curl). Surcharge fonctionnelle (Bar Hang).',
+        },
+        // ── LOWER BACK ─────────────────────────────────────────────────────
+        lower_back: {
+            S: ['Jefferson Curl', 'Back Extension Machine'],
+            A: ['Zercher Good Morning', 'GHD Back Extension', 'Barbell Good Morning'],
+            B: ['Superman Hold', 'Reverse Hyper (light)'],
+            rationale: 'Flexion chargée (Jefferson Curl) = stimulus en position étirée optimal pour les érecteurs.',
+        },
+        // ── HIP ABDUCTORS ──────────────────────────────────────────────────
+        hip_abductors: {
+            S: ['Seated Hip Abduction (extra range)'],
+            A: ['Hip Abduction Machine', 'Lying Hip Abduction', 'Cable Hip Abduction'],
+            B: ['Band Hip Abduction', 'Standing Hip Abduction'],
+            rationale: 'Machines avec pleine amplitude = tension optimale sur moyen fessier et TFL.',
         },
     },
 
